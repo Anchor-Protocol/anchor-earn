@@ -7,8 +7,6 @@ export interface AddressProvider {
 }
 
 export enum DENOMS {
-  UUST = 'uusd',
-  UKRW = 'ukrw',
-  UANC = 'uanc',
-  UAUST = 'uaust',
+  UST = 'uusd',
+  AUST = 'uaust',
 }

@@ -23,7 +23,7 @@ describe('anchor-earn', () => {
 
     const deposit = await anchorEarn.earn.deposit({
       amount: '0.01',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
     });
 
     if (deposit instanceof OutputImpl) {
@@ -39,7 +39,7 @@ describe('anchor-earn', () => {
     });
     const deposit = await anchorEarn.earn.deposit({
       amount: '0.01',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
       log: (data) => {
         console.log(data);
       },
@@ -84,7 +84,7 @@ describe('anchor-earn', () => {
   //   });
   //   const deposit = anchorEarn.deposit({
   //     amount: '0.01',
-  //     currency: DENOMS.UUST,
+  //     currency: DENOMS.UST,
   //   });
   //
   //   // deposit.print();
@@ -102,7 +102,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(account.privateKey),
     });
-    const sendAust = await anchorEarn.earn.send(DENOMS.UAUST, {
+    const sendAust = await anchorEarn.earn.send(DENOMS.AUST, {
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
     });
@@ -123,7 +123,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(account.privateKey),
     });
-    const sendUst = await anchorEarn.earn.send(DENOMS.UUST, {
+    const sendUst = await anchorEarn.earn.send(DENOMS.UST, {
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
     });
@@ -146,7 +146,7 @@ describe('anchor-earn', () => {
     });
     const withdraw = await anchorEarn.earn.withdraw({
       amount: '0.01',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
     });
 
     if (withdraw instanceof OutputImpl) {
@@ -170,7 +170,7 @@ describe('anchor-earn', () => {
     failedAnchorEarn.earn
       .withdraw({
         amount: '1000000000000',
-        currency: DENOMS.UUST,
+        currency: DENOMS.UST,
       })
       .catch((e: Error) => {
         expect(e.message).toEqual('There is no deposit for the user');
@@ -179,21 +179,21 @@ describe('anchor-earn', () => {
     failedAnchorEarn.earn
       .withdraw({
         amount: '0',
-        currency: DENOMS.UUST,
+        currency: DENOMS.UST,
       })
       .catch((e: Error) => {
         expect(e.message).toEqual('Invalid zero amount');
       });
   });
 
-  it('balance', async () => {
+  it.only('balance', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAIN.TERRA,
       network: NETWORKS.TESTNET,
     });
 
     const userBalance = await anchorEarn.earn.balance({
-      currencies: [DENOMS.UUST],
+      currencies: [DENOMS.UST],
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
@@ -208,7 +208,7 @@ describe('anchor-earn', () => {
     });
 
     const market = await anchorEarn.earn.market({
-      currencies: [DENOMS.UUST, DENOMS.UKRW],
+      currencies: [DENOMS.UST],
     });
 
     market.print();

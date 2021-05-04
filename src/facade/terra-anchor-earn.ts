@@ -191,13 +191,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {market} Anchor Deposit Market. For now, it is only Denom.UUST.
+   * @param {market} Anchor Deposit Market. For now, it is only Denom.UST.
    * @param {amount} Amount for deposit. The amount will be deposited in micro UST. e.g. 1 ust = 1000000 uust
    *
    * @example
    * const deposit = await anchorEarn.deposit({
       amount: '0.01',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
     });
    */
   async deposit(
@@ -255,13 +255,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {market} Anchor Deposit Market. For now, it is only Denom.UUST.
+   * @param {market} Anchor Deposit Market. For now, it is only Denom.UST.
    * @param {amount} Amount for withdraw. The amount will be withdrawed in micro UST. e.g. 1 ust = 1000000 uust
    *
    * @example
    * const withdraw = await anchorEarn.withdraw({
       amount: '0.01',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
     });
    */
   async withdraw(
@@ -311,12 +311,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {denom} currency denomination for send. it could be either DENOMS.UUST, DENOMS.UAUST, DENOMS.UANC
+   * @param {denom} currency denomination for send. it could be either DENOMS.UST, DENOMS.AUST
    * @param {amount} Amount for withdraw. The amount will be withdrawed in micro UST. e.g. 1 ust = 1000000 uust
    * @param {recipient} Recipient's terra address
    *
    * @example
-   * const sendAust = await anchorEarn.send(DENOMS.UAUST, {
+   * const sendAust = await anchorEarn.send(DENOMS.AUST, {
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
     });
@@ -331,8 +331,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const address = options.address;
 
     switch (denom) {
-      case DENOMS.UUST: {
-        await this.assertUSTBalance(DENOMS.UUST, options.amount);
+      case DENOMS.UST: {
+        await this.assertUSTBalance(DENOMS.UST, options.amount);
         const coin = new Coin(
           'uusd',
           new Int(new Dec(dec(options.amount)).mul(1000000)),
@@ -368,7 +368,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           });
         break;
       }
-      case DENOMS.UAUST: {
+      case DENOMS.AUST: {
         await this.assertAUSTBalance(options.amount);
         let transferAUST: Msg[];
         if (customSigner && address) {
@@ -376,14 +376,14 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
             address: address,
             amount: options.amount,
             recipient: options.recipient,
-            contract_address: this._addressProvider.aTerra(DENOMS.UUST),
+            contract_address: this._addressProvider.aTerra(DENOMS.UST),
           });
         } else {
           transferAUST = fabricateCw20Transfer({
             address: this._account.key.accAddress,
             amount: options.amount,
             recipient: options.recipient,
-            contract_address: this._addressProvider.aTerra(DENOMS.UUST),
+            contract_address: this._addressProvider.aTerra(DENOMS.UST),
           });
         }
         return Promise.resolve()
@@ -415,7 +415,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   //  *
   //  * @example
   //  * const userBalance = await anchorEarn.balance({
-  //     currencies: [DENOMS.UUST, DENOMS.UKRW],
+  //     currencies: [DENOMS.UST, DENOMS.KRW],
   //   });
   //  */
   //
@@ -448,7 +448,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
    *
    * @example
    * const userBalance = await anchorEarn.currency({
-      currencies: [DENOMS.UUST, DENOMS.UKRW],
+      currencies: [DENOMS.UST, DENOMS.KRW],
     });
    */
 
@@ -664,7 +664,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   private async assertAUSTBalance(requestedAmount: string): Promise<void> {
     const austBalance = await this.getAUstBalance({
       address: this._account.key.accAddress,
-      market: DENOMS.UUST,
+      market: DENOMS.UST,
     });
     const userRequest = new Int(new Dec(dec(requestedAmount)).mul(1000000));
 

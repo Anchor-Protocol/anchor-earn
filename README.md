@@ -90,18 +90,18 @@ As mentioned above, `AnchorEarn` helps execute messages and query the state of t
 `AnchorEarn` executor has three functionalities:
 - deposit: deposit coin on anchor protocol
 - withdraw: withdraw previously deposited amount.
-- send: transfer `UST` and `aUST` to other accounts.
+- send: transfer `UST` and `AUST` to other accounts.
 
 The following code snippets show how to use `AnchorEarn` object.
 
-**NOTE**: currently anchor-earn supports `UUST` currency.
+**NOTE**: currently anchor-earn supports `UST` currency.
 
 ### Deposit 
 For depositing coins on Anchor Protocol, use the following example:
 ```ts
     const deposit = await anchorEarn.earn.deposit({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
     });
 ```
 
@@ -110,15 +110,15 @@ To withdraw your deposits from the protocol, use the following example:
 ```ts
     const deposit = await anchorEarn.earn.withdraw({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
     });
 ```
 
 ### Send
-To send `UUST` and `aUST` to other accounts, use the following example: 
-For this functionality, `aUst` denom is also supported. 
+To send `UST` and `AUST` to other accounts, use the following example: 
+For this functionality, `AUst` denom is also supported. 
 ```ts
- const sendUst = await anchorEarn.earn.send(DENOMS.UUST, {
+ const sendUst = await anchorEarn.earn.send(DENOMS.UST, {
       recipient: 'terra1....',
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
     });
@@ -138,7 +138,7 @@ To get the current state of account, use the following example:
     });
 
 const userBalance = await anchorEarn.earn.balance({
-      currencies: [DENOMS.UUST],
+      currencies: [DENOMS.UST],
       address: 'terra1...'
     });
 ```
@@ -146,7 +146,7 @@ const userBalance = await anchorEarn.earn.balance({
 To get the current state of the market, use the below example:
 ```ts
     const market = await anchorEarn.earn.market({
-      currencies: [DENOMS.UUST, DENOMS.UKRW],
+      currencies: [DENOMS.UST],
     });
 ```
 ## CustomSigner
@@ -160,7 +160,7 @@ The following code snippet specifies an example of `CustomSigner` usage.
 ```ts
 const deposit = await anchorEarn.earn.deposit({
       amount: '0.01',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
       customSigner: async (tx: Msg[]) => {
         const account = new MnemonicKey({
           mnemonic:
@@ -189,7 +189,7 @@ For seeing the progress of the transaction on the chain, loggable is provided. T
 ```ts
     const deposit = await anchorEarn.earn.deposit({
       amount: '...',
-      currency: DENOMS.UUST,
+      currency: DENOMS.UST,
       log: (data) => {
         console.log(data);
       }

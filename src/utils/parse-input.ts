@@ -60,7 +60,7 @@ export namespace Parse {
   }
 
   export function assertMarket(input?: DENOMS): boolean {
-    if (input !== DENOMS.UUST) {
+    if (input !== DENOMS.UST) {
       return false;
     }
     return true;

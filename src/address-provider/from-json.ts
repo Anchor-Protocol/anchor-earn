@@ -20,7 +20,7 @@ export class AddressProviderFromJson implements AddressProvider {
   }
 
   aTerra(denom: DENOMS): string {
-    if (denom == DENOMS.UUST) {
+    if (denom == DENOMS.UST) {
       return this.data.aTerra;
     }
     return '';
