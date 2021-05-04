@@ -186,7 +186,7 @@ describe('anchor-earn', () => {
       });
   });
 
-  it.only('balance', async () => {
+  it('balance', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAIN.TERRA,
       network: NETWORKS.TESTNET,

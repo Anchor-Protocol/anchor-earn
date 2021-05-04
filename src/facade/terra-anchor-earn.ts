@@ -6,7 +6,7 @@ import {
   LCDClient,
   MnemonicKey,
   Msg,
-  RawKey,
+  RawKey, StdTx,
   Wallet,
 } from '@terra-money/terra.js';
 import {
@@ -241,7 +241,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
               gasAdjustment: this._gasConfig.gasAdjustment,
             }),
       )
-      .then((signedTx) =>
+      .then((signedTx: StdTx) =>
         customSigner
           ? send_signed_transaction(this._lcd, signedTx)
           : operation.execute(this._account, {
@@ -297,7 +297,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
               gasAdjustment: this._gasConfig.gasAdjustment,
             }),
       )
-      .then((signedTx) =>
+      .then((signedTx: StdTx) =>
         customSigner
           ? send_signed_transaction(this._lcd, signedTx)
           : operation.execute(this._account, {
@@ -362,7 +362,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   [tx],
                 ),
           )
-          .then((signedTx) => send_signed_transaction(this._lcd, signedTx))
+          .then((signedTx: StdTx) => send_signed_transaction(this._lcd, signedTx))
           .then((result) => {
             return this.generate_output(result, TxType.SEND, loggable);
           });
@@ -399,14 +399,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   transferAUST,
                 ),
           )
-          .then((signedTx) => send_signed_transaction(this._lcd, signedTx))
+          .then((signedTx: StdTx) => send_signed_transaction(this._lcd, signedTx))
           .then((result) => {
             return this.generate_output(result, TxType.SENDAUST, loggable);
           });
         break;
       }
-      default:
-        throw new Error(`invalid '${denom}' - must be uusd|uanc|uaust`);
     }
   }
 
