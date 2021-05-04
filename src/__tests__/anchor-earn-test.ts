@@ -190,11 +190,11 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAIN.TERRA,
       network: NETWORKS.TESTNET,
-      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
     const userBalance = await anchorEarn.earn.balance({
       currencies: [DENOMS.UUST],
+      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
     userBalance.print();

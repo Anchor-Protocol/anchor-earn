@@ -436,7 +436,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     return new BalanceOutput(
       this._lcd.config.chainID,
       height[0],
-      this.getAddress(),
+      options.address ? options.address : this.getAddress(),
       balances,
       totalBalance[0],
       totalDeposit[0],
