@@ -4,7 +4,7 @@ Anchor-earn is a client SDK for building applications that can interact with the
 
 
 > **NOTE** 
-This SDK only supports the earn functionalities of anchor protocol and cannot be used for other functionalities like bond or borrow of the protocol.
+This SDK only supports the earn functionalities of anchor protocol and cannot be used for other functionalities like bond or borrow.
 
 ## Table of Contents <!-- omit in toc -->
 - [Getting Started](#getting-started)
@@ -21,7 +21,7 @@ A walk through of the steps to get started with Anchor-earn SDK alongside with a
 ## Requirements
 
 - Node.js 12+
-- NPM,
+- NPM
 
 ## Installation
 Anchor-earn is available as a package on NPM and it is independent from other Terra and Anchor SDKs.\
