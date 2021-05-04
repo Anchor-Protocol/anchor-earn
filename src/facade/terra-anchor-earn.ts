@@ -14,7 +14,7 @@ import {
   createNativeSend,
   createAndSignMsg,
   OperationImpl,
-  send_signed_transaction,
+  sendSignedTransaction,
 } from './operation';
 import {
   Balance,
@@ -183,11 +183,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     }
   }
 
-  get_account(): Wallet {
+  getAccount(): Wallet {
     return this._account;
   }
 
-  get_lcd(): LCDClient {
+  getLcd(): LCDClient {
     return this._lcd;
   }
 
@@ -244,14 +244,14 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       )
       .then((signedTx: StdTx) =>
         customSigner
-          ? send_signed_transaction(this._lcd, signedTx)
+          ? sendSignedTransaction(this._lcd, signedTx)
           : operation.execute(this._account, {
               gasPrices: this._gasConfig.gasPrices,
               gasAdjustment: this._gasConfig.gasAdjustment,
             }),
       )
       .then((result) => {
-        return this.generate_output(result, TxType.DEPOSIT, loggable);
+        return this.generateOutput(result, TxType.DEPOSIT, loggable);
       });
   }
 
@@ -300,20 +300,20 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       )
       .then((signedTx: StdTx) =>
         customSigner
-          ? send_signed_transaction(this._lcd, signedTx)
+          ? sendSignedTransaction(this._lcd, signedTx)
           : operation.execute(this._account, {
               gasPrices: this._gasConfig.gasPrices,
               gasAdjustment: this._gasConfig.gasAdjustment,
             }),
       )
       .then((result) => {
-        return this.generate_output(result, TxType.WITHDRAW, loggable);
+        return this.generateOutput(result, TxType.WITHDRAW, loggable);
       });
   }
 
   /**
    * @param {denom} currency denomination for send. it could be either DENOMS.UST, DENOMS.AUST
-   * @param {amount} Amount for withdraw. The amount will be withdrawed in micro UST. e.g. 1 ust = 1000000 uust
+   * @param {amount} Amount for withdraw. The amount will be withdrawn in micro UST. e.g. 1 ust = 1000000 uust
    * @param {recipient} Recipient's terra address
    *
    * @example
@@ -363,11 +363,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   [tx],
                 ),
           )
-          .then((signedTx: StdTx) =>
-            send_signed_transaction(this._lcd, signedTx),
-          )
+          .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
           .then((result) => {
-            return this.generate_output(result, TxType.SEND, loggable);
+            return this.generateOutput(result, TxType.SEND, loggable);
           });
         break;
       }
@@ -402,11 +400,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   transferAUST,
                 ),
           )
-          .then((signedTx: StdTx) =>
-            send_signed_transaction(this._lcd, signedTx),
-          )
+          .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
           .then((result) => {
-            return this.generate_output(result, TxType.SENDAUST, loggable);
+            return this.generateOutput(result, TxType.SENDAUST, loggable);
           });
         break;
       }
@@ -502,11 +498,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private async getDepositRate(
-    getDepositRateoption: GetDepositRateOption,
+    getDepositRateOption: GetDepositRateOption,
   ): Promise<string> {
     const state = await queryOverseerEpochState({
       lcd: this._lcd,
-      market: getDepositRateoption.market,
+      market: getDepositRateOption.market,
     })(this._addressProvider);
     return state.deposit_rate;
   }
@@ -533,29 +529,29 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     currency: DENOMS,
     address?: string,
   ): Promise<BalanceEntry> {
-    let account_balance;
-    let deposit_balance;
+    let accountBalance;
+    let depositBalance;
     if (address) {
-      account_balance = await Promise.all([
+      accountBalance = await Promise.all([
         this.getNativeBalance({
           address: address,
           currency,
         }),
       ]);
-      deposit_balance = await Promise.all([
+      depositBalance = await Promise.all([
         this.getAUstBalance({
           address: address,
           market: currency,
         }),
       ]);
     } else {
-      account_balance = await Promise.all([
+      accountBalance = await Promise.all([
         this.getNativeBalance({
           address: this.getAddress(),
           currency,
         }),
       ]);
-      deposit_balance = await Promise.all([
+      depositBalance = await Promise.all([
         this.getAUstBalance({
           address: this.getAddress(),
           market: currency,
@@ -563,15 +559,15 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       ]);
     }
 
-    const exchange_rate = await this.getExchangeRate({
+    const exchangeRate = await this.getExchangeRate({
       market: currency,
     });
 
     const balance: BalanceEntry = {
       currency: mapCurrencyToUST(currency),
-      account_balance: account_balance[0].amount.toString(),
+      account_balance: accountBalance[0].amount.toString(),
       deposit_balance: new Int(
-        new Dec(deposit_balance[0].balance).mul(exchange_rate).toString(),
+        new Dec(depositBalance[0].balance).mul(exchangeRate).toString(),
       ).toString(),
     };
 
@@ -614,7 +610,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private async getCurrencyMarketState(currency: DENOMS): Promise<MarketEntry> {
-    const contract_balance = await this.getNativeBalance({
+    const contractBalance = await this.getNativeBalance({
       address: this._addressProvider.market(currency),
       currency,
     });
@@ -626,7 +622,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const entry: MarketEntry = {
       currency: mapCurrencyToUST(currency),
-      liquidity: contract_balance.amount.toString(),
+      liquidity: contractBalance.amount.toString(),
       APY: APY.toString(),
     };
 
@@ -683,7 +679,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     }
   }
 
-  private generate_output(
+  private generateOutput(
     tx: BlockTxBroadcastResult,
     type: TxType,
     loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,

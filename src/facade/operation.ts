@@ -35,7 +35,6 @@ export interface Operation {
     wallet: Wallet,
     gasParameters: OperationGasParameters,
   ): Promise<SyncTxBroadcastResult>;
-  generateStxWithAddress(address: string, fee: StdFee): StdTx;
 }
 
 export class OperationImpl<FabricatorInputType> implements Operation {
@@ -58,14 +57,6 @@ export class OperationImpl<FabricatorInputType> implements Operation {
       address,
       ...this._option,
     } as unknown) as FabricatorInputType)(this._addressProvider);
-  }
-
-  generateStxWithAddress(address: string, fee: StdFee): StdTx {
-    const msg = this._fabricator(({
-      address,
-      ...this._option,
-    } as unknown) as FabricatorInputType)(this._addressProvider);
-    return new StdTx(msg, fee, []);
   }
 
   generateWithWallet(wallet: Wallet): Msg[] {
@@ -107,36 +98,7 @@ export class OperationImpl<FabricatorInputType> implements Operation {
   }
 }
 
-export async function send_transaction(
-  sender: Wallet,
-  msgs: Msg[],
-  { fee, gasPrices, gasAdjustment }: OperationGasParameters,
-): Promise<BlockTxBroadcastResult> {
-  return Promise.resolve()
-    .then(() =>
-      sender.createAndSignTx({
-        fee,
-        gasAdjustment,
-        gasPrices,
-        msgs: msgs,
-      }),
-    )
-    .then((tx) => sender.lcd.tx.broadcast(tx))
-    .then(async (result) => {
-      await Promise.resolve().then(
-        () => new Promise((resolve) => setTimeout(resolve, 6000)),
-      );
-
-      return result;
-    })
-    .catch(async () => {
-      console.log('Transaction failed');
-      await new Promise((resolve) => setTimeout(resolve, 6000));
-      return send_transaction(sender, msgs, { fee, gasPrices, gasAdjustment });
-    });
-}
-
-export async function send_signed_transaction(
+export async function sendSignedTransaction(
   lcd: LCDClient,
   tx: StdTx,
 ): Promise<BlockTxBroadcastResult> {
