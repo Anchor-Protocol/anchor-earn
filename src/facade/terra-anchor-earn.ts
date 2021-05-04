@@ -6,7 +6,8 @@ import {
   LCDClient,
   MnemonicKey,
   Msg,
-  RawKey, StdTx,
+  RawKey,
+  StdTx,
   Wallet,
 } from '@terra-money/terra.js';
 import {
@@ -362,7 +363,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   [tx],
                 ),
           )
-          .then((signedTx: StdTx) => send_signed_transaction(this._lcd, signedTx))
+          .then((signedTx: StdTx) =>
+            send_signed_transaction(this._lcd, signedTx),
+          )
           .then((result) => {
             return this.generate_output(result, TxType.SEND, loggable);
           });
@@ -399,7 +402,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   transferAUST,
                 ),
           )
-          .then((signedTx: StdTx) => send_signed_transaction(this._lcd, signedTx))
+          .then((signedTx: StdTx) =>
+            send_signed_transaction(this._lcd, signedTx),
+          )
           .then((result) => {
             return this.generate_output(result, TxType.SENDAUST, loggable);
           });
