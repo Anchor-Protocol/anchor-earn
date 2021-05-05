@@ -4,6 +4,7 @@ import { Parse } from '../utils/parse-input';
 import { JSONSerializable } from '../utils/json';
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import processLog = Parse.processLog;
+import subNaturalDecimals = Parse.subNaturalDecimals;
 
 export interface OperationError {
   type: TxType;
@@ -25,6 +26,7 @@ export class OutputImpl
   currency: string;
   amount: string;
   txFee: string;
+  deductedTax?: string;
 
   constructor(
     txResult: BlockTxBroadcastResult,
@@ -32,6 +34,7 @@ export class OutputImpl
     chain: string,
     network: string,
     gasPrice: number,
+    requestedAmount?: string,
   ) {
     super();
     this.type = type;
@@ -45,12 +48,13 @@ export class OutputImpl
       this.height = txResult.height;
       this.txHash = txResult.txhash;
       this.timestamp = new Date();
-      this.txFee = getNaturalDecimals(
-        new Int(gasPrice * txResult.gas_wanted).toString(),
-      ).concat(' UST');
+      this.txFee = computeTax(gasPrice, txResult.gas_wanted);
       const processedLog = processLog(txResult.logs, type);
       this.amount = processedLog[0];
       this.currency = processedLog[1];
+      this.deductedTax = requestedAmount
+        ? subNaturalDecimals(requestedAmount, this.amount)
+        : undefined;
     }
   }
 
@@ -62,6 +66,7 @@ export class OutputImpl
       currency: this.currency,
       amount: this.amount,
       txFee: this.txFee,
+      deductedTax: this.deductedTax ? this.deductedTax : '0',
       height: this.height,
       timestamp: this.timestamp.toString(),
       chain: this.chain,
@@ -78,9 +83,16 @@ export namespace OutputImp {
     currency: string;
     amount: string;
     txFee: string;
+    deductedTax?: string;
     height: number;
     timestamp: string;
     chain: string;
     network: string;
   }
+}
+
+function computeTax(gasPrice: number, gasWanted: number): string {
+  return getNaturalDecimals(new Int(gasPrice * gasWanted).toString()).concat(
+    ' UST',
+  );
 }

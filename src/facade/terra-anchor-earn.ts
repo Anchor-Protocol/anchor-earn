@@ -11,8 +11,8 @@ import {
   Wallet,
 } from '@terra-money/terra.js';
 import {
-  createNativeSend,
   createAndSignMsg,
+  createNativeSend,
   OperationImpl,
   sendSignedTransaction,
 } from './operation';
@@ -57,6 +57,7 @@ import assertMarket = Parse.assertMarket;
 import getAccessToken = Parse.getAccessToken;
 import mapCurrencyToUST = Parse.mapCurrencyToUST;
 import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
+import getNaturalDecimals = Parse.getNaturalDecimals;
 
 const NUMBER_OF_BLOCKS = 4_906_443;
 
@@ -276,8 +277,31 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    if (!assertMarket(withdrawOption.currency)) {
-      throw new Error('Invalid Market');
+    let requestedAmount = '0';
+    switch (withdrawOption.currency) {
+      case DENOMS.AUST: {
+        const exchangeRate = await this.getExchangeRate({
+          market: DENOMS.UST,
+        });
+        requestedAmount = getNaturalDecimals(
+          new Int(new Dec(dec(withdrawOption.amount)).mul(1000000))
+            .mul(exchangeRate)
+            .toString(),
+        );
+        break;
+      }
+      case DENOMS.UST: {
+        const exchangeRate = await this.getExchangeRate({
+          market: DENOMS.UST,
+        });
+        requestedAmount = withdrawOption.amount;
+
+        withdrawOption.amount = getNaturalDecimals(
+          new Int(new Dec(dec(withdrawOption.amount)).mul(1000000))
+            .div(exchangeRate)
+            .toString(),
+        );
+      }
     }
 
     await this.assertAUSTBalance(withdrawOption.amount);
@@ -307,7 +331,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
             }),
       )
       .then((result) => {
-        return this.generateOutput(result, TxType.WITHDRAW, loggable);
+        return this.generateOutput(
+          result,
+          TxType.WITHDRAW,
+          loggable,
+          requestedAmount,
+        );
       });
   }
 
@@ -437,8 +466,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       height[0],
       options.address ? options.address : this.getAddress(),
       balances,
-      totalBalance[0],
-      totalDeposit[0],
+      getNaturalDecimals(totalBalance[0]),
+      getNaturalDecimals(totalDeposit[0]),
     );
   }
 
@@ -565,10 +594,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const balance: BalanceEntry = {
       currency: mapCurrencyToUST(currency),
-      account_balance: accountBalance[0].amount.toString(),
-      deposit_balance: new Int(
-        new Dec(depositBalance[0].balance).mul(exchangeRate).toString(),
-      ).toString(),
+      account_balance: getNaturalDecimals(accountBalance[0].amount.toString()),
+      deposit_balance: getNaturalDecimals(
+        new Int(
+          new Dec(depositBalance[0].balance).mul(exchangeRate).toString(),
+        ).toString(),
+      ),
     };
 
     return balance;
@@ -577,14 +608,16 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   private async getTotalBalance(balances: BalanceEntry[]): Promise<string> {
     let totalBalance = 0;
     for (const entry of balances) {
-      if (mapCurrencyToUSD(entry.currency) !== 'uusd') {
+      if (mapCurrencyToUSD(entry.currency) !== DENOMS.UST) {
         const swapCoin = await this._lcd.market.swapRate(
           new Coin(entry.currency, entry.account_balance),
-          'uusd',
+          DENOMS.UST,
         );
-        totalBalance += Parse.int(swapCoin.amount.toString());
+        const inMicro = +swapCoin.amount * 100000;
+        totalBalance += Parse.int(inMicro.toString());
       } else {
-        totalBalance += Parse.int(entry.account_balance);
+        const inMicro = +entry.account_balance * 100000;
+        totalBalance += Parse.int(inMicro.toString());
       }
     }
     return totalBalance.toString();
@@ -594,16 +627,18 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     let totalBalance = 0;
     for (const entry of balances) {
       if (
-        mapCurrencyToUSD(entry.currency) !== 'uusd' &&
+        mapCurrencyToUSD(entry.currency) !== DENOMS.UST &&
         Parse.int(entry.deposit_balance) > 0
       ) {
         const swapCoin = await this._lcd.market.swapRate(
           new Coin(entry.currency, entry.deposit_balance),
-          'uusd',
+          DENOMS.UST,
         );
-        totalBalance += Parse.int(swapCoin.amount.toString());
+        const inMicro = +swapCoin.amount * 100000;
+        totalBalance += Parse.int(inMicro.toString());
       } else {
-        totalBalance += Parse.int(entry.deposit_balance);
+        const inMicro = +entry.deposit_balance * 100000;
+        totalBalance += Parse.int(inMicro.toString());
       }
     }
     return totalBalance.toString();
@@ -622,7 +657,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const entry: MarketEntry = {
       currency: mapCurrencyToUST(currency),
-      liquidity: contractBalance.amount.toString(),
+      liquidity: getNaturalDecimals(contractBalance.amount.toString()),
       APY: APY.toString(),
     };
 
@@ -670,9 +705,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     if (austBalance.balance === '0') {
       throw new Error(`There is no deposit for the user`);
     }
-    if (new Int(austBalance.balance) < userRequest) {
+    if (userRequest.greaterThan(new Int(austBalance.balance))) {
       throw new Error(
-        `Cannot withdraw more than balance. ${userRequest.toString()}> ${
+        `Cannot withdraw more than balance. ${userRequest.toString()} > ${
           austBalance.balance
         }`,
       );
@@ -683,6 +718,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     tx: BlockTxBroadcastResult,
     type: TxType,
     loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
+    requestedAmount?: string,
   ): OutputImpl | OperationError {
     let result: OperationError | OutputImpl;
     if (isTxError(tx)) {
@@ -701,6 +737,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         CHAIN.TERRA,
         this._lcd.config.chainID,
         +new Coins(this._gasConfig.gasPrices).get('uusd').amount,
+        requestedAmount,
       );
       if (loggable) {
         loggable(result);

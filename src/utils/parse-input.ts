@@ -70,6 +70,15 @@ export namespace Parse {
     return (+new Int(input).toString() / 1000000).toString();
   }
 
+  export function subNaturalDecimals(
+    minuend: string,
+    subtrahend: string,
+  ): string {
+    const a = new Int(new Dec(minuend).mul(1000000));
+    const b = new Int(new Dec(subtrahend).mul(1000000));
+    return getNaturalDecimals(a.sub(b).toString());
+  }
+
   export function getAccessToken(input?: string): string {
     if (!input.includes(TERRA)) {
       throw new Error('Access token is not correct');
@@ -83,13 +92,13 @@ export namespace Parse {
 
   export function mapCurrencyToUST(input?: string): string {
     if (input && input === 'uusd') {
-      return 'uust';
+      return UST;
     }
     return input;
   }
 
   export function mapCurrencyToUSD(input?: string): string {
-    if (input && input === 'uust') {
+    if (input && input === UST) {
       return 'uusd';
     }
     return input;
