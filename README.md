@@ -10,11 +10,17 @@ This SDK only supports the earn functionalities of anchor protocol and cannot be
 - [Getting Started](#getting-started)
     - [Requirements](#requirements)
     - [Installation](#installation) 
+    - [Dependencies](#dependencies)
+    - [Test](#test)
 - [Usage](#usage)
+- [Fund Account with UST](#fund-account-with-ust)
 - [Examples](#examples)
+    - [Executor](#executor)
+    - [Querier](#querier)
 - [CustomSigner](#customsigner)
 - [Logabble](#loggable)
 - [License](#license)
+
 ## Getting Started
 A walk through of the steps to get started with Anchor-earn SDK alongside with a few use case examples are provided below.
 
@@ -29,6 +35,19 @@ To your JavaScript project's `package.json` as dependencies using preferred pack
 ```bash
 npm install -S @anchor-protocol/anchor-earn
 ```
+
+## Dependencies
+Anchor earn uses only Terra.js as a dependency. To get set up with the required dependencies, run:
+```shell
+# debug
+yarn install
+```
+## Test
+Anchor earn provides extensive tests for data classes and functions. To run them, after the steps in [Dependencies](#dependencies):
+```shell
+# debug
+yarn test
+```
 ## Usage
 
 ### `Account` object
@@ -39,7 +58,7 @@ const account = new Account();
 ```  
 > **NOTE** It is crucial to store or write your account information before doing any interactions with the SDK. A user can have access to this info by printing the account.
 ```ts
-console.log(account)
+console.log(account.toData());
 ```
 
 ```
@@ -83,8 +102,12 @@ const accessToken = generateTerraAccessToken(wallet.privateKey);
       accessToken: accessToken,
     });
 ```
+## Fund Account with UST
+For terra testnet (tequila-0004), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
+
 ## Examples
 As mentioned above, `AnchorEarn` helps execute messages and query the state of the market and account. The following examples show how to use the object.
+
 ## Executor
 
 `AnchorEarn` executor has three functionalities:
@@ -97,7 +120,7 @@ The following code snippets show how to use `AnchorEarn` object.
 **NOTE**: currently anchor-earn supports `UST` currency.
 
 ### Deposit 
-For depositing coins on Anchor Protocol, use the following example:
+To deposit coins on Anchor Protocol, use the following example:
 ```ts
     const deposit = await anchorEarn.earn.deposit({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
@@ -195,6 +218,7 @@ For seeing the progress of the transaction on the chain, loggable is provided. T
       }
     });
 ```
+
 ## License
 This software is licensed under the Apache 2.0 license. Read more about it [here](./LICENSE).
 
