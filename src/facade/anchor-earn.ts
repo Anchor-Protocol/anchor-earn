@@ -1,15 +1,15 @@
-import { AnchorEarnOperations, CHAIN, NETWORKS } from './types';
+import { AnchorEarnOperations, CHAINS, NETWORKS } from './types';
 import { TerraAnchorEarn } from './terra-anchor-earn';
 
 export interface AnchorEarnOption {
-  chain: CHAIN;
+  chain: CHAINS;
   network: NETWORKS;
   accessToken?: string;
   address?: string;
 }
 
 /**
- * @param {CHAIN} The blockchain that user wants to execute his message in.
+ * @param {CHAINS} The blockchain that user wants to execute his message in.
  * @param {NETWORKS} the chain networks: It Could be either NETWORKS.TESTNET and NETWORKS.MAINNET.
  * The default network is NETWORKS.MAINNET.
  * @param {accessToken} Decoded version of the user's private key.
@@ -27,7 +27,7 @@ export class AnchorEarn {
 
   constructor(options: AnchorEarnOption) {
     switch (options.chain) {
-      case CHAIN.TERRA: {
+      case CHAINS.TERRA: {
         this.earn = new TerraAnchorEarn({
           network: options.network,
           accessToken: options.accessToken,

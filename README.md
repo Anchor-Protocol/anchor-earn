@@ -83,7 +83,7 @@ Both are these functions are accessible through the `AnchorEarn` object.
 To creat the `AnchorEarn` object.
 ```ts
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: account.accessToken,
     });
@@ -97,7 +97,7 @@ import generateTerraAccessToken = Parse.generateTerraAccessToken;
 const accessToken = generateTerraAccessToken(wallet.privateKey);
 
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: accessToken,
     });
@@ -156,7 +156,7 @@ If a user wants to use queries alone, there is no need to instantiate the object
 To get the current state of account, use the following example: 
 ```ts
  const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
     });
 

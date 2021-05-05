@@ -1,5 +1,5 @@
 import { BlockTxBroadcastResult, Int, isTxError } from '@terra-money/terra.js';
-import { CHAIN, Output, STATUS, TxType } from './types';
+import { CHAINS, Output, STATUS, TxType } from './types';
 import { Parse } from '../utils/parse-input';
 import { JSONSerializable } from '../utils/json';
 import getNaturalDecimals = Parse.getNaturalDecimals;
@@ -8,7 +8,7 @@ import subNaturalDecimals = Parse.subNaturalDecimals;
 
 export interface OperationError {
   type: TxType;
-  chain: CHAIN;
+  chain: CHAINS;
   status: STATUS;
   error_msg: string;
 }

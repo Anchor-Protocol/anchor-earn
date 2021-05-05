@@ -40,7 +40,7 @@ import { BalanceEntry, BalanceOutput } from './user-query-output';
 import { MarketEntry } from './market-query-output';
 import {
   AnchorEarnOperations,
-  CHAIN,
+  CHAINS,
   DepositOption,
   NETWORKS,
   QueryOption,
@@ -724,7 +724,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     if (isTxError(tx)) {
       result = {
         type: type,
-        chain: CHAIN.TERRA,
+        chain: CHAINS.TERRA,
         error_msg: tx.raw_log,
       } as OperationError;
       if (loggable) {
@@ -734,7 +734,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       result = new OutputImpl(
         tx,
         type,
-        CHAIN.TERRA,
+        CHAINS.TERRA,
         this._lcd.config.chainID,
         +new Coins(this._gasConfig.gasPrices).get('uusd').amount,
         requestedAmount,

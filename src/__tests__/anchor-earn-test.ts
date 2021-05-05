@@ -2,7 +2,7 @@ import { AnchorEarn, OutputImpl } from '../facade';
 import { LCDClient, MnemonicKey, Msg, Wallet } from '@terra-money/terra.js';
 import { DENOMS } from '../address-provider';
 import { Parse } from '../utils/parse-input';
-import { CHAIN, NETWORKS } from '../facade/types';
+import { CHAINS, NETWORKS } from '../facade/types';
 import generateTerraAccessToken = Parse.generateTerraAccessToken;
 
 //accounts were created for test purposes and they have 5000ust and 5000aust.
@@ -16,7 +16,7 @@ describe('anchor-earn', () => {
     });
 
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(account.privateKey),
     });
@@ -34,7 +34,7 @@ describe('anchor-earn', () => {
   it('deposit-customized-sign', async () => {
     //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
     });
     const deposit = await anchorEarn.earn.deposit({
@@ -98,7 +98,7 @@ describe('anchor-earn', () => {
         'supply sting ranch post eternal decline silly want outside prize crazy rapid foil gain soft above left castle illness cargo night game satisfy legend',
     });
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(account.privateKey),
     });
@@ -119,7 +119,7 @@ describe('anchor-earn', () => {
         'supply sting ranch post eternal decline silly want outside prize crazy rapid foil gain soft above left castle illness cargo night game satisfy legend',
     });
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(account.privateKey),
     });
@@ -140,7 +140,7 @@ describe('anchor-earn', () => {
         'supply sting ranch post eternal decline silly want outside prize crazy rapid foil gain soft above left castle illness cargo night game satisfy legend',
     });
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(account.privateKey),
     });
@@ -162,7 +162,7 @@ describe('anchor-earn', () => {
     });
 
     const failedAnchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       accessToken: generateTerraAccessToken(failure_account.privateKey),
     });
@@ -188,7 +188,7 @@ describe('anchor-earn', () => {
 
   it('balance', async () => {
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
     });
 
@@ -202,7 +202,7 @@ describe('anchor-earn', () => {
 
   it('market', async () => {
     const anchorEarn = new AnchorEarn({
-      chain: CHAIN.TERRA,
+      chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });

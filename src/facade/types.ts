@@ -50,7 +50,7 @@ export interface AnchorEarnOperations<> {
 
 export interface InProgress {
   type: 'in-progress';
-  chain: CHAIN;
+  chain: CHAINS;
   tx_hash: string;
   timestamp: Date;
 }
@@ -81,7 +81,7 @@ export enum STATUS {
   UNSUCCESSFUL = 'unsuccessful',
 }
 
-export enum CHAIN {
+export enum CHAINS {
   TERRA = 'terra',
   ETH = 'ethereum',
 }
