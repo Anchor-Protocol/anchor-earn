@@ -9,7 +9,7 @@ describe('account', () => {
       getAccessToken(account.accessToken),
       'base64',
     );
-    console.log(account.accessToken);
+    console.log(account.toData());
     expect(account.get_private_key()).toEqual(privateKey);
   });
 });
