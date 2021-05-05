@@ -1,4 +1,4 @@
-import * as yaml from 'yaml';
+import { JSONSerializable } from '../utils/json';
 
 export interface MarketEntry {
   currency: string;
@@ -6,20 +6,35 @@ export interface MarketEntry {
   APY: string;
 }
 
-export class MarketOutput {
+export class MarketOutput extends JSONSerializable<MarketOutput.Data> {
   network: string;
   height: number;
   timestamp: Date;
   markets: MarketEntry[];
 
   constructor(network: string, height: number, markets: MarketEntry[]) {
+    super();
     this.network = network;
     this.height = height;
     this.markets = markets;
     this.timestamp = new Date();
   }
 
-  print(): void {
-    console.log(yaml.stringify(this));
+  public toData(): MarketOutput.Data {
+    return {
+      network: this.network,
+      height: this.height,
+      timestamp: this.timestamp,
+      markets: this.markets,
+    };
+  }
+}
+
+export namespace MarketOutput {
+  export interface Data {
+    network: string;
+    height: number;
+    timestamp: Date;
+    markets: MarketEntry[];
   }
 }

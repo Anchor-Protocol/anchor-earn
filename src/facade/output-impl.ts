@@ -1,7 +1,7 @@
 import { BlockTxBroadcastResult, Int, isTxError } from '@terra-money/terra.js';
 import { CHAIN, Output, STATUS, TxType } from './types';
-import * as yaml from 'yaml';
 import { Parse } from '../utils/parse-input';
+import { JSONSerializable } from '../utils/json';
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import processLog = Parse.processLog;
 
@@ -12,7 +12,9 @@ export interface OperationError {
   error_msg: string;
 }
 
-export class OutputImpl implements Output {
+export class OutputImpl
+  extends JSONSerializable<OutputImp.Data>
+  implements Output {
   chain: string;
   network: string;
   status: STATUS;
@@ -31,6 +33,7 @@ export class OutputImpl implements Output {
     network: string,
     gasPrice: number,
   ) {
+    super();
     this.type = type;
     this.network = network;
     this.chain = chain;
@@ -51,7 +54,33 @@ export class OutputImpl implements Output {
     }
   }
 
-  print(): void {
-    console.log(yaml.stringify(this));
+  public toData(): OutputImp.Data {
+    return {
+      type: this.type,
+      status: this.status,
+      txHash: this.txHash,
+      currency: this.currency,
+      amount: this.amount,
+      txFee: this.txFee,
+      height: this.height,
+      timestamp: this.timestamp.toString(),
+      chain: this.chain,
+      network: this.network,
+    };
+  }
+}
+
+export namespace OutputImp {
+  export interface Data {
+    type: string;
+    status: string;
+    txHash: string;
+    currency: string;
+    amount: string;
+    txFee: string;
+    height: number;
+    timestamp: string;
+    chain: string;
+    network: string;
   }
 }

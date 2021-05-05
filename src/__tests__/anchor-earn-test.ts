@@ -27,7 +27,7 @@ describe('anchor-earn', () => {
     });
 
     if (deposit instanceof OutputImpl) {
-      deposit.print();
+      console.log(deposit.toData());
     }
   });
 
@@ -67,7 +67,7 @@ describe('anchor-earn', () => {
     });
 
     if (deposit instanceof OutputImpl) {
-      deposit.print();
+      console.log(deposit.toData());
     }
   });
 
@@ -108,7 +108,7 @@ describe('anchor-earn', () => {
     });
 
     if (sendAust instanceof OutputImpl) {
-      sendAust.print();
+      console.log(sendAust.toData());
     }
   });
 
@@ -129,7 +129,7 @@ describe('anchor-earn', () => {
     });
 
     if (sendUst instanceof OutputImpl) {
-      sendUst.print();
+      console.log(sendUst.toData());
     }
   });
 
@@ -150,7 +150,7 @@ describe('anchor-earn', () => {
     });
 
     if (withdraw instanceof OutputImpl) {
-      withdraw.print();
+      console.log(withdraw.toData());
     }
     expect(withdraw.type).toEqual('withdraw');
 
@@ -197,7 +197,7 @@ describe('anchor-earn', () => {
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
-    userBalance.print();
+    console.log(userBalance.toData());
   });
 
   it('market', async () => {
@@ -211,6 +211,6 @@ describe('anchor-earn', () => {
       currencies: [DENOMS.UST],
     });
 
-    market.print();
+    console.log(market.toData());
   });
 });

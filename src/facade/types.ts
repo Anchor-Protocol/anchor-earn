@@ -73,8 +73,6 @@ export interface Output {
   currency: string;
   amount: string;
   txFee: string;
-
-  print(): void;
 }
 
 export enum STATUS {
