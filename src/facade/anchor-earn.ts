@@ -6,7 +6,6 @@ export interface AnchorEarnOption {
   network: NETWORKS;
   privateKey?: Buffer | any;
   MnemonicKey?: string | any;
-  accessToken?: string;
   address?: string;
 }
 
@@ -20,7 +19,7 @@ export interface AnchorEarnOption {
  * @example
  * const anchorEarn = new AnchorEarn({
       network: NETWORKS.TEQUILA0004,
-      accessToken: '....',
+      private_key: '....',
     });
  */
 
@@ -34,7 +33,6 @@ export class AnchorEarn {
           network: options.network,
           privateKey: options.privateKey as Buffer,
           MnemonicKey: options.MnemonicKey as string,
-          accessToken: options.accessToken,
           address: options.address,
         });
       }

@@ -50,10 +50,8 @@ import {
 } from './types';
 import { BlockTxBroadcastResult } from '@terra-money/terra.js/dist/client/lcd/api/TxAPI';
 import { MarketOutput } from '../facade';
-import privateKey = Parse.privateKey;
 import accAddress = Parse.accAddress;
 import assertMarket = Parse.assertMarket;
-import getAccessToken = Parse.getAccessToken;
 import mapCurrencyToUST = Parse.mapCurrencyToUST;
 import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
 import getNaturalDecimals = Parse.getNaturalDecimals;
@@ -96,13 +94,12 @@ interface GasConfig {
  * @example
  * const anchorEarn = new AnchorEarn({
       network: NETWORKS.TEQUILA0004,
-      accessToken: '....',
+      private_key: '....',
     });
  */
 
 interface AnchorEarnOptions {
   network?: NETWORKS;
-  accessToken?: string;
   privateKey?: Buffer;
   MnemonicKey?: string;
   gasConfig?: GasConfig;
@@ -169,17 +166,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       this._lcd = new LCDClient(tequilaDefaultConfig.lcd);
     }
 
-    if (options.accessToken) {
-      const key = new RawKey(privateKey(getAccessToken(options.accessToken)));
-      this._account = this._lcd.wallet(key);
-    }
-
-    if (options.accessToken === undefined && options.MnemonicKey) {
+    if (options.MnemonicKey) {
       const key = new MnemonicKey({ mnemonic: options.MnemonicKey });
       this._account = this._lcd.wallet(key);
     }
 
-    if (options.accessToken === undefined && options.privateKey) {
+    if (options.privateKey) {
       const key = new RawKey(options.privateKey);
       this._account = this._lcd.wallet(key);
     }
@@ -235,7 +227,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     );
 
     const taxFee = await Promise.all([this.getTax(depositOption.amount)]);
-    console.log(taxFee[0]);
 
     return Promise.resolve()
       .then(() => operation.generateWithAddress(address))

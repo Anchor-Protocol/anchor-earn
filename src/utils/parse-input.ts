@@ -83,7 +83,7 @@ export namespace Parse {
     return getNaturalDecimals(a.sub(b).toString());
   }
 
-  export function getAccessToken(input?: string): string {
+  export function getPrivateKey(input?: string): string {
     if (!input.includes(TERRA)) {
       throw new Error('Access token is not correct');
     }

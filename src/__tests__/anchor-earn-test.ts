@@ -1,9 +1,7 @@
 import { AnchorEarn, OutputImpl, Wallet, MnemonicKey } from '../facade';
 import { LCDClient, Msg } from '@terra-money/terra.js';
 import { DENOMS } from '../address-provider';
-import { Parse } from '../utils/parse-input';
 import { CHAINS, NETWORKS } from '../facade/types';
-import generateTerraAccessToken = Parse.generateTerraAccessToken;
 
 //accounts were created for test purposes and they have 5000ust and 5000aust.
 
@@ -80,7 +78,7 @@ describe('anchor-earn', () => {
   //
   //   const anchorEarn = new AnchorEarn({
   //     network: NETWORKS.TEQUILA0004,
-  //     accessToken: account.privateKey.toString('base64'),
+  //     private_key: account.privateKey.toString('base64'),
   //   });
   //   const deposit = anchorEarn.deposit({
   //     amount: '0.01',
@@ -100,7 +98,7 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      accessToken: generateTerraAccessToken(account.privateKey),
+      privateKey: account.privateKey,
     });
     const sendAust = await anchorEarn.earn.send(DENOMS.AUST, {
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
@@ -121,7 +119,7 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      accessToken: generateTerraAccessToken(account.privateKey),
+      privateKey: account.privateKey,
     });
     const sendUst = await anchorEarn.earn.send(DENOMS.UST, {
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
@@ -142,7 +140,7 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      accessToken: generateTerraAccessToken(account.privateKey),
+      privateKey: account.privateKey,
     });
     const withdraw = await anchorEarn.earn.withdraw({
       amount: '0.01',
@@ -164,7 +162,7 @@ describe('anchor-earn', () => {
     const failedAnchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      accessToken: generateTerraAccessToken(failure_account.privateKey),
+      privateKey: failure_account.privateKey,
     });
 
     failedAnchorEarn.earn

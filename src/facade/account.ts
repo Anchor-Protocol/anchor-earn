@@ -1,13 +1,12 @@
 import { AccAddress, MnemonicKey, Wallet } from '@terra-money/terra.js';
 import { Parse } from '../utils/parse-input';
 import generateTerraAccessToken = Parse.generateTerraAccessToken;
-import getAccessToken = Parse.getAccessToken;
 import { JSONSerializable } from '../utils/json';
 
 export class Account extends JSONSerializable<Account.Data> {
   accAddress: AccAddress;
   publicKey: string;
-  accessToken: string;
+  privateKey: Buffer;
   MnemonicKey: string;
 
   constructor() {
@@ -15,30 +14,30 @@ export class Account extends JSONSerializable<Account.Data> {
     const account = new MnemonicKey();
     this.accAddress = account.accAddress;
     this.publicKey = account.accPubKey;
-    this.accessToken = generateTerraAccessToken(account.privateKey);
+    this.privateKey = account.privateKey;
     this.MnemonicKey = account.mnemonic;
   }
 
   toData(): Account.Data {
     return {
-      accAddress: this.accAddress.toString(),
-      publicKey: this.publicKey,
-      accessToken: this.accessToken,
-      MnemonicKey: this.MnemonicKey,
+      acc_address: this.accAddress.toString(),
+      public_key: this.publicKey,
+      private_key: generateTerraAccessToken(this.privateKey),
+      mnemonic_key: this.MnemonicKey,
     };
   }
 
   get_private_key(): Buffer {
-    return Buffer.from(getAccessToken(this.accessToken), 'base64');
+    return this.privateKey;
   }
 }
 
 export namespace Account {
   export interface Data {
-    accAddress: AccAddress;
-    publicKey: string;
-    accessToken: string;
-    MnemonicKey: string;
+    acc_address: AccAddress;
+    public_key: string;
+    private_key: string;
+    mnemonic_key: string;
   }
 }
 
