@@ -1,4 +1,4 @@
-import { OperationError, OutputImpl } from './output-impl';
+import { OperationError } from './output-impl';
 import { BalanceOutput } from './user-query-output';
 import { MarketOutput } from './market-query-output';
 import { DENOMS } from '../address-provider';
@@ -8,7 +8,7 @@ import { Msg, StdTx } from '@terra-money/terra.js';
 
 export interface DepositOption
   extends CustomSigner<Msg[] | unknown, StdTx | unknown>,
-    Loggable<OutputImpl | InProgress | OperationError> {
+    Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   amount: string;
   address?: string;
@@ -16,7 +16,7 @@ export interface DepositOption
 
 export interface WithdrawOption
   extends CustomSigner<Msg[] | unknown, StdTx | unknown>,
-    Loggable<OutputImpl | InProgress | OperationError> {
+    Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   amount: string;
   address?: string;
@@ -24,7 +24,7 @@ export interface WithdrawOption
 
 export interface SendOption
   extends CustomSigner<Msg[] | unknown, StdTx | unknown>,
-    Loggable<OutputImpl | InProgress | OperationError> {
+    Loggable<Output | InProgress | OperationError> {
   recipient: string;
   amount: string;
   address?: string;
@@ -35,15 +35,10 @@ export interface QueryOption {
   address?: string;
 }
 
-export interface AnchorEarnOperations<> {
-  deposit(depositOption: DepositOption): Promise<OutputImpl | OperationError>;
-  withdraw(
-    withdrawOption: WithdrawOption,
-  ): Promise<OutputImpl | OperationError>;
-  send(
-    denom: DENOMS,
-    options: SendOption,
-  ): Promise<OutputImpl | OperationError>;
+export interface AnchorEarnOperations {
+  deposit(depositOption: DepositOption): Promise<Output | OperationError>;
+  withdraw(withdrawOption: WithdrawOption): Promise<Output | OperationError>;
+  send(denom: DENOMS, options: SendOption): Promise<Output | OperationError>;
   balance(options: QueryOption): Promise<BalanceOutput>;
   market(options: QueryOption): Promise<MarketOutput>;
 }
@@ -62,16 +57,20 @@ export enum TxType {
   SENDAUST = 'sendAUST',
 }
 
+export interface TxDetails {
+  chain: string;
+  height: number;
+  timestamp: Date;
+  txHash: string;
+}
 export interface Output {
   chain: string;
   network: string;
   status: STATUS;
-  txHash: string;
-  height: number;
-  timestamp: Date;
   type: TxType;
   currency: string;
   amount: string;
+  txDetails: TxDetails[];
   txFee: string;
   deductedTax?: string;
 }

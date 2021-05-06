@@ -1,5 +1,5 @@
 import { BlockTxBroadcastResult, Dec, isTxError } from '@terra-money/terra.js';
-import { CHAINS, Output, STATUS, TxType } from './types';
+import { CHAINS, Output, STATUS, TxDetails, TxType } from './types';
 import { Parse } from '../utils/parse-input';
 import { JSONSerializable } from '../utils/json';
 import getNaturalDecimals = Parse.getNaturalDecimals;
@@ -14,17 +14,15 @@ export interface OperationError {
 }
 
 export class OutputImpl
-  extends JSONSerializable<OutputImp.Data>
+  extends JSONSerializable<OutputImpl.Data>
   implements Output {
   chain: string;
   network: string;
   status: STATUS;
-  txHash: string;
-  height: number;
-  timestamp: Date;
   type: TxType;
   currency: string;
   amount: string;
+  txDetails: TxDetails[];
   txFee: string;
   deductedTax?: string;
 
@@ -46,9 +44,14 @@ export class OutputImpl
       this.status = STATUS.UNSUCCESSFUL;
     } else {
       this.status = STATUS.SUCCESSFUL;
-      this.height = txResult.height;
-      this.txHash = txResult.txhash;
-      this.timestamp = new Date();
+      this.txDetails = [
+        {
+          chain: chain,
+          height: txResult.height,
+          timestamp: new Date(),
+          txHash: txResult.txhash,
+        },
+      ];
       this.txFee = computeTax(gasPrice, txResult.gas_wanted, taxFee);
       const processedLog = processLog(txResult.logs, type);
       this.amount = processedLog[0];
@@ -59,34 +62,30 @@ export class OutputImpl
     }
   }
 
-  public toData(): OutputImp.Data {
+  public toData(): OutputImpl.Data {
     return {
       type: this.type,
       status: this.status,
-      txHash: this.txHash,
       currency: this.currency,
+      tx_details: this.txDetails,
       amount: this.amount,
-      txFee: this.txFee,
-      deductedTax: this.deductedTax ? this.deductedTax : '0',
-      height: this.height,
-      timestamp: this.timestamp.toString(),
+      tx_fee: this.txFee,
+      deducted_tax: this.deductedTax ? this.deductedTax : '0',
       chain: this.chain,
       network: this.network,
     };
   }
 }
 
-export namespace OutputImp {
+export namespace OutputImpl {
   export interface Data {
     type: string;
     status: string;
-    txHash: string;
+    tx_details: TxDetails[];
     currency: string;
     amount: string;
-    txFee: string;
-    deductedTax?: string;
-    height: number;
-    timestamp: string;
+    tx_fee: string;
+    deducted_tax?: string;
     chain: string;
     network: string;
   }
