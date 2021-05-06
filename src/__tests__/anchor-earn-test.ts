@@ -1,7 +1,13 @@
-import { AnchorEarn, OutputImpl, Wallet, MnemonicKey } from '../facade';
+import {
+  AnchorEarn,
+  CHAINS,
+  MnemonicKey,
+  NETWORKS,
+  OutputImpl,
+  Wallet,
+} from '../facade';
 import { LCDClient, Msg } from '@terra-money/terra.js';
 import { DENOMS } from '../address-provider';
-import { CHAINS, NETWORKS } from '../facade/types';
 
 //accounts were created for test purposes and they have 5000ust and 5000aust.
 
@@ -27,6 +33,28 @@ describe('anchor-earn', () => {
     if (deposit instanceof OutputImpl) {
       console.log(deposit.toData());
     }
+  });
+
+  it('failed-deposit', () => {
+    //address: terra1pgtqe0qv9gl77hnwwvwmsjywlucgz25ywm8a22
+    const account = new MnemonicKey({
+      mnemonic:
+        'spider clerk bird usual rug meadow evoke deny search art seven notable cousin quote april grace reward author climb soccer couple physical calm equip',
+    });
+
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account.privateKey,
+    });
+    anchorEarn.earn
+      .deposit({
+        amount: '10000000',
+        currency: DENOMS.UST,
+      })
+      .catch((e: Error) => {
+        expect(e.message).toEqual('Insufficient ust balance');
+      });
   });
 
   it('deposit-customized-sign', async () => {
@@ -68,26 +96,6 @@ describe('anchor-earn', () => {
       console.log(deposit.toData());
     }
   });
-
-  // it('failed-deposit', async () => {
-  //   //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
-  //   const account = new MnemonicKey({
-  //     mnemonic:
-  //       'kidney cannon silk dust tube flight trophy approve identify kind purse install proud kind pigeon bleak this clever mosquito change cash mango sample prepare',
-  //   });
-  //
-  //   const anchorEarn = new AnchorEarn({
-  //     network: NETWORKS.TEQUILA0004,
-  //     private_key: account.privateKey.toString('base64'),
-  //   });
-  //   const deposit = anchorEarn.deposit({
-  //     amount: '0.01',
-  //     currency: DENOMS.UST,
-  //   });
-  //
-  //   // deposit.print();
-  //   // expect(deposit.amount).toEqual('10000');
-  // });
 
   it('send-aust', async () => {
     //address: terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj

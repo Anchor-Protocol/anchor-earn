@@ -687,6 +687,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       });
     }
 
+    if (ustBalance === undefined) {
+      throw new Error('Insufficient ust balance');
+    }
+
     const userRequest = Parse.getMicroAmount(requestedAmount);
 
     if (ustBalance.amount < userRequest) {
