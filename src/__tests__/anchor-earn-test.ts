@@ -1,5 +1,5 @@
-import { AnchorEarn, OutputImpl } from '../facade';
-import { LCDClient, MnemonicKey, Msg, Wallet } from '@terra-money/terra.js';
+import { AnchorEarn, OutputImpl, Wallet, MnemonicKey } from '../facade';
+import { LCDClient, Msg } from '@terra-money/terra.js';
 import { DENOMS } from '../address-provider';
 import { Parse } from '../utils/parse-input';
 import { CHAINS, NETWORKS } from '../facade/types';
@@ -18,7 +18,7 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      accessToken: generateTerraAccessToken(account.privateKey),
+      privateKey: account.privateKey,
     });
 
     const deposit = await anchorEarn.earn.deposit({

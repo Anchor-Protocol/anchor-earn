@@ -4,6 +4,8 @@ import { TerraAnchorEarn } from './terra-anchor-earn';
 export interface AnchorEarnOption {
   chain: CHAINS;
   network: NETWORKS;
+  privateKey?: Buffer | any;
+  MnemonicKey?: string | any;
   accessToken?: string;
   address?: string;
 }
@@ -30,6 +32,8 @@ export class AnchorEarn {
       case CHAINS.TERRA: {
         this.earn = new TerraAnchorEarn({
           network: options.network,
+          privateKey: options.privateKey as Buffer,
+          MnemonicKey: options.MnemonicKey as string,
           accessToken: options.accessToken,
           address: options.address,
         });

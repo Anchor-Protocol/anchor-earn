@@ -3,7 +3,7 @@
 Anchor-earn is a client SDK for building applications that can interact with the earn functionality of Anchor Protocol from within JavaScript runtimes. 
 
 
-> **NOTE** 
+> **NOTE**
 This SDK only supports the earn functionalities of anchor protocol and cannot be used for other functionalities like bond or borrow.
 
 ## Table of Contents <!-- omit in toc -->
@@ -22,7 +22,7 @@ This SDK only supports the earn functionalities of anchor protocol and cannot be
 - [License](#license)
 
 ## Getting Started
-A walk through of the steps to get started with Anchor-earn SDK alongside with a few use case examples are provided below.
+A walk through of the steps to get started with the Anchor-earn SDK alongside with a few use case examples are provided below.
 
 ## Requirements
 
@@ -31,9 +31,13 @@ A walk through of the steps to get started with Anchor-earn SDK alongside with a
 
 ## Installation
 Anchor-earn is available as a package on NPM and it is independent from other Terra and Anchor SDKs.\
-To your JavaScript project's `package.json` as dependencies using preferred package manager: 
+To add to your JavaScript project's `package.json` as a dependency using preferred package manager: 
 ```bash
 npm install -S @anchor-protocol/anchor-earn
+```
+or
+```bash
+yarn add @anchor-protocol/anchor-earn
 ```
 
 ## Dependencies
@@ -56,7 +60,7 @@ This functionality is accessible through the `Account` object.
 ```ts
 const account = new Account();
 ```  
-> **NOTE** It is crucial to store or write your account information before doing any interactions with the SDK. A user can have access to this info by printing the account.
+> **NOTE** It is crucial to store or write down your account information before doing any interactions with the SDK. A user can have access to this info by printing the account.
 ```ts
 console.log(account.toData());
 ```
@@ -72,15 +76,29 @@ console.log(account.toData());
 ```
 `accessToken` is essential for later usage.
 
+### `Wallet` and `MnemonicKey` object
+`Wallet` and `MnemonicKey` object are borrowed from Terra.js. Users have access to them in Anchor earn without dependency on Terra.js.
+
+In case users have a previous account on the Terra chain, they can use their private key and MnemonicKey to recover their keys.
+ ```ts
+import { Wallet, MnemonicKey } from '@anchor-protocol/anchor-earn';
+
+    const account = new MnemonicKey({
+      mnemonic:
+        '...',
+    });
+```
+
+Additional usage of `Wallet` object is that it can be used for [customSigner](#customsigner). An example is provided in  [customSigner](#customsigner) section.
 ### `AnchorEarn` object
 Anchor-earn provides facilities for two main use cases: 
 
-- execute: Signs the message and broadcasts the message using Terra.js
+- execute: Signs the message and broadcasts it using Terra.js
 - query: Runs a series of smart contract and chain queries through LCD
 
-Both are these functions are accessible through the `AnchorEarn` object. 
+Both of these functions are accessible through the `AnchorEarn` object. 
 
-To creat the `AnchorEarn` object.
+To create the `AnchorEarn` object.
 ```ts
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
@@ -88,22 +106,24 @@ To creat the `AnchorEarn` object.
       accessToken: account.accessToken,
     });
 ```
-The above example uses used `Account` object for using anchor-earn.
- 
- In case users have a previous account in the terra, they can use their private key to generate an access token with the following `Parser` function. 
- ```ts
-import generateTerraAccessToken = Parse.generateTerraAccessToken;
+The above example uses the `Account` object for instantiating `anchor-earn`.
 
-const accessToken = generateTerraAccessToken(wallet.privateKey);
+For the case that a user has a previous account on the Terra chain, the user can recover their key using `MnemonicKey` and use the following code to instantiate `AnchorEarn`.
+ ```ts
+   import { MnemonicKey } from '@anchor-protocol/anchor-earn';
+    const account = new MnemonicKey({
+      mnemonic:
+        '...',
+    });
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      accessToken: accessToken,
+      privateKey: account.privateKey,
     });
 ```
 ## Fund Account with UST
-For terra testnet (tequila-0004), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
+For Terra testnet (tequila-0004), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
 
 ## Examples
 As mentioned above, `AnchorEarn` helps execute messages and query the state of the market and account. The following examples show how to use the object.
@@ -111,16 +131,16 @@ As mentioned above, `AnchorEarn` helps execute messages and query the state of t
 ## Executor
 
 `AnchorEarn` executor has three functionalities:
-- deposit: deposit coin on anchor protocol
-- withdraw: withdraw previously deposited amount.
-- send: transfer `UST` and `AUST` to other accounts.
+- deposit: deposit funds in the Anchor protocol
+- withdraw: withdraw previously deposited funds
+- send: transfer `UST` and `AUST` to other accounts
 
-The following code snippets show how to use `AnchorEarn` object.
+The following code snippets show how to use the `AnchorEarn` object.
 
-**NOTE**: currently anchor-earn supports `UST` currency.
+> **NOTE**: Currently, Anchor-earn supports the deposit of the`UST` currency only.
 
 ### Deposit 
-To deposit coins on Anchor Protocol, use the following example:
+To deposit funds in the Anchor Protocol, use the following example:
 ```ts
     const deposit = await anchorEarn.earn.deposit({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
@@ -129,7 +149,7 @@ To deposit coins on Anchor Protocol, use the following example:
 ```
 
 ### Withdraw
-To withdraw your deposits from the protocol, use the following example:
+To withdraw funds from the protocol, use the following example:
 ```ts
     const deposit = await anchorEarn.earn.withdraw({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
@@ -139,7 +159,8 @@ To withdraw your deposits from the protocol, use the following example:
 
 ### Send
 To send `UST` and `AUST` to other accounts, use the following example: 
-For this functionality, `AUst` denom is also supported. 
+<br/>
+<sub>(For this functionality, the `AUST` denom is also supported.) </sub>
 ```ts
  const sendUst = await anchorEarn.earn.send(DENOMS.UST, {
       recipient: 'terra1....',
@@ -147,13 +168,14 @@ For this functionality, `AUst` denom is also supported.
     });
 ```
 ## Querier
-`AnchorEarn` querier facilitates both querying the smart contracts and chain. There are two queries that the `AnchorEarn` object provides.
-- balance: query user balance and user deposit amount based on currency.
-- market: return the state of specifies currency market.
+`AnchorEarn` querier facilitates both querying smart contracts and the chain. There are two queries provided by the `AnchorEarn` object:
+- balance: query user balance and user deposit based on currency
+- market: return the state of the specified currency's market
 
-If a user wants to use queries alone, there is no need to instantiate the object like [here](#anchorearn-object); instead, the user can provide the address for queries like the following examples: 
+If a user wishes to use only the queries, there is no need to instantiate the object as explained [here](#anchorearn-object);
+instead, they can provide the address for queries as demonstrated by the following examples: 
 ### Balance
-To get the current state of account, use the following example: 
+To get the current state of an account, use the following example: 
 ```ts
  const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
@@ -166,20 +188,20 @@ const userBalance = await anchorEarn.earn.balance({
     });
 ```
 ### Market
-To get the current state of the market, use the below example:
+To get the current state of the market, use the example below:
 ```ts
     const market = await anchorEarn.earn.market({
       currencies: [DENOMS.UST],
     });
 ```
 ## CustomSigner
-Anchor-earn also facilitates a function that user can sign their transactions and leave the signed transaction to the SDK and SDK will manage to broadcast it.
+Anchor-earn also provides users with the functionality to sign transactions and leave the signed transaction to the SDK to perform the broadcasting.
  
- `CustomSigner` is a callback function that users can sign deposit, withdraw, and send transactions.
+ `CustomSigner` is a callback function with which the users can sign `deposit`, `withdraw`, and `send` transactions.
   
-The following code snippet specifies an example of `CustomSigner` usage.
+The following code snippet specifies an example of the `CustomSigner` usage:
 
-**Note**: address must be specified. 
+> **Note**: The address must be specified. 
 ```ts
 const deposit = await anchorEarn.earn.deposit({
       amount: '0.01',
@@ -208,7 +230,7 @@ const deposit = await anchorEarn.earn.deposit({
     });
 ```
 ## Loggable 
-For seeing the progress of the transaction on the chain, loggable is provided. The following code shows how to use it:
+For seeing the progress of the transaction on the chain, `loggable` is provided. The following code shows how to use it:
 ```ts
     const deposit = await anchorEarn.earn.deposit({
       amount: '...',

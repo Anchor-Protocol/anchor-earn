@@ -1,4 +1,4 @@
-import { AccAddress, MnemonicKey } from '@terra-money/terra.js';
+import { AccAddress, MnemonicKey, Wallet } from '@terra-money/terra.js';
 import { Parse } from '../utils/parse-input';
 import generateTerraAccessToken = Parse.generateTerraAccessToken;
 import getAccessToken = Parse.getAccessToken;
@@ -41,3 +41,5 @@ export namespace Account {
     MnemonicKey: string;
   }
 }
+
+export { Wallet, MnemonicKey };

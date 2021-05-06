@@ -179,7 +179,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     }
 
     if (options.accessToken === undefined && options.privateKey) {
-      const key = new RawKey(privateKey(options.accessToken));
+      const key = new RawKey(options.privateKey);
       this._account = this._lcd.wallet(key);
     }
   }
