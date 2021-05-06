@@ -7,7 +7,7 @@ import { CustomSigner } from './custom-signer';
 import { Msg, StdTx } from '@terra-money/terra.js';
 
 export interface DepositOption
-  extends CustomSigner<Msg[] | unknown, StdTx | unknown>,
+  extends CustomSigner<Msg[] | any, StdTx | any>,
     Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   amount: string;
@@ -15,7 +15,7 @@ export interface DepositOption
 }
 
 export interface WithdrawOption
-  extends CustomSigner<Msg[] | unknown, StdTx | unknown>,
+  extends CustomSigner<Msg[] | any, StdTx | any>,
     Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   amount: string;
@@ -23,7 +23,7 @@ export interface WithdrawOption
 }
 
 export interface SendOption
-  extends CustomSigner<Msg[] | unknown, StdTx | unknown>,
+  extends CustomSigner<Msg[] | any, StdTx | any>,
     Loggable<Output | InProgress | OperationError> {
   recipient: string;
   amount: string;
