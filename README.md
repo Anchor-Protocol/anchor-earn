@@ -1,3 +1,6 @@
+
+<p align="center"><img src="./docs/img/anchor_earn_logo.png" width=500 alt="earn-logo"></p>
+
 # Anchor-earn
 Anchor-earn is a client SDK for building applications that can interact with the earn functionality of Anchor Protocol from within JavaScript runtimes. 
 > **NOTE**
