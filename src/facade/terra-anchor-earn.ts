@@ -60,6 +60,7 @@ import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
 import getNaturalDecimals = Parse.getNaturalDecimals;
 
 const NUMBER_OF_BLOCKS = 4_906_443;
+const WITHDRAW_TAX_FEE = '0';
 
 export interface GetAUstBalanceOption {
   market: DENOMS;
@@ -233,6 +234,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       this._addressProvider,
     );
 
+    const taxFee = await Promise.all([this.getTax(depositOption.amount)]);
+    console.log(taxFee[0]);
+
     return Promise.resolve()
       .then(() => operation.generateWithAddress(address))
       .then((tx) =>
@@ -252,7 +256,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
             }),
       )
       .then((result) => {
-        return this.generateOutput(result, TxType.DEPOSIT, loggable);
+        return this.generateOutput(result, TxType.DEPOSIT, taxFee[0], loggable);
       });
   }
 
@@ -334,6 +338,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         return this.generateOutput(
           result,
           TxType.WITHDRAW,
+          WITHDRAW_TAX_FEE,
           loggable,
           requestedAmount,
         );
@@ -359,6 +364,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const loggable = options.log;
     const customSigner = options.customSigner;
     const address = options.address;
+
+    const taxFee = await Promise.all([this.getTax(options.amount)]);
 
     switch (denom) {
       case DENOMS.UST: {
@@ -394,7 +401,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           )
           .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
           .then((result) => {
-            return this.generateOutput(result, TxType.SEND, loggable);
+            return this.generateOutput(
+              result,
+              TxType.SEND,
+              taxFee[0],
+              loggable,
+            );
           });
         break;
       }
@@ -431,7 +443,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           )
           .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
           .then((result) => {
-            return this.generateOutput(result, TxType.SENDAUST, loggable);
+            return this.generateOutput(
+              result,
+              TxType.SENDAUST,
+              taxFee[0],
+              loggable,
+            );
           });
         break;
       }
@@ -714,9 +731,27 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     }
   }
 
+  private async getTax(requestAmount: string): Promise<string> {
+    //get the taxCap
+    const taxCap = await this._lcd.treasury.taxCap(DENOMS.UST);
+
+    //get the height for taxRate
+    const height = await Promise.all([this.getHeight()]);
+
+    // get the current taxRate
+    const taxRate = await this._lcd.treasury.taxRate(height[0]);
+
+    // Tax = min(transfer_amount * tax_rate, tax_cap)
+    return Dec.min(
+      taxRate.mul(requestAmount),
+      taxCap.amount.toString(),
+    ).toString();
+  }
+
   private generateOutput(
     tx: BlockTxBroadcastResult,
     type: TxType,
+    taxFee: string,
     loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
     requestedAmount?: string,
   ): OutputImpl | OperationError {
@@ -736,6 +771,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         type,
         CHAINS.TERRA,
         this._lcd.config.chainID,
+        taxFee,
         +new Coins(this._gasConfig.gasPrices).get('uusd').amount,
         requestedAmount,
       );

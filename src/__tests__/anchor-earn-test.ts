@@ -22,7 +22,7 @@ describe('anchor-earn', () => {
     });
 
     const deposit = await anchorEarn.earn.deposit({
-      amount: '0.01',
+      amount: '10',
       currency: DENOMS.UST,
     });
 

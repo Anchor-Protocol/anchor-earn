@@ -1,4 +1,9 @@
-import { BlockTxBroadcastResult, Int, isTxError } from '@terra-money/terra.js';
+import {
+  BlockTxBroadcastResult,
+  Dec,
+  Int,
+  isTxError,
+} from '@terra-money/terra.js';
 import { CHAINS, Output, STATUS, TxType } from './types';
 import { Parse } from '../utils/parse-input';
 import { JSONSerializable } from '../utils/json';
@@ -33,6 +38,7 @@ export class OutputImpl
     type: TxType,
     chain: string,
     network: string,
+    taxFee: string,
     gasPrice: number,
     requestedAmount?: string,
   ) {
@@ -48,7 +54,7 @@ export class OutputImpl
       this.height = txResult.height;
       this.txHash = txResult.txhash;
       this.timestamp = new Date();
-      this.txFee = computeTax(gasPrice, txResult.gas_wanted);
+      this.txFee = computeTax(gasPrice, txResult.gas_wanted, taxFee);
       const processedLog = processLog(txResult.logs, type);
       this.amount = processedLog[0];
       this.currency = processedLog[1];
@@ -91,8 +97,15 @@ export namespace OutputImp {
   }
 }
 
-function computeTax(gasPrice: number, gasWanted: number): string {
-  return getNaturalDecimals(new Int(gasPrice * gasWanted).toString()).concat(
-    ' UST',
-  );
+function computeTax(
+  gasPrice: number,
+  gasWanted: number,
+  taxFee: string,
+): string {
+  return getNaturalDecimals(
+    new Dec(taxFee)
+      .mul(1000000)
+      .add(gasPrice * gasWanted + 1)
+      .toString(),
+  ).concat(' UST');
 }
