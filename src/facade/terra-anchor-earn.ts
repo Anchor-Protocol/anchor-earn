@@ -52,12 +52,12 @@ import { BlockTxBroadcastResult } from '@terra-money/terra.js/dist/client/lcd/ap
 import { MarketOutput } from '../facade';
 import privateKey = Parse.privateKey;
 import accAddress = Parse.accAddress;
-import dec = Parse.dec;
 import assertMarket = Parse.assertMarket;
 import getAccessToken = Parse.getAccessToken;
 import mapCurrencyToUST = Parse.mapCurrencyToUST;
 import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
 import getNaturalDecimals = Parse.getNaturalDecimals;
+import getMicroAmount = Parse.getMicroAmount;
 
 const NUMBER_OF_BLOCKS = 4_906_443;
 const WITHDRAW_TAX_FEE = '0';
@@ -288,9 +288,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           market: DENOMS.UST,
         });
         requestedAmount = getNaturalDecimals(
-          new Int(new Dec(dec(withdrawOption.amount)).mul(1000000))
-            .mul(exchangeRate)
-            .toString(),
+          getMicroAmount(withdrawOption.amount).mul(exchangeRate).toString(),
         );
         break;
       }
@@ -301,9 +299,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         requestedAmount = withdrawOption.amount;
 
         withdrawOption.amount = getNaturalDecimals(
-          new Int(new Dec(dec(withdrawOption.amount)).mul(1000000))
-            .div(exchangeRate)
-            .toString(),
+          getMicroAmount(withdrawOption.amount).div(exchangeRate).toString(),
         );
       }
     }
@@ -370,10 +366,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     switch (denom) {
       case DENOMS.UST: {
         await this.assertUSTBalance(DENOMS.UST, options.amount);
-        const coin = new Coin(
-          'uusd',
-          new Int(new Dec(dec(options.amount)).mul(1000000)),
-        );
+        const coin = new Coin('uusd', getMicroAmount(options.amount));
 
         return Promise.resolve()
           .then(() =>
@@ -630,10 +623,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           new Coin(entry.currency, entry.account_balance),
           DENOMS.UST,
         );
-        const inMicro = +swapCoin.amount * 100000;
+        const inMicro = Parse.getMicroAmount(swapCoin.amount.toString());
         totalBalance += Parse.int(inMicro.toString());
       } else {
-        const inMicro = +entry.account_balance * 100000;
+        const inMicro = Parse.getMicroAmount(entry.account_balance);
         totalBalance += Parse.int(inMicro.toString());
       }
     }
@@ -651,10 +644,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           new Coin(entry.currency, entry.deposit_balance),
           DENOMS.UST,
         );
-        const inMicro = +swapCoin.amount * 100000;
+        const inMicro = Parse.getMicroAmount(swapCoin.amount.toString());
         totalBalance += Parse.int(inMicro.toString());
       } else {
-        const inMicro = +entry.deposit_balance * 100000;
+        const inMicro = Parse.getMicroAmount(entry.deposit_balance);
         totalBalance += Parse.int(inMicro.toString());
       }
     }
@@ -703,7 +696,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       });
     }
 
-    const userRequest = new Int(new Dec(dec(requestedAmount)).mul(1000000));
+    const userRequest = Parse.getMicroAmount(requestedAmount);
 
     if (ustBalance.amount < userRequest) {
       throw new Error(
@@ -717,7 +710,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       address: this._account.key.accAddress,
       market: DENOMS.UST,
     });
-    const userRequest = new Int(new Dec(dec(requestedAmount)).mul(1000000));
+    const userRequest = Parse.getMicroAmount(requestedAmount);
 
     if (austBalance.balance === '0') {
       throw new Error(`There is no deposit for the user`);

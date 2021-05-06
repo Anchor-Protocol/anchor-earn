@@ -66,6 +66,10 @@ export namespace Parse {
     return true;
   }
 
+  export function getMicroAmount(input?: string): Int {
+    return new Int(new Dec(dec(input)).mul(1000000));
+  }
+
   export function getNaturalDecimals(input?: string): string {
     return (+new Int(input).toString() / 1000000).toString();
   }
