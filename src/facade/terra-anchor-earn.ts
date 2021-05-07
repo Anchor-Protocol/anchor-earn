@@ -292,6 +292,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     switch (withdrawOption.currency) {
       case DENOMS.AUST: {
+        withdrawOption.currency = DENOMS.UST;
         const exchangeRate = await this.getExchangeRate({
           market: DENOMS.UST,
         });
@@ -320,14 +321,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     return Promise.resolve()
       .then(() => operation.generateWithAddress(address))
-      .then((tx) =>
-        customSigner
-          ? customSigner(tx)
-          : operation.creatTx(this._account, {
-              gasPrices: this._gasConfig.gasPrices,
-              gasAdjustment: this._gasConfig.gasAdjustment,
-            }),
-      )
+      .then((tx) => (customSigner ? customSigner(tx) : undefined))
       .then((signedTx: StdTx) =>
         customSigner
           ? sendSignedTransaction(this._lcd, signedTx)

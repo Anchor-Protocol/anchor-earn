@@ -367,7 +367,9 @@ describe('anchor-earn', () => {
       console.log(withdraw.toData());
     }
     expect(withdraw.type).toEqual('withdraw');
+  });
 
+  it('failed-withdraw', () => {
     //failure: account does not have deposit
     //address: terra1ypnfshpkyh8rzyh39unz0xsj3x8jd59hru8fwe
     const failure_account = new MnemonicKey({
@@ -547,6 +549,27 @@ describe('anchor-earn', () => {
       );
   });
 
+  it('withdraw-aust', async () => {
+    //address: terra1zk6rpwmxdh9md4hk3l9apnsfapqa59lh9tqyxa
+    const account = new MnemonicKey({
+      mnemonic:
+        'tide tortoise focus risk educate hotel actress season wish caught paper fashion gift tired cute poet cute scan wage local float nest task hire',
+    });
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account.privateKey,
+    });
+    const withdraw = await anchorEarn.earn.withdraw({
+      amount: '0.01',
+      currency: DENOMS.AUST,
+    });
+    if (withdraw instanceof OutputImpl) {
+      console.log(withdraw.toData());
+    }
+    expect(withdraw.type).toEqual('withdraw');
+  });
+
   it('balance', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
@@ -559,6 +582,13 @@ describe('anchor-earn', () => {
     });
 
     console.log(userBalance.toData());
+  });
+
+  it('failed-balance', () => {
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+    });
 
     anchorEarn.earn
       .balance({
