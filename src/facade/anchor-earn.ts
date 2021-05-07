@@ -13,7 +13,8 @@ export interface AnchorEarnOption {
  * @param {CHAINS} The blockchain that user wants to execute his message in.
  * @param {NETWORKS} the chain networks: It Could be either NETWORKS.TESTNET and NETWORKS.MAINNET.
  * The default network is NETWORKS.MAINNET.
- * @param {accessToken} Decoded version of the user's private key.
+ * @param {privateKey} chain account private key.
+ * @param {mnemonicKey} list of words that is used to retrieve private key.
  * @param {address}: Client’s Terra address. It can be only used for queries.
  *
  * @example
