@@ -6,6 +6,8 @@ import getNaturalDecimals = Parse.getNaturalDecimals;
 import processLog = Parse.processLog;
 import subNaturalDecimals = Parse.subNaturalDecimals;
 
+const DEFAULT_DEDUCTED_TAX = '0';
+
 export interface OperationError {
   type: TxType;
   chain: CHAINS;
@@ -58,7 +60,7 @@ export class OutputImpl
       this.currency = processedLog[1];
       this.deductedTax = requestedAmount
         ? subNaturalDecimals(requestedAmount, this.amount)
-        : undefined;
+        : DEFAULT_DEDUCTED_TAX;
     }
   }
 

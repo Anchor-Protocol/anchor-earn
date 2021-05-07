@@ -206,6 +206,14 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
+    if (customSigner && address == undefined) {
+      throw new Error('Address must be provided');
+    }
+
+    if (address && customSigner === undefined) {
+      throw new Error('Address must be used with customSigner');
+    }
+
     if (address && customSigner) {
       await this.assertUSTBalance(
         depositOption.currency,
@@ -214,10 +222,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       );
     } else {
       await this.assertUSTBalance(depositOption.currency, depositOption.amount);
-    }
-
-    if (customSigner && address == undefined) {
-      throw new Error('Address must be provided');
     }
 
     const operation = new OperationImpl(
@@ -272,7 +276,20 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
+    if (customSigner && address == undefined) {
+      throw new Error('Address must be provided');
+    }
+
+    if (address && customSigner === undefined) {
+      throw new Error('Address must be used with customSigner');
+    }
+
+    address
+      ? await this.assertAUSTBalance(withdrawOption.amount, address)
+      : await this.assertAUSTBalance(withdrawOption.amount);
+
     let requestedAmount = '0';
+
     switch (withdrawOption.currency) {
       case DENOMS.AUST: {
         const exchangeRate = await this.getExchangeRate({
@@ -294,8 +311,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         );
       }
     }
-
-    await this.assertAUSTBalance(withdrawOption.amount);
 
     const operation = new OperationImpl(
       fabricateMarketRedeemStable,
@@ -351,15 +366,29 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const taxFee = await Promise.all([this.getTax(options.amount)]);
 
+    if (customSigner && address === undefined) {
+      throw new Error('Address must be provided');
+    }
+
+    if (address && customSigner === undefined) {
+      throw new Error('Address must be used with customSigner');
+    }
+
     switch (options.currency) {
       case DENOMS.UST: {
         await this.assertUSTBalance(DENOMS.UST, options.amount);
         const coin = new Coin('uusd', getMicroAmount(options.amount));
-
+        address
+          ? this.assertUSTBalance(
+              DENOMS.UST,
+              options.amount,
+              accAddress(address),
+            )
+          : this.assertUSTBalance(DENOMS.UST, options.amount);
         return Promise.resolve()
           .then(() =>
             customSigner
-              ? createNativeSend(address, {
+              ? createNativeSend(accAddress(address), {
                   recipient: options.recipient,
                   coin,
                 })
@@ -392,11 +421,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         break;
       }
       case DENOMS.AUST: {
-        await this.assertAUSTBalance(options.amount);
+        address
+          ? this.assertAUSTBalance(options.amount, accAddress(address))
+          : this.assertUSTBalance(DENOMS.UST, options.amount);
         let transferAUST: Msg[];
         if (customSigner && address) {
           transferAUST = fabricateCw20Transfer({
-            address: address,
+            address: accAddress(address),
             amount: options.amount,
             recipient: options.recipient,
             contract_address: this._addressProvider.aTerra(DENOMS.UST),
@@ -448,7 +479,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   async balance(options: QueryOption): Promise<BalanceOutput> {
     const balances = await Promise.all(
       options.currencies.map(async (currency) => {
-        const balance = await this.getCurrencyState(currency, options.address);
+        const balance = await this.getCurrencyState(
+          currency,
+          accAddress(options.address),
+        );
         return balance;
       }),
     );
@@ -674,7 +708,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     let ustBalance;
     if (address) {
       ustBalance = await this.getNativeBalance({
-        address: address,
+        address: accAddress(address),
         currency: market,
       });
     } else {
@@ -697,14 +731,23 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     }
   }
 
-  private async assertAUSTBalance(requestedAmount: string): Promise<void> {
-    const austBalance = await this.getAUstBalance({
-      address: this._account.key.accAddress,
-      market: DENOMS.UST,
-    });
+  private async assertAUSTBalance(
+    requestedAmount: string,
+    address?: string,
+  ): Promise<void> {
+    const austBalance = address
+      ? await this.getAUstBalance({
+          address: accAddress(address),
+          market: DENOMS.UST,
+        })
+      : await this.getAUstBalance({
+          address: this._account.key.accAddress,
+          market: DENOMS.UST,
+        });
+
     const userRequest = Parse.getMicroAmount(requestedAmount);
 
-    if (austBalance.balance === '0') {
+    if (austBalance.balance === '0' || austBalance.balance === undefined) {
       throw new Error(`There is no deposit for the user`);
     }
     if (userRequest.greaterThan(new Int(austBalance.balance))) {
