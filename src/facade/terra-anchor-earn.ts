@@ -344,17 +344,14 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
 
-  async send(
-    denom: DENOMS,
-    options: SendOption,
-  ): Promise<OutputImpl | OperationError> {
+  async send(options: SendOption): Promise<OutputImpl | OperationError> {
     const loggable = options.log;
     const customSigner = options.customSigner;
     const address = options.address;
 
     const taxFee = await Promise.all([this.getTax(options.amount)]);
 
-    switch (denom) {
+    switch (options.currency) {
       case DENOMS.UST: {
         await this.assertUSTBalance(DENOMS.UST, options.amount);
         const coin = new Coin('uusd', getMicroAmount(options.amount));

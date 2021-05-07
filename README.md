@@ -143,7 +143,8 @@ To send `UST` and `AUST` to other accounts, use the following example:
 <br/>
 <sub>(For this functionality, the `AUST` denom is also supported.) </sub>
 ```ts
- const sendUst = await anchorEarn.earn.send(DENOMS.UST, {
+ const sendUst = await anchorEarn.earn.send({
+      currency: DENOMS.UST,
       recipient: 'terra1....',
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
     });

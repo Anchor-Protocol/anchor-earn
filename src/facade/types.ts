@@ -25,6 +25,7 @@ export interface WithdrawOption
 export interface SendOption
   extends CustomSigner<Msg[] | any, StdTx | any>,
     Loggable<Output | InProgress | OperationError> {
+  currency: DENOMS;
   recipient: string;
   amount: string;
   address?: string;
@@ -38,7 +39,7 @@ export interface QueryOption {
 export interface AnchorEarnOperations {
   deposit(depositOption: DepositOption): Promise<Output | OperationError>;
   withdraw(withdrawOption: WithdrawOption): Promise<Output | OperationError>;
-  send(denom: DENOMS, options: SendOption): Promise<Output | OperationError>;
+  send(options: SendOption): Promise<Output | OperationError>;
   balance(options: QueryOption): Promise<BalanceOutput>;
   market(options: QueryOption): Promise<MarketOutput>;
 }

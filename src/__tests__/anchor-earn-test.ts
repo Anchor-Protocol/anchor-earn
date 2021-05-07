@@ -108,7 +108,8 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    const sendAust = await anchorEarn.earn.send(DENOMS.AUST, {
+    const sendAust = await anchorEarn.earn.send({
+      currency: DENOMS.AUST,
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
     });
@@ -129,7 +130,8 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    const sendUst = await anchorEarn.earn.send(DENOMS.UST, {
+    const sendUst = await anchorEarn.earn.send({
+      currency: DENOMS.UST,
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
     });
