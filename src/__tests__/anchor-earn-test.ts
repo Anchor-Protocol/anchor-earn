@@ -57,7 +57,7 @@ describe('anchor-earn', () => {
       });
   });
 
-  it('deposit-customized-sign', async () => {
+  it('deposit-custom-signer', async () => {
     //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
@@ -402,7 +402,7 @@ describe('anchor-earn', () => {
       });
   });
 
-  it('withdraw-custom-sign', async () => {
+  it('withdraw-custom-signer', async () => {
     //address: terra10zkyac50dgx830uepym5508h7vukqufr6y5wdy
 
     const anchorEarn = new AnchorEarn({
