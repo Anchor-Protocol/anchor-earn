@@ -36,10 +36,10 @@ describe('anchor-earn', () => {
   });
 
   it('failed-deposit', () => {
-    //address: terra1pgtqe0qv9gl77hnwwvwmsjywlucgz25ywm8a22
+    //address: terra1arf9420dd8suu4a7cmw6wap5zfjt7wxaadrt74
     const account = new MnemonicKey({
       mnemonic:
-        'spider clerk bird usual rug meadow evoke deny search art seven notable cousin quote april grace reward author climb soccer couple physical calm equip',
+        'canoe collect invest hurry cancel educate ask swarm sell topic raccoon first group session decline coral merit total icon warm check glow urban track',
     });
 
     const anchorEarn = new AnchorEarn({
