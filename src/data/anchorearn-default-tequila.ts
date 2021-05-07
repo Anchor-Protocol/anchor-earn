@@ -13,7 +13,6 @@ const tequilaDefaultConfig: AnchorConfig = {
     mmMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',
     mmOverseer: 'terra1qljxd0y3j3gk97025qvl3lgq8ygup4gsksvaxv',
     aTerra: 'terra1ajt556dpzvjwl0kl5tzku3fc3p3knkg9mkv8jl',
-    ANC: 'terra1747mad58h0w4y589y3sk84r5efqdev9q4r02pc',
   },
 };
 

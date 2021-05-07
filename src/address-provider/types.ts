@@ -9,5 +9,4 @@ export interface Contracts {
   mmMarket: string;
   mmOverseer: string;
   aTerra: string;
-  ANC: string;
 }
