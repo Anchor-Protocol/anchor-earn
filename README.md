@@ -1,5 +1,5 @@
 
-<p align="center"><img src="./docs/img/anchor_earn_logo.png" width=500 alt="earn-logo"></p>
+<p align="center"><img src="./docs/img/anchor_earn_logo2.png" width=750 alt="earn-logo"></p>
 
 # Anchor-earn
 Anchor-earn is a client SDK for building applications that can interact with the earn functionality of Anchor Protocol from within JavaScript runtimes. 
@@ -16,7 +16,7 @@ This SDK only supports the earn functionalities of anchor protocol and cannot be
   - [Executor](#executor)
   - [Querier](#querier)
   - [CustomSigner](#customsigner)
-  - [Logabble](#loggable)
+  - [Loggable](#loggable)
 - [License](#license)
 ## Getting Started
 A walk through of the steps to get started with the Anchor-earn SDK alongside with a few use case examples are provided below.
@@ -125,7 +125,7 @@ The following code snippets show how to use the `AnchorEarn` object.
 #### Deposit 
 To deposit funds in the Anchor Protocol, use the following example:
 ```ts
-    const deposit = await anchorEarn.earn.deposit({
+    const deposit = await anchorEarn.deposit({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
       currency: DENOMS.UST,
     });
@@ -133,7 +133,7 @@ To deposit funds in the Anchor Protocol, use the following example:
 #### Withdraw
 To withdraw funds from the protocol, use the following example:
 ```ts
-    const deposit = await anchorEarn.earn.withdraw({
+    const deposit = await anchorEarn.withdraw({
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
       currency: DENOMS.UST,
     });
@@ -143,7 +143,7 @@ To send `UST` and `AUST` to other accounts, use the following example:
 <br/>
 <sub>(For this functionality, the `AUST` denom is also supported.) </sub>
 ```ts
- const sendUst = await anchorEarn.earn.send({
+ const sendUst = await anchorEarn.send({
       currency: DENOMS.UST,
       recipient: 'terra1....',
       amount: '...', // amount in natural decimal e.g. 100.5. The amount will be handled in macro.
@@ -162,7 +162,7 @@ To get the current state of an account, use the following example:
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
     });
-const userBalance = await anchorEarn.earn.balance({
+const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
       address: 'terra1...'
     });
@@ -170,7 +170,7 @@ const userBalance = await anchorEarn.earn.balance({
 #### Market
 To get the current state of the market, use the example below:
 ```ts
-    const market = await anchorEarn.earn.market({
+    const market = await anchorEarn.market({
       currencies: [DENOMS.UST],
     });
 ```
@@ -182,7 +182,7 @@ Anchor-earn also provides users with the functionality to sign transactions and 
 The following code snippet specifies an example of the `CustomSigner` usage:
 > **Note**: The address must be specified. 
 ```ts
-const deposit = await anchorEarn.earn.deposit({
+const deposit = await anchorEarn.deposit({
       amount: '0.01',
       currency: DENOMS.UST,
       customSigner: async (tx: Msg[]) => {
@@ -209,7 +209,7 @@ const deposit = await anchorEarn.earn.deposit({
 ### Loggable 
 For seeing the progress of the transaction on the chain, `loggable` is provided. The following code shows how to use it:
 ```ts
-    const deposit = await anchorEarn.earn.deposit({
+    const deposit = await anchorEarn.deposit({
       amount: '...',
       currency: DENOMS.UST,
       log: (data) => {

@@ -25,7 +25,7 @@ describe('anchor-earn', () => {
       privateKey: account.privateKey,
     });
 
-    const deposit = await anchorEarn.earn.deposit({
+    const deposit = await anchorEarn.deposit({
       amount: '0.01',
       currency: DENOMS.UST,
     });
@@ -47,7 +47,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    anchorEarn.earn
+    anchorEarn
       .deposit({
         amount: '10000000',
         currency: DENOMS.UST,
@@ -63,7 +63,7 @@ describe('anchor-earn', () => {
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
     });
-    const deposit = await anchorEarn.earn.deposit({
+    const deposit = await anchorEarn.deposit({
       amount: '0.01',
       currency: DENOMS.UST,
       log: (data) => {
@@ -98,7 +98,7 @@ describe('anchor-earn', () => {
 
     // signer is different from the address
     // signer is terra1chxrckyqauguv268kg0vjp9qrzefv8vff392x6
-    await anchorEarn.earn.deposit({
+    await anchorEarn.deposit({
       amount: '0.01',
       currency: DENOMS.UST,
       log: (data) => {
@@ -127,7 +127,7 @@ describe('anchor-earn', () => {
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
-    await anchorEarn.earn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -160,7 +160,7 @@ describe('anchor-earn', () => {
         expect(e.message).toContain('Invalid Terra account address:'),
       );
 
-    anchorEarn.earn
+    anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -192,7 +192,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be provided'),
       );
 
-    anchorEarn.earn
+    anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -205,7 +205,7 @@ describe('anchor-earn', () => {
         expect(e.message).toContain('Address must be used with customSigner'),
       );
 
-    anchorEarn.earn
+    anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -230,7 +230,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    const sendAust = await anchorEarn.earn.send({
+    const sendAust = await anchorEarn.send({
       currency: DENOMS.AUST,
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
@@ -247,7 +247,7 @@ describe('anchor-earn', () => {
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
     });
-    await anchorEarn.earn.send({
+    await anchorEarn.send({
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
       currency: DENOMS.AUST,
@@ -277,7 +277,7 @@ describe('anchor-earn', () => {
       address: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
     });
 
-    await anchorEarn.earn
+    await anchorEarn
       .send({
         recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
         amount: '0.01',
@@ -291,7 +291,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be used with customSigner'),
       );
 
-    await anchorEarn.earn
+    await anchorEarn
       .send({
         recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
         amount: '0.01',
@@ -336,7 +336,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    const sendUst = await anchorEarn.earn.send({
+    const sendUst = await anchorEarn.send({
       currency: DENOMS.UST,
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       amount: '0.01',
@@ -358,7 +358,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    const withdraw = await anchorEarn.earn.withdraw({
+    const withdraw = await anchorEarn.withdraw({
       amount: '0.01',
       currency: DENOMS.UST,
     });
@@ -383,7 +383,7 @@ describe('anchor-earn', () => {
       privateKey: failure_account.privateKey,
     });
 
-    failedAnchorEarn.earn
+    failedAnchorEarn
       .withdraw({
         amount: '1000000000000',
         currency: DENOMS.UST,
@@ -392,7 +392,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('There is no deposit for the user');
       });
 
-    failedAnchorEarn.earn
+    failedAnchorEarn
       .withdraw({
         amount: '0',
         currency: DENOMS.UST,
@@ -410,7 +410,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
     });
 
-    await anchorEarn.earn.withdraw({
+    await anchorEarn.withdraw({
       amount: '0.01',
       currency: DENOMS.UST,
       log: (data) => {
@@ -441,7 +441,7 @@ describe('anchor-earn', () => {
 
     // signer is different from the address
     // signer is terra1chxrckyqauguv268kg0vjp9qrzefv8vff392x6
-    await anchorEarn.earn.withdraw({
+    await anchorEarn.withdraw({
       amount: '0.01',
       currency: DENOMS.UST,
       log: (data) => {
@@ -470,7 +470,7 @@ describe('anchor-earn', () => {
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
-    await anchorEarn.earn
+    await anchorEarn
       .withdraw({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -483,7 +483,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be used with customSigner'),
       );
 
-    await anchorEarn.earn
+    await anchorEarn
       .withdraw({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -515,7 +515,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be provided'),
       );
 
-    await anchorEarn.earn
+    await anchorEarn
       .withdraw({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -560,7 +560,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
       privateKey: account.privateKey,
     });
-    const withdraw = await anchorEarn.earn.withdraw({
+    const withdraw = await anchorEarn.withdraw({
       amount: '0.01',
       currency: DENOMS.AUST,
     });
@@ -576,7 +576,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
     });
 
-    const userBalance = await anchorEarn.earn.balance({
+    const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
@@ -590,7 +590,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
     });
 
-    anchorEarn.earn
+    anchorEarn
       .balance({
         currencies: [DENOMS.UST],
         address: 'invalid address',
@@ -606,7 +606,7 @@ describe('anchor-earn', () => {
       network: NETWORKS.TESTNET,
     });
 
-    const market = await anchorEarn.earn.market({
+    const market = await anchorEarn.market({
       currencies: [DENOMS.UST],
     });
 

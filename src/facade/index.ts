@@ -1,5 +1,6 @@
 export * from './anchor-earn';
 export * from './account';
+export * from './user-query-output';
 export * from './output-impl';
 export * from './market-query-output';
 export * from './terra-anchor-earn';

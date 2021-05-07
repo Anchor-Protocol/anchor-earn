@@ -1,5 +1,19 @@
-import { AnchorEarnOperations, CHAINS, NETWORKS } from './types';
-import { TerraAnchorEarn } from './terra-anchor-earn';
+import {
+  AnchorEarnOperations,
+  CHAINS,
+  DepositOption,
+  NETWORKS,
+  Output,
+  QueryOption,
+  SendOption,
+  WithdrawOption,
+} from './types';
+import {
+  MarketOutput,
+  OperationError,
+  BalanceOutput,
+  TerraAnchorEarn,
+} from '../facade';
 
 export interface AnchorEarnOption {
   chain: CHAINS;
@@ -24,8 +38,8 @@ export interface AnchorEarnOption {
     });
  */
 
-export class AnchorEarn {
-  earn: AnchorEarnOperations;
+export class AnchorEarn implements AnchorEarnOperations {
+  private earn: AnchorEarnOperations;
 
   constructor(options: AnchorEarnOption) {
     switch (options.chain) {
@@ -38,5 +52,25 @@ export class AnchorEarn {
         });
       }
     }
+  }
+
+  async balance(options: QueryOption): Promise<BalanceOutput> {
+    return this.earn.balance(options);
+  }
+
+  deposit(depositOption: DepositOption): Promise<Output | OperationError> {
+    return this.earn.deposit(depositOption);
+  }
+
+  market(options: QueryOption): Promise<MarketOutput> {
+    return this.earn.market(options);
+  }
+
+  send(options: SendOption): Promise<Output | OperationError> {
+    return this.earn.send(options);
+  }
+
+  withdraw(withdrawOption: WithdrawOption): Promise<Output | OperationError> {
+    return this.earn.withdraw(withdrawOption);
   }
 }
