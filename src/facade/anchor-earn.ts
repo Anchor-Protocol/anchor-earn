@@ -5,7 +5,7 @@ export interface AnchorEarnOption {
   chain: CHAINS;
   network: NETWORKS;
   privateKey?: Buffer | any;
-  MnemonicKey?: string | any;
+  mnemonicKey?: string | any;
   address?: string;
 }
 
@@ -32,7 +32,7 @@ export class AnchorEarn {
         this.earn = new TerraAnchorEarn({
           network: options.network,
           privateKey: options.privateKey as Buffer,
-          MnemonicKey: options.MnemonicKey as string,
+          mnemonicKey: options.mnemonicKey as string,
           address: options.address,
         });
       }

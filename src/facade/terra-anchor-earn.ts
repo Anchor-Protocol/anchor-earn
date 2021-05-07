@@ -101,7 +101,7 @@ interface GasConfig {
 interface AnchorEarnOptions {
   network?: NETWORKS;
   privateKey?: Buffer;
-  MnemonicKey?: string;
+  mnemonicKey?: string;
   gasConfig?: GasConfig;
   address?: string;
 }
@@ -166,8 +166,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       this._lcd = new LCDClient(tequilaDefaultConfig.lcd);
     }
 
-    if (options.MnemonicKey) {
-      const key = new MnemonicKey({ mnemonic: options.MnemonicKey });
+    if (options.mnemonicKey) {
+      const key = new MnemonicKey({ mnemonic: options.mnemonicKey });
       this._account = this._lcd.wallet(key);
     }
 
