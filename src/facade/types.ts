@@ -4,10 +4,17 @@ import { MarketOutput } from './market-query-output';
 import { DENOMS } from '../address-provider';
 import { Loggable } from './loggable';
 import { CustomSigner } from './custom-signer';
-import { Msg, StdTx } from '@terra-money/terra.js';
+import {
+  Msg,
+  MsgSend,
+  StdTx,
+  SyncTxBroadcastResult,
+} from '@terra-money/terra.js';
+import { CustomBroadcaster } from './custom-broadcaster';
 
 export interface DepositOption
-  extends CustomSigner<Msg[] | any, StdTx | any>,
+  extends CustomSigner<Msg[], StdTx>,
+    CustomBroadcaster<StdTx, SyncTxBroadcastResult>,
     Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   amount: string;
@@ -15,7 +22,8 @@ export interface DepositOption
 }
 
 export interface WithdrawOption
-  extends CustomSigner<Msg[] | any, StdTx | any>,
+  extends CustomSigner<Msg[], StdTx>,
+    CustomBroadcaster<StdTx, SyncTxBroadcastResult>,
     Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   amount: string;
@@ -23,7 +31,8 @@ export interface WithdrawOption
 }
 
 export interface SendOption
-  extends CustomSigner<Msg[] | any, StdTx | any>,
+  extends CustomSigner<Msg[] | MsgSend, StdTx>,
+    CustomBroadcaster<StdTx, SyncTxBroadcastResult>,
     Loggable<Output | InProgress | OperationError> {
   currency: DENOMS;
   recipient: string;

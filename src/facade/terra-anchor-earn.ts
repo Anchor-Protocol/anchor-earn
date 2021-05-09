@@ -8,6 +8,8 @@ import {
   Msg,
   RawKey,
   StdTx,
+  SyncTxBroadcastResult,
+  TxInfo,
   Wallet,
 } from '@terra-money/terra.js';
 import {
@@ -200,13 +202,18 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   ): Promise<OutputImpl | OperationError> {
     const loggable = depositOption.log;
     const customSigner = depositOption.customSigner;
+    const customBroadcaster = depositOption.customBroadcaster;
     const address = depositOption.address;
 
     if (!assertMarket(depositOption.currency)) {
       throw new Error('Invalid Market');
     }
 
-    if (customSigner && address == undefined) {
+    if (
+      customSigner &&
+      address == undefined &&
+      customBroadcaster == undefined
+    ) {
       throw new Error('Address must be provided');
     }
 
@@ -243,15 +250,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
             }),
       )
       .then((signedTx: StdTx) =>
-        customSigner
-          ? sendSignedTransaction(this._lcd, signedTx)
-          : operation.execute(this._account, {
-              gasPrices: this._gasConfig.gasPrices,
-              gasAdjustment: this._gasConfig.gasAdjustment,
-            }),
+        customBroadcaster
+          ? customBroadcaster(signedTx)
+          : sendSignedTransaction(this._lcd, signedTx),
       )
-      .then((result) => {
-        return this.generateOutput(result, TxType.DEPOSIT, taxFee[0], loggable);
+      .then((result: TxInfo | BlockTxBroadcastResult) => {
+        return this.getFinalResult(result, TxType.DEPOSIT, taxFee[0], loggable);
       });
   }
 
@@ -270,6 +274,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   ): Promise<OutputImpl | OperationError> {
     const loggable = withdrawOption.log;
     const customSigner = withdrawOption.customSigner;
+    const customBroadcaster = withdrawOption.customBroadcaster;
+
     const address = withdrawOption.address;
 
     if (withdrawOption.amount == '0') {
@@ -321,17 +327,21 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     return Promise.resolve()
       .then(() => operation.generateWithAddress(address))
-      .then((tx) => (customSigner ? customSigner(tx) : undefined))
-      .then((signedTx: StdTx) =>
+      .then((tx) =>
         customSigner
-          ? sendSignedTransaction(this._lcd, signedTx)
-          : operation.execute(this._account, {
+          ? customSigner(tx)
+          : operation.creatTx(this._account, {
               gasPrices: this._gasConfig.gasPrices,
               gasAdjustment: this._gasConfig.gasAdjustment,
             }),
       )
+      .then((signedTx: StdTx) =>
+        customBroadcaster
+          ? customBroadcaster(signedTx)
+          : sendSignedTransaction(this._lcd, signedTx),
+      )
       .then((result) => {
-        return this.generateOutput(
+        return this.getFinalResult(
           result,
           TxType.WITHDRAW,
           WITHDRAW_TAX_FEE,
@@ -356,6 +366,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   async send(options: SendOption): Promise<OutputImpl | OperationError> {
     const loggable = options.log;
     const customSigner = options.customSigner;
+    const customBroadcaster = options.customBroadcaster;
     const address = options.address;
 
     const taxFee = await Promise.all([this.getTax(options.amount)]);
@@ -364,13 +375,16 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Address must be provided');
     }
 
-    if (address && customSigner === undefined) {
+    if (
+      address &&
+      customSigner === undefined &&
+      customBroadcaster === undefined
+    ) {
       throw new Error('Address must be used with customSigner');
     }
 
     switch (options.currency) {
       case DENOMS.UST: {
-        await this.assertUSTBalance(DENOMS.UST, options.amount);
         const coin = new Coin('uusd', getMicroAmount(options.amount));
         address
           ? this.assertUSTBalance(
@@ -393,7 +407,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           )
           .then((tx) =>
             customSigner
-              ? customSigner(tx)
+              ? customSigner([tx])
               : createAndSignMsg(
                   this._account,
                   {
@@ -403,9 +417,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   [tx],
                 ),
           )
-          .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
+          .then((signedTx: StdTx) =>
+            customBroadcaster
+              ? customBroadcaster(signedTx)
+              : sendSignedTransaction(this._lcd, signedTx),
+          )
           .then((result) => {
-            return this.generateOutput(
+            return this.getFinalResult(
               result,
               TxType.SEND,
               taxFee[0],
@@ -447,9 +465,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
                   transferAUST,
                 ),
           )
-          .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
+          .then((signedTx: StdTx) =>
+            customBroadcaster
+              ? customBroadcaster(signedTx)
+              : sendSignedTransaction(this._lcd, signedTx),
+          )
           .then((result) => {
-            return this.generateOutput(
+            return this.getFinalResult(
               result,
               TxType.SENDAUST,
               taxFee[0],
@@ -573,11 +595,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   private async getHeight(): Promise<number> {
     const blockInfo = await this._lcd.tendermint.blockInfo();
     return Parse.int(blockInfo.block.header.height);
-  }
-
-  private async getSwapRate(offerCoin: Coin, denom: string): Promise<Coin> {
-    const destinationCoin = await this._lcd.market.swapRate(offerCoin, denom);
-    return destinationCoin;
   }
 
   private async getCurrencyState(
@@ -771,7 +788,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private generateOutput(
-    tx: BlockTxBroadcastResult,
+    tx: TxInfo,
     type: TxType,
     taxFee: string,
     loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
@@ -802,5 +819,44 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       }
     }
     return result;
+  }
+
+  private async getFinalResult(
+    txResult: SyncTxBroadcastResult,
+    type: TxType,
+    taxFee: string,
+    loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
+    requestedAmount?: string,
+  ): Promise<OutputImpl | OperationError> {
+    if (isTxError(txResult)) {
+      const result = {
+        type: type,
+        chain: CHAINS.TERRA,
+        error_msg: txResult.raw_log,
+      } as OperationError;
+      if (loggable) {
+        loggable(result);
+      }
+      return result;
+    } else {
+      return await new Promise((resolve) => {
+        const interval = setInterval(() => {
+          this._lcd.tx
+            .txInfo(txResult.txhash)
+            .then((result) => {
+              clearInterval(interval);
+              const output = this.generateOutput(
+                result,
+                type,
+                taxFee,
+                loggable,
+                requestedAmount,
+              );
+              resolve(output);
+            })
+            .catch(() => {});
+        }, 1000);
+      });
+    }
   }
 }
