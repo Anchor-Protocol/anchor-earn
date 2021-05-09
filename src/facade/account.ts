@@ -1,5 +1,5 @@
 import { AccAddress, MnemonicKey, Wallet } from '@terra-money/terra.js';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import generateTerraAccessToken = Parse.generateTerraAccessToken;
 import { JSONSerializable } from '../utils/json';
 

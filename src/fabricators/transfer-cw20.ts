@@ -1,5 +1,5 @@
 import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import accAddress = Parse.accAddress;
 import dec = Parse.dec;
 

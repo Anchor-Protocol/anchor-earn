@@ -60,10 +60,7 @@ export namespace Parse {
   }
 
   export function assertMarket(input?: DENOMS): boolean {
-    if (input !== DENOMS.UST) {
-      return false;
-    }
-    return true;
+    return input === DENOMS.UST;
   }
 
   export function getMicroAmount(input?: string): Int {

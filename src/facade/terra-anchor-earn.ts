@@ -29,7 +29,7 @@ import {
 } from '../fabricators';
 import mainNetDefaultConfig from '../data/anchorearn-default-columbus';
 import tequilaDefaultConfig from '../data/anchorearn-default-tequila';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import {
   AddressMap,
   AddressProvider,
@@ -255,8 +255,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {market} Anchor Deposit Market. For now, it is only Denom.UST.
-   * @param {amount} Amount for withdraw. The amount will be withdrawed in micro UST. e.g. 1 ust = 1000000 uust
+   * @param {market} Anchor Deposit Market.
+   * @param {amount} Amount for withdraw. The amount will be withdrawn in micro UST. e.g. 1 ust = 1000000 uust
    *
    * @example
    * const withdraw = await anchorEarn.withdraw({
@@ -374,12 +374,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       case DENOMS.UST: {
         const coin = new Coin('uusd', getMicroAmount(options.amount));
         address
-          ? this.assertUSTBalance(
+          ? await this.assertUSTBalance(
               DENOMS.UST,
               options.amount,
               accAddress(address),
             )
-          : this.assertUSTBalance(DENOMS.UST, options.amount);
+          : await this.assertUSTBalance(DENOMS.UST, options.amount);
         return Promise.resolve()
           .then(() =>
             customSigner
@@ -507,7 +507,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {currencies} List of currency currencies.
+   * @param {currencies} List of market currencies.
    *
    * @example
    * const userBalance = await anchorEarn.currency({
