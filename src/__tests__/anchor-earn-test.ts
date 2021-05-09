@@ -264,6 +264,104 @@ describe('anchor-earn', () => {
     });
   });
 
+  // test amount assertion
+  it('deposit-assert-input-1', () => {
+    //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
+    const account = new MnemonicKey({
+      mnemonic:
+        'kidney cannon silk dust tube flight trophy approve identify kind purse install proud kind pigeon bleak this clever mosquito change cash mango sample prepare',
+    });
+
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account.privateKey,
+    });
+
+    anchorEarn
+      .deposit({
+        amount: 'invalid',
+        currency: DENOMS.UST,
+      })
+      .catch((e: Error) => {
+        expect(e.message).toContain('Invalid argument');
+      });
+  });
+
+  // test input assertion except amount
+  it('deposit-assert-input-2', () => {
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+    });
+
+    anchorEarn
+      .deposit({
+        amount: '0.01',
+        currency: DENOMS.UST,
+        log: (data) => {
+          console.log(data);
+        },
+        customBroadcaster: async (tx: StdTx) => {
+          const lcd = new LCDClient({
+            URL: 'https://tequila-lcd.terra.dev',
+            chainID: 'tequila-0004',
+          });
+
+          return lcd.tx.broadcastSync(tx);
+        },
+        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be used with customSigner'),
+      );
+
+    anchorEarn
+      .deposit({
+        amount: '0.01',
+        currency: DENOMS.UST,
+        log: (data) => {
+          console.log(data);
+        },
+        customSigner: async (tx: Msg[]) => {
+          const account = new MnemonicKey({
+            mnemonic:
+              'frozen nation brand marriage tuition return symbol creek father forward invite invite eternal debris solve popular life decorate effort ranch wrist galaxy rich guilt',
+          });
+
+          const wallet = new Wallet(
+            new LCDClient({
+              URL: 'https://tequila-lcd.terra.dev',
+              chainID: 'tequila-0004',
+            }),
+            account,
+          );
+
+          return await wallet.createAndSignTx({
+            msgs: tx,
+            gasAdjustment: 2,
+            gasPrices: { uusd: 0.15 },
+          });
+        },
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be provided'),
+      );
+
+    anchorEarn
+      .deposit({
+        amount: '0.01',
+        currency: DENOMS.UST,
+        log: (data) => {
+          console.log(data);
+        },
+        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be used with customSigner'),
+      );
+  });
+
   it('failed-deposit-custom-broadcast', async () => {
     //address: terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt
     const anchorEarn = new AnchorEarn({
@@ -462,6 +560,130 @@ describe('anchor-earn', () => {
     });
   });
 
+  // test amount assertion
+  it('send-aust-assert-input-1', () => {
+    //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
+    const account = new MnemonicKey({
+      mnemonic:
+        'kidney cannon silk dust tube flight trophy approve identify kind purse install proud kind pigeon bleak this clever mosquito change cash mango sample prepare',
+    });
+
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account.privateKey,
+    });
+
+    anchorEarn
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: 'invalid',
+        currency: DENOMS.UST,
+      })
+      .catch((e: Error) => {
+        expect(e.message).toContain('Invalid argument');
+      });
+  });
+
+  // test input assertion except amount
+  it('send-aust-assert-input', () => {
+    //address: terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj
+    const account = new MnemonicKey({
+      mnemonic:
+        'supply sting ranch post eternal decline silly want outside prize crazy rapid foil gain soft above left castle illness cargo night game satisfy legend',
+    });
+
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account.privateKey,
+    });
+
+    anchorEarn
+      .send({
+        currency: DENOMS.AUST,
+        recipient: 'invalid',
+        amount: '0.01',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toContain('Invalid Terra account address'),
+      );
+
+    const anchorEarn2 = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+    });
+
+    anchorEarn2
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: '0.01',
+        currency: DENOMS.AUST,
+        log: (data) => {
+          console.log(data);
+        },
+        customBroadcaster: async (tx: StdTx) => {
+          const lcd = new LCDClient({
+            URL: 'https://tequila-lcd.terra.dev',
+            chainID: 'tequila-0004',
+          });
+
+          return lcd.tx.broadcastSync(tx);
+        },
+        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be used with customSigner'),
+      );
+
+    anchorEarn2
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: '0.01',
+        currency: DENOMS.AUST,
+        log: (data) => {
+          console.log(data);
+        },
+        customSigner: async (tx: Msg[]) => {
+          const account = new MnemonicKey({
+            mnemonic:
+              'frozen nation brand marriage tuition return symbol creek father forward invite invite eternal debris solve popular life decorate effort ranch wrist galaxy rich guilt',
+          });
+
+          const wallet = new Wallet(
+            new LCDClient({
+              URL: 'https://tequila-lcd.terra.dev',
+              chainID: 'tequila-0004',
+            }),
+            account,
+          );
+
+          return await wallet.createAndSignTx({
+            msgs: tx,
+            gasAdjustment: 2,
+            gasPrices: { uusd: 0.15 },
+          });
+        },
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be provided'),
+      );
+
+    anchorEarn2
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: '0.01',
+        currency: DENOMS.AUST,
+        log: (data) => {
+          console.log(data);
+        },
+        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be used with customSigner'),
+      );
+  });
+
   it('send-ust', async () => {
     //address: terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj
     const account = new MnemonicKey({
@@ -545,6 +767,105 @@ describe('anchor-earn', () => {
         return lcd.tx.broadcastSync(tx);
       },
     });
+  });
+
+  // test input assertion except amount
+  it('send-ust-assert-input', () => {
+    //address: terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj
+    const account = new MnemonicKey({
+      mnemonic:
+        'supply sting ranch post eternal decline silly want outside prize crazy rapid foil gain soft above left castle illness cargo night game satisfy legend',
+    });
+
+    const anchorEarn = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account.privateKey,
+    });
+
+    anchorEarn
+      .send({
+        currency: DENOMS.UST,
+        recipient: 'invalid',
+        amount: '0.01',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toContain('Invalid Terra account address'),
+      );
+
+    const anchorEarn2 = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+    });
+
+    anchorEarn2
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: '0.01',
+        currency: DENOMS.UST,
+        log: (data) => {
+          console.log(data);
+        },
+        customBroadcaster: async (tx: StdTx) => {
+          const lcd = new LCDClient({
+            URL: 'https://tequila-lcd.terra.dev',
+            chainID: 'tequila-0004',
+          });
+
+          return lcd.tx.broadcastSync(tx);
+        },
+        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be used with customSigner'),
+      );
+
+    anchorEarn2
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: '0.01',
+        currency: DENOMS.UST,
+        log: (data) => {
+          console.log(data);
+        },
+        customSigner: async (tx: Msg[]) => {
+          const account = new MnemonicKey({
+            mnemonic:
+              'frozen nation brand marriage tuition return symbol creek father forward invite invite eternal debris solve popular life decorate effort ranch wrist galaxy rich guilt',
+          });
+
+          const wallet = new Wallet(
+            new LCDClient({
+              URL: 'https://tequila-lcd.terra.dev',
+              chainID: 'tequila-0004',
+            }),
+            account,
+          );
+
+          return await wallet.createAndSignTx({
+            msgs: tx,
+            gasAdjustment: 2,
+            gasPrices: { uusd: 0.15 },
+          });
+        },
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be provided'),
+      );
+
+    anchorEarn2
+      .send({
+        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
+        amount: '0.01',
+        currency: DENOMS.UST,
+        log: (data) => {
+          console.log(data);
+        },
+        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      })
+      .catch((e: Error) =>
+        expect(e.message).toEqual('Address must be used with customSigner'),
+      );
   });
 
   it('withdraw', async () => {

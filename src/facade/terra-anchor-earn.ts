@@ -58,6 +58,7 @@ import mapCurrencyToUST = Parse.mapCurrencyToUST;
 import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import getMicroAmount = Parse.getMicroAmount;
+import { assertInput } from '../utils/assert-inputs';
 
 const NUMBER_OF_BLOCKS = 4_906_443;
 const WITHDRAW_TAX_FEE = '0';
@@ -209,17 +210,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    if (
-      customSigner &&
-      address == undefined &&
-      customBroadcaster == undefined
-    ) {
-      throw new Error('Address must be provided');
-    }
-
-    if (address && customSigner === undefined) {
-      throw new Error('Address must be used with customSigner');
-    }
+    assertInput<Msg[], StdTx, SyncTxBroadcastResult>(
+      customSigner,
+      customBroadcaster,
+      address,
+    );
 
     if (address && customSigner) {
       await this.assertUSTBalance(
@@ -282,13 +277,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    if (customSigner && address == undefined) {
-      throw new Error('Address must be provided');
-    }
-
-    if (address && customSigner === undefined) {
-      throw new Error('Address must be used with customSigner');
-    }
+    assertInput<Msg[], StdTx, SyncTxBroadcastResult>(
+      customSigner,
+      customBroadcaster,
+      address,
+    );
 
     address
       ? await this.assertAUSTBalance(withdrawOption.amount, address)
@@ -371,17 +364,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const taxFee = await Promise.all([this.getTax(options.amount)]);
 
-    if (customSigner && address === undefined) {
-      throw new Error('Address must be provided');
-    }
-
-    if (
-      address &&
-      customSigner === undefined &&
-      customBroadcaster === undefined
-    ) {
-      throw new Error('Address must be used with customSigner');
-    }
+    assertInput<Msg[], StdTx, SyncTxBroadcastResult>(
+      customSigner,
+      customBroadcaster,
+      address,
+    );
 
     switch (options.currency) {
       case DENOMS.UST: {
@@ -397,11 +384,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           .then(() =>
             customSigner
               ? createNativeSend(accAddress(address), {
-                  recipient: options.recipient,
+                  recipient: accAddress(options.recipient),
                   coin,
                 })
               : createNativeSend(this._account.key.accAddress, {
-                  recipient: options.recipient,
+                  recipient: accAddress(options.recipient),
                   coin,
                 }),
           )
@@ -441,14 +428,14 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           transferAUST = fabricateCw20Transfer({
             address: accAddress(address),
             amount: options.amount,
-            recipient: options.recipient,
+            recipient: accAddress(options.recipient),
             contract_address: this._addressProvider.aTerra(DENOMS.UST),
           });
         } else {
           transferAUST = fabricateCw20Transfer({
             address: this._account.key.accAddress,
             amount: options.amount,
-            recipient: options.recipient,
+            recipient: accAddress(options.recipient),
             contract_address: this._addressProvider.aTerra(DENOMS.UST),
           });
         }
