@@ -10,7 +10,7 @@ import { CustomBroadcaster } from './custom-broadcaster';
 export interface DepositOption
   extends CustomSigner<Msg[], StdTx>,
     CustomBroadcaster<Msg[], string>,
-    Loggable<Output | InProgress | OperationError> {
+    Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
   address?: string;
@@ -19,7 +19,7 @@ export interface DepositOption
 export interface WithdrawOption
   extends CustomSigner<Msg[], StdTx>,
     CustomBroadcaster<Msg[], string>,
-    Loggable<Output | InProgress | OperationError> {
+    Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
   address?: string;
@@ -28,7 +28,7 @@ export interface WithdrawOption
 export interface SendOption
   extends CustomSigner<Msg[] | MsgSend, StdTx>,
     CustomBroadcaster<Msg[], string>,
-    Loggable<Output | InProgress | OperationError> {
+    Loggable<Output | OperationError> {
   currency: DENOMS;
   recipient: string;
   amount: string;
@@ -48,13 +48,6 @@ export interface AnchorEarnOperations {
   market(options: QueryOption): Promise<MarketOutput>;
 }
 
-export interface InProgress {
-  type: 'in-progress';
-  chain: CHAINS;
-  tx_hash: string;
-  timestamp: Date;
-}
-
 export enum TxType {
   SEND = 'send',
   DEPOSIT = 'deposit',
@@ -68,6 +61,7 @@ export interface TxDetails {
   timestamp: Date;
   txHash: string;
 }
+
 export interface Output {
   chain: string;
   network: string;
