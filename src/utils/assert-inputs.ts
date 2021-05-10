@@ -1,16 +1,23 @@
-export function assertInput<T, K, V>(
+export function assertInput<T, K>(
   customSigner?: (tx: T) => Promise<K>,
-  customeBroadcaster?: (tx: K) => Promise<V>,
+  customBroadcaster?: (tx: T) => Promise<string>,
   address?: string,
 ) {
-  if (
-    customSigner &&
-    address === undefined &&
-    customeBroadcaster === undefined
-  ) {
+  if (customSigner && customBroadcaster) {
+    throw new Error(
+      'Either customSigner or customBroadcaster must be provided',
+    );
+  }
+  if ((customSigner || customBroadcaster) && address === undefined) {
     throw new Error('Address must be provided');
   }
-  if (address && customSigner === undefined) {
-    throw new Error('Address must be used with customSigner');
+  if (
+    address &&
+    customSigner === undefined &&
+    customBroadcaster === undefined
+  ) {
+    throw new Error(
+      'Address must be used with customSigner or customBroadcaster',
+    );
   }
 }

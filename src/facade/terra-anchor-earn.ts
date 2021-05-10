@@ -210,21 +210,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    assertInput<Msg[], StdTx, SyncTxBroadcastResult>(
-      customSigner,
-      customBroadcaster,
+    assertInput<Msg[], StdTx>(customSigner, customBroadcaster, address);
+
+    await this.assertUSTBalance(
+      depositOption.currency,
+      depositOption.amount,
       address,
     );
-
-    if (address && customSigner) {
-      await this.assertUSTBalance(
-        depositOption.currency,
-        depositOption.amount,
-        address,
-      );
-    } else {
-      await this.assertUSTBalance(depositOption.currency, depositOption.amount);
-    }
 
     const operation = new OperationImpl(
       fabricateMarketDepositStableCoin,
@@ -234,24 +226,42 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const taxFee = await Promise.all([this.getTax(depositOption.amount)]);
 
-    return Promise.resolve()
-      .then(() => operation.generateWithAddress(address))
-      .then((tx) =>
-        customSigner
-          ? customSigner(tx)
-          : operation.creatTx(this._account, {
-              gasPrices: this._gasConfig.gasPrices,
-              gasAdjustment: this._gasConfig.gasAdjustment,
-            }),
-      )
-      .then((signedTx: StdTx) =>
-        customBroadcaster
-          ? customBroadcaster(signedTx)
-          : sendSignedTransaction(this._lcd, signedTx),
-      )
-      .then((result: TxInfo | BlockTxBroadcastResult) => {
-        return this.getFinalResult(result, TxType.DEPOSIT, taxFee[0], loggable);
-      });
+    if (customBroadcaster) {
+      return Promise.resolve()
+        .then(() => operation.generateWithAddress(address))
+        .then((tx) =>
+          customBroadcaster(tx).then((result) => {
+            return this.getFinalOutput(
+              TxType.DEPOSIT,
+              taxFee[0],
+              undefined,
+              result,
+              loggable,
+            );
+          }),
+        );
+    } else {
+      return Promise.resolve()
+        .then(() => operation.generateWithAddress(address))
+        .then((tx) =>
+          customSigner
+            ? customSigner(tx)
+            : operation.creatTx(this._account, {
+                gasPrices: this._gasConfig.gasPrices,
+                gasAdjustment: this._gasConfig.gasAdjustment,
+              }),
+        )
+        .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
+        .then((result: TxInfo | BlockTxBroadcastResult) => {
+          return this.getFinalOutput(
+            TxType.DEPOSIT,
+            taxFee[0],
+            result,
+            undefined,
+            loggable,
+          );
+        });
+    }
   }
 
   /**
@@ -277,11 +287,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    assertInput<Msg[], StdTx, SyncTxBroadcastResult>(
-      customSigner,
-      customBroadcaster,
-      address,
-    );
+    assertInput<Msg[], StdTx>(customSigner, customBroadcaster, address);
 
     address
       ? await this.assertAUSTBalance(withdrawOption.amount, address)
@@ -318,30 +324,43 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       this._addressProvider,
     );
 
-    return Promise.resolve()
-      .then(() => operation.generateWithAddress(address))
-      .then((tx) =>
-        customSigner
-          ? customSigner(tx)
-          : operation.creatTx(this._account, {
-              gasPrices: this._gasConfig.gasPrices,
-              gasAdjustment: this._gasConfig.gasAdjustment,
-            }),
-      )
-      .then((signedTx: StdTx) =>
-        customBroadcaster
-          ? customBroadcaster(signedTx)
-          : sendSignedTransaction(this._lcd, signedTx),
-      )
-      .then((result) => {
-        return this.getFinalResult(
-          result,
-          TxType.WITHDRAW,
-          WITHDRAW_TAX_FEE,
-          loggable,
-          requestedAmount,
+    if (customBroadcaster) {
+      return Promise.resolve()
+        .then(() => operation.generateWithAddress(address))
+        .then((tx) =>
+          customBroadcaster(tx).then((result) => {
+            return this.getFinalOutput(
+              TxType.DEPOSIT,
+              WITHDRAW_TAX_FEE,
+              undefined,
+              result,
+              loggable,
+            );
+          }),
         );
-      });
+    } else {
+      return Promise.resolve()
+        .then(() => operation.generateWithAddress(address))
+        .then((tx) =>
+          customSigner
+            ? customSigner(tx)
+            : operation.creatTx(this._account, {
+                gasPrices: this._gasConfig.gasPrices,
+                gasAdjustment: this._gasConfig.gasAdjustment,
+              }),
+        )
+        .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
+        .then((result) => {
+          return this.getFinalOutput(
+            TxType.WITHDRAW,
+            WITHDRAW_TAX_FEE,
+            result,
+            undefined,
+            loggable,
+            requestedAmount,
+          );
+        });
+    }
   }
 
   /**
@@ -357,114 +376,19 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
    */
 
   async send(options: SendOption): Promise<OutputImpl | OperationError> {
-    const loggable = options.log;
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
     const address = options.address;
 
-    const taxFee = await Promise.all([this.getTax(options.amount)]);
-
-    assertInput<Msg[], StdTx, SyncTxBroadcastResult>(
-      customSigner,
-      customBroadcaster,
-      address,
-    );
+    assertInput<Msg[], StdTx>(customSigner, customBroadcaster, address);
 
     switch (options.currency) {
       case DENOMS.UST: {
-        const coin = new Coin('uusd', getMicroAmount(options.amount));
-        address
-          ? await this.assertUSTBalance(
-              DENOMS.UST,
-              options.amount,
-              accAddress(address),
-            )
-          : await this.assertUSTBalance(DENOMS.UST, options.amount);
-        return Promise.resolve()
-          .then(() =>
-            customSigner
-              ? createNativeSend(accAddress(address), {
-                  recipient: accAddress(options.recipient),
-                  coin,
-                })
-              : createNativeSend(this._account.key.accAddress, {
-                  recipient: accAddress(options.recipient),
-                  coin,
-                }),
-          )
-          .then((tx) =>
-            customSigner
-              ? customSigner([tx])
-              : createAndSignMsg(
-                  this._account,
-                  {
-                    gasAdjustment: this._gasConfig.gasAdjustment,
-                    gasPrices: this._gasConfig.gasPrices,
-                  },
-                  [tx],
-                ),
-          )
-          .then((signedTx: StdTx) =>
-            customBroadcaster
-              ? customBroadcaster(signedTx)
-              : sendSignedTransaction(this._lcd, signedTx),
-          )
-          .then((result) => {
-            return this.getFinalResult(
-              result,
-              TxType.SEND,
-              taxFee[0],
-              loggable,
-            );
-          });
+        return this.sendUSTHelper(options);
         break;
       }
       case DENOMS.AUST: {
-        address
-          ? this.assertAUSTBalance(options.amount, accAddress(address))
-          : this.assertUSTBalance(DENOMS.UST, options.amount);
-        let transferAUST: Msg[];
-        if (customSigner && address) {
-          transferAUST = fabricateCw20Transfer({
-            address: accAddress(address),
-            amount: options.amount,
-            recipient: accAddress(options.recipient),
-            contract_address: this._addressProvider.aTerra(DENOMS.UST),
-          });
-        } else {
-          transferAUST = fabricateCw20Transfer({
-            address: this._account.key.accAddress,
-            amount: options.amount,
-            recipient: accAddress(options.recipient),
-            contract_address: this._addressProvider.aTerra(DENOMS.UST),
-          });
-        }
-        return Promise.resolve()
-          .then(() =>
-            customSigner
-              ? customSigner(transferAUST)
-              : createAndSignMsg(
-                  this._account,
-                  {
-                    gasPrices: this._gasConfig.gasPrices,
-                    gasAdjustment: this._gasConfig.gasAdjustment,
-                  },
-                  transferAUST,
-                ),
-          )
-          .then((signedTx: StdTx) =>
-            customBroadcaster
-              ? customBroadcaster(signedTx)
-              : sendSignedTransaction(this._lcd, signedTx),
-          )
-          .then((result) => {
-            return this.getFinalResult(
-              result,
-              TxType.SENDAUST,
-              taxFee[0],
-              loggable,
-            );
-          });
+        return this.sendAUSTHelper(options);
         break;
       }
     }
@@ -808,14 +732,158 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     return result;
   }
 
-  private async getFinalResult(
-    txResult: SyncTxBroadcastResult,
+  private async sendUSTHelper(
+    options: SendOption,
+  ): Promise<OutputImpl | OperationError> {
+    const loggable = options.log;
+    const customSigner = options.customSigner;
+    const customBroadcaster = options.customBroadcaster;
+    const address = options.address;
+
+    const taxFee = await Promise.all([this.getTax(options.amount)]);
+
+    const coin = new Coin('uusd', getMicroAmount(options.amount));
+    address
+      ? await this.assertUSTBalance(
+          DENOMS.UST,
+          options.amount,
+          accAddress(address),
+        )
+      : await this.assertUSTBalance(DENOMS.UST, options.amount);
+    if (customBroadcaster) {
+      return Promise.resolve()
+        .then(() =>
+          createNativeSend(accAddress(address), {
+            recipient: accAddress(options.recipient),
+            coin,
+          }),
+        )
+        .then((tx) =>
+          customBroadcaster([tx]).then((result) => {
+            return this.getFinalOutput(
+              TxType.DEPOSIT,
+              WITHDRAW_TAX_FEE,
+              undefined,
+              result,
+              loggable,
+            );
+          }),
+        );
+    } else {
+      return Promise.resolve()
+        .then(() =>
+          customSigner
+            ? createNativeSend(accAddress(address), {
+                recipient: accAddress(options.recipient),
+                coin,
+              })
+            : createNativeSend(this._account.key.accAddress, {
+                recipient: accAddress(options.recipient),
+                coin,
+              }),
+        )
+        .then((tx) =>
+          customSigner
+            ? customSigner([tx])
+            : createAndSignMsg(
+                this._account,
+                {
+                  gasAdjustment: this._gasConfig.gasAdjustment,
+                  gasPrices: this._gasConfig.gasPrices,
+                },
+                [tx],
+              ),
+        )
+        .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
+        .then((result) => {
+          return this.getFinalOutput(
+            TxType.SEND,
+            taxFee[0],
+            result,
+            undefined,
+            loggable,
+          );
+        });
+    }
+  }
+
+  private async sendAUSTHelper(
+    options: SendOption,
+  ): Promise<OutputImpl | OperationError> {
+    const loggable = options.log;
+    const customSigner = options.customSigner;
+    const customBroadcaster = options.customBroadcaster;
+    const address = options.address;
+
+    const taxFee = await Promise.all([this.getTax(options.amount)]);
+
+    address
+      ? this.assertAUSTBalance(options.amount, accAddress(address))
+      : this.assertUSTBalance(DENOMS.UST, options.amount);
+    let transferAUST: Msg[];
+    if (customSigner || (customBroadcaster && address)) {
+      transferAUST = fabricateCw20Transfer({
+        address: accAddress(address),
+        amount: options.amount,
+        recipient: accAddress(options.recipient),
+        contract_address: this._addressProvider.aTerra(DENOMS.UST),
+      });
+    } else {
+      transferAUST = fabricateCw20Transfer({
+        address: this._account.key.accAddress,
+        amount: options.amount,
+        recipient: accAddress(options.recipient),
+        contract_address: this._addressProvider.aTerra(DENOMS.UST),
+      });
+    }
+
+    if (customBroadcaster) {
+      return Promise.resolve().then(() =>
+        customBroadcaster(transferAUST).then((result) => {
+          return this.getFinalOutput(
+            TxType.DEPOSIT,
+            WITHDRAW_TAX_FEE,
+            undefined,
+            result,
+            loggable,
+          );
+        }),
+      );
+    }
+    return Promise.resolve()
+      .then(() =>
+        customSigner
+          ? customSigner(transferAUST)
+          : createAndSignMsg(
+              this._account,
+              {
+                gasPrices: this._gasConfig.gasPrices,
+                gasAdjustment: this._gasConfig.gasAdjustment,
+              },
+              transferAUST,
+            ),
+      )
+      .then((signedTx: StdTx) => sendSignedTransaction(this._lcd, signedTx))
+      .then((result) => {
+        return this.getFinalOutput(
+          TxType.SENDAUST,
+          taxFee[0],
+          result,
+          undefined,
+          loggable,
+        );
+      });
+  }
+
+  private async getFinalOutput(
     type: TxType,
     taxFee: string,
+    txResult?: SyncTxBroadcastResult,
+    txHash?: string,
     loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
     requestedAmount?: string,
   ): Promise<OutputImpl | OperationError> {
-    if (isTxError(txResult)) {
+    if (txResult && isTxError(txResult)) {
       const result = {
         type: type,
         chain: CHAINS.TERRA,
@@ -826,10 +894,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       }
       return result;
     } else {
+      const hash = txHash ? txHash : txResult.txhash;
       return await new Promise((resolve) => {
         const interval = setInterval(() => {
           this._lcd.tx
-            .txInfo(txResult.txhash)
+            .txInfo(hash)
             .then((result) => {
               clearInterval(interval);
               const output = this.generateOutput(
