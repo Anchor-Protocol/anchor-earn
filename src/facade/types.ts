@@ -4,7 +4,13 @@ import { MarketOutput } from './market-query-output';
 import { DENOMS } from '../address-provider';
 import { Loggable } from './loggable';
 import { CustomSigner } from './custom-signer';
-import { Msg, MsgSend, StdTx } from '@terra-money/terra.js';
+import {
+  Msg,
+  MsgSend,
+  StdTx,
+  LCDClient,
+  LCDClientConfig,
+} from '@terra-money/terra.js';
 import { CustomBroadcaster } from './custom-broadcaster';
 
 export interface DepositOption
@@ -88,3 +94,5 @@ export enum NETWORKS {
   MAINNET,
   TESTNET,
 }
+
+export { Msg, StdTx, LCDClient, LCDClientConfig };
