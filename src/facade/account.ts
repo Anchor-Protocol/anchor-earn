@@ -2,6 +2,7 @@ import { AccAddress, MnemonicKey, Wallet } from '@terra-money/terra.js';
 import { Parse } from '../utils';
 import generateTerraAccessToken = Parse.generateTerraAccessToken;
 import { JSONSerializable } from '../utils/json';
+import { CHAINS } from './types';
 
 export class Account extends JSONSerializable<Account.Data> {
   accAddress: AccAddress;
@@ -9,13 +10,17 @@ export class Account extends JSONSerializable<Account.Data> {
   privateKey: Buffer;
   MnemonicKey: string;
 
-  constructor() {
+  constructor(chain: CHAINS) {
     super();
-    const account = new MnemonicKey();
-    this.accAddress = account.accAddress;
-    this.publicKey = account.accPubKey;
-    this.privateKey = account.privateKey;
-    this.MnemonicKey = account.mnemonic;
+    switch (chain) {
+      case CHAINS.TERRA: {
+        const account = new MnemonicKey();
+        this.accAddress = account.accAddress;
+        this.publicKey = account.accPubKey;
+        this.privateKey = account.privateKey;
+        this.MnemonicKey = account.mnemonic;
+      }
+    }
   }
 
   toData(): Account.Data {
