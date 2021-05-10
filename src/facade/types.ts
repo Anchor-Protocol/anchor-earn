@@ -54,6 +54,8 @@ export interface AnchorEarnOperations {
   market(options: QueryOption): Promise<MarketOutput>;
 }
 
+/// TxType are send, withdraw and deposit.
+/// SENDAUST usage is only for processing logs.
 export enum TxType {
   SEND = 'send',
   DEPOSIT = 'deposit',

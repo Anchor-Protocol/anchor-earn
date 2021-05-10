@@ -38,7 +38,7 @@ export class OutputImpl
     requestedAmount?: string,
   ) {
     super();
-    this.type = type;
+    this.type = type === TxType.SENDAUST ? TxType.SEND : type;
     this.network = network;
     this.chain = chain;
 
