@@ -658,7 +658,7 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      mnemonicKey:
+      mnemonic:
         'jungle asthma machine bring result credit wisdom dinosaur office book reopen ladder dune gadget choice insane festival inspire drive female speed evil wreck acid',
     });
 
@@ -1016,7 +1016,7 @@ describe('anchor-earn', () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      mnemonicKey:
+      mnemonic:
         'carpet glue angle people endorse thunder unknown fly choose fat dash hurt jeans lottery omit reject immense vocal hockey slide loop episode host comic',
     });
     await anchorEarn.withdraw({

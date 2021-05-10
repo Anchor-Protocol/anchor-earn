@@ -62,10 +62,10 @@ Account {
     acc_address: 'terra15kwnsu3a539l8l6pcs6yspzas7urrtsgs4w5v4',
     public_key: 'terrapub1addwnpepq2wc706a537ct954wfxxxwe8yhrqpuwxs2ejykya9jadwk0jj3ud5935v95',
     private_key: 'TERRA_m2rIfcnwpIZXlxrdjpcSj7VOZHoRj8Sc1Wv8C9F09vY=',
-    mnemonic_key: 'weird rent soft alien write globe october wish arena cream agree toe gain chunk club clip green night hobby keep void garden help diagram'
+    mnemonic: 'weird rent soft alien write globe october wish arena cream agree toe gain chunk club clip green night hobby keep void garden help diagram'
 }
 ```
-`private_key` and `mnemonic_key` are essential for later usage. 
+`private_key` and `mnemonic` are essential for later usage. 
 
 If a user wants to use the logged version of `private_key`, the one that the user gets from `toData()` function, for `AnchorEarn` construction, they can utilize the following `Parser` function:
 ```ts
@@ -214,7 +214,7 @@ Anchor Earn facilitates a custom broadcast. This can be helpful in the case of a
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
       network: NETWORKS.TESTNET,
-      mnemonicKey:
+      mnemonic:
         '...',
 });
 await anchorEarn.withdraw({

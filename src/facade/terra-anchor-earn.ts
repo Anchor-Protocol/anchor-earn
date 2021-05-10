@@ -91,7 +91,7 @@ interface GasConfig {
  * The default network is NETWORKS.MAINNET.
  * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
- * @param {MnemonicKey} The user's MnemonicKey key. It will be generated when an account is created.
+ * @param {mnemonic} The user's mnemonic key. It will be generated when an account is created.
  * @param {address}: Client’s Terra address. It can be only used for queries.
  *
  * @example
@@ -104,7 +104,7 @@ interface GasConfig {
 interface AnchorEarnOptions {
   network?: NETWORKS;
   privateKey?: Buffer;
-  mnemonicKey?: string;
+  mnemonic?: string;
   gasConfig?: GasConfig;
   address?: string;
 }
@@ -169,8 +169,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       this._lcd = new LCDClient(tequilaDefaultConfig.lcd);
     }
 
-    if (options.mnemonicKey) {
-      const key = new MnemonicKey({ mnemonic: options.mnemonicKey });
+    if (options.mnemonic) {
+      const key = new MnemonicKey({ mnemonic: options.mnemonic });
       this._account = this._lcd.wallet(key);
     }
 

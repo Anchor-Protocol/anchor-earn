@@ -8,7 +8,7 @@ export class Account extends JSONSerializable<Account.Data> {
   accAddress: AccAddress;
   publicKey: string;
   privateKey: Buffer;
-  MnemonicKey: string;
+  mnemonic: string;
 
   constructor(chain: CHAINS) {
     super();
@@ -18,7 +18,7 @@ export class Account extends JSONSerializable<Account.Data> {
         this.accAddress = account.accAddress;
         this.publicKey = account.accPubKey;
         this.privateKey = account.privateKey;
-        this.MnemonicKey = account.mnemonic;
+        this.mnemonic = account.mnemonic;
       }
     }
   }
@@ -28,7 +28,7 @@ export class Account extends JSONSerializable<Account.Data> {
       acc_address: this.accAddress.toString(),
       public_key: this.publicKey,
       private_key: generateTerraAccessToken(this.privateKey),
-      mnemonic_key: this.MnemonicKey,
+      mnemonic: this.mnemonic,
     };
   }
 
@@ -42,7 +42,7 @@ export namespace Account {
     acc_address: AccAddress;
     public_key: string;
     private_key: string;
-    mnemonic_key: string;
+    mnemonic: string;
   }
 }
 

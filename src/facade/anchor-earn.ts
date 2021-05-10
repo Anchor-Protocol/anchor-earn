@@ -19,7 +19,7 @@ export interface AnchorEarnOption {
   chain: CHAINS;
   network: NETWORKS;
   privateKey?: Buffer | any;
-  mnemonicKey?: string | any;
+  mnemonic?: string | any;
   address?: string;
 }
 
@@ -28,7 +28,7 @@ export interface AnchorEarnOption {
  * @param {NETWORKS} the chain networks: It Could be either NETWORKS.TESTNET and NETWORKS.MAINNET.
  * The default network is NETWORKS.MAINNET.
  * @param {privateKey} chain account private key.
- * @param {mnemonicKey} list of words that is used to retrieve private key.
+ * @param {mnemonic} list of words that is used to retrieve private key.
  * @param {address}: Client’s Terra address. It can be only used for queries.
  *
  * @example
@@ -47,7 +47,7 @@ export class AnchorEarn implements AnchorEarnOperations {
         this.earn = new TerraAnchorEarn({
           network: options.network,
           privateKey: options.privateKey as Buffer,
-          mnemonicKey: options.mnemonicKey as string,
+          mnemonic: options.mnemonic as string,
           address: options.address,
         });
       }
