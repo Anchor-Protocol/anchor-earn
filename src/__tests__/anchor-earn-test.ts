@@ -55,6 +55,26 @@ describe('anchor-earn', () => {
       .catch((e: Error) => {
         expect(e.message).toEqual('Insufficient ust balance');
       });
+
+    //address: terra17jxhfjl9ty2xunz2cgv4cgy2ah4s8um4c6uwqt
+    const account2 = new MnemonicKey({
+      mnemonic:
+        'guide cheap phone best option coffee tonight ocean exchange skull cement salad concert urban course drastic bright pool soap actual duck correct body tomorrow',
+    });
+
+    const anchorEarn2 = new AnchorEarn({
+      chain: CHAINS.TERRA,
+      network: NETWORKS.TESTNET,
+      privateKey: account2.privateKey,
+    });
+    anchorEarn2
+      .deposit({
+        amount: '10000000',
+        currency: DENOMS.UST,
+      })
+      .catch((e: Error) => {
+        expect(e.message).toContain('Insufficient ust balance');
+      });
   });
 
   it('deposit-custom-signer', async () => {

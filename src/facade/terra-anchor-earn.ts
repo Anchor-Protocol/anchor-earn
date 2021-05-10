@@ -646,7 +646,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     const userRequest = Parse.getMicroAmount(requestedAmount);
 
-    if (ustBalance.amount < userRequest) {
+    if (userRequest.greaterThan(ustBalance.amount)) {
       throw new Error(
         `Insufficient ust balance ${userRequest.toString()}> ${ustBalance.toString()}. Cannot deposit`,
       );
@@ -672,7 +672,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     if (austBalance.balance === '0' || austBalance.balance === undefined) {
       throw new Error(`There is no deposit for the user`);
     }
-    if (userRequest.greaterThan(new Int(austBalance.balance))) {
+    if (userRequest.greaterThan(austBalance.balance)) {
       throw new Error(
         `Cannot withdraw more than balance. ${userRequest.toString()} > ${
           austBalance.balance
