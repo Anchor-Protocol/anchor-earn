@@ -1,7 +1,8 @@
 import { BlockTxBroadcastResult, Dec, isTxError } from '@terra-money/terra.js';
-import { CHAINS, Output, STATUS, TxDetails, TxType } from './types';
+import { OperationType } from './types';
 import { Parse } from '../utils/parse-input';
 import { JSONSerializable } from '../utils/json';
+import { CHAINS, Output, STATUS, TxDetails, TxType } from './output';
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import processLog = Parse.processLog;
 import subNaturalDecimals = Parse.subNaturalDecimals;
@@ -10,13 +11,14 @@ const DEFAULT_DEDUCTED_TAX = '0';
 
 export interface OperationError {
   type: TxType;
+  network: string;
   chain: CHAINS;
   status: STATUS;
   error_msg: string;
 }
 
-export class OutputImpl
-  extends JSONSerializable<OutputImpl.Data>
+export class TxOutput
+  extends JSONSerializable<TxOutput.Data>
   implements Output {
   chain: string;
   network: string;
@@ -30,7 +32,7 @@ export class OutputImpl
 
   constructor(
     txResult: BlockTxBroadcastResult,
-    type: TxType,
+    type: OperationType,
     chain: string,
     network: string,
     taxFee: string,
@@ -38,7 +40,7 @@ export class OutputImpl
     requestedAmount?: string,
   ) {
     super();
-    this.type = type;
+    this.type = getTxType(type);
     this.network = network;
     this.chain = chain;
 
@@ -49,6 +51,7 @@ export class OutputImpl
       this.txDetails = [
         {
           chain: chain,
+          network: network,
           height: txResult.height,
           timestamp: new Date(),
           txHash: txResult.txhash,
@@ -64,7 +67,7 @@ export class OutputImpl
     }
   }
 
-  public toData(): OutputImpl.Data {
+  public toData(): TxOutput.Data {
     return {
       type: this.type,
       status: this.status,
@@ -79,7 +82,7 @@ export class OutputImpl
   }
 }
 
-export namespace OutputImpl {
+export namespace TxOutput {
   export interface Data {
     type: string;
     status: string;
@@ -104,4 +107,25 @@ function computeTax(
       .add(gasPrice * gasWanted + 1)
       .toString(),
   ).concat(' UST');
+}
+
+export function getTxType(type: OperationType): TxType {
+  switch (type) {
+    case OperationType.DEPOSIT: {
+      return TxType.DEPOSIT;
+      break;
+    }
+    case OperationType.SEND: {
+      return TxType.SEND;
+      break;
+    }
+    case OperationType.SENDAUST: {
+      return TxType.SEND;
+      break;
+    }
+    case OperationType.WITHDRAW: {
+      return TxType.WITHDRAW;
+      break;
+    }
+  }
 }

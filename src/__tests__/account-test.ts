@@ -1,8 +1,8 @@
-import { Account } from '../facade/account';
+import { Account, CHAINS } from '../facade';
 
 describe('account', () => {
   it('decode', () => {
-    const account = new Account();
+    const account = new Account(CHAINS.TERRA);
     console.log(account.toData());
   });
 });

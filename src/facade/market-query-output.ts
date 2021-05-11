@@ -1,4 +1,5 @@
 import { JSONSerializable } from '../utils/json';
+import { CHAINS } from './output';
 
 export interface MarketEntry {
   currency: string;
@@ -7,13 +8,20 @@ export interface MarketEntry {
 }
 
 export class MarketOutput extends JSONSerializable<MarketOutput.Data> {
+  chain: CHAINS;
   network: string;
   height: number;
   timestamp: Date;
   markets: MarketEntry[];
 
-  constructor(network: string, height: number, markets: MarketEntry[]) {
+  constructor(
+    chain: CHAINS,
+    network: string,
+    height: number,
+    markets: MarketEntry[],
+  ) {
     super();
+    this, (this.chain = chain);
     this.network = network;
     this.height = height;
     this.markets = markets;
@@ -22,6 +30,7 @@ export class MarketOutput extends JSONSerializable<MarketOutput.Data> {
 
   public toData(): MarketOutput.Data {
     return {
+      chain: this.chain,
       network: this.network,
       height: this.height,
       timestamp: this.timestamp,
@@ -32,6 +41,7 @@ export class MarketOutput extends JSONSerializable<MarketOutput.Data> {
 
 export namespace MarketOutput {
   export interface Data {
+    chain: CHAINS;
     network: string;
     height: number;
     timestamp: Date;

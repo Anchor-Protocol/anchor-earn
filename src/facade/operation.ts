@@ -9,13 +9,13 @@ import {
   StdTx,
   Wallet,
 } from '@terra-money/terra.js';
-import { Fabricator, OmitAddress } from '../fabricators/types';
+import { Fabricator, OmitAddress } from '../fabricators';
 import { AddressProvider } from '../address-provider';
 import {
   BlockTxBroadcastResult,
   SyncTxBroadcastResult,
 } from '@terra-money/terra.js/dist/client/lcd/api/TxAPI';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import accAddress = Parse.accAddress;
 
 export interface OperationGasParameters {
@@ -101,15 +101,8 @@ export class OperationImpl<FabricatorInputType> implements Operation {
 export async function sendSignedTransaction(
   lcd: LCDClient,
   tx: StdTx,
-): Promise<BlockTxBroadcastResult> {
-  return Promise.resolve()
-    .then(() => lcd.tx.broadcast(tx))
-    .then(async (result) => {
-      await Promise.resolve().then(
-        () => new Promise((resolve) => setTimeout(resolve, 6000)),
-      );
-      return result;
-    });
+): Promise<SyncTxBroadcastResult> {
+  return await lcd.tx.broadcastSync(tx);
 }
 
 export function createNativeSend(

@@ -1,39 +1,40 @@
-import { OperationError } from './output-impl';
+import { OperationError } from './tx-output';
 import { BalanceOutput } from './user-query-output';
 import { MarketOutput } from './market-query-output';
 import { DENOMS } from '../address-provider';
 import { Loggable } from './loggable';
 import { CustomSigner } from './custom-signer';
-import { Msg, StdTx } from '@terra-money/terra.js';
+import { Msg, MsgSend, StdTx } from '@terra-money/terra.js';
+import { CustomBroadcaster } from './custom-broadcaster';
+import { Output } from './output';
 
 export interface DepositOption
-  extends CustomSigner<Msg[] | any, StdTx | any>,
-    Loggable<Output | InProgress | OperationError> {
+  extends CustomSigner<Msg[], StdTx>,
+    CustomBroadcaster<Msg[], string>,
+    Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
-  address?: string;
 }
 
 export interface WithdrawOption
-  extends CustomSigner<Msg[] | any, StdTx | any>,
-    Loggable<Output | InProgress | OperationError> {
+  extends CustomSigner<Msg[], StdTx>,
+    CustomBroadcaster<Msg[], string>,
+    Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
-  address?: string;
 }
 
 export interface SendOption
-  extends CustomSigner<Msg[] | any, StdTx | any>,
-    Loggable<Output | InProgress | OperationError> {
+  extends CustomSigner<Msg[] | MsgSend, StdTx>,
+    CustomBroadcaster<Msg[], string>,
+    Loggable<Output | OperationError> {
   currency: DENOMS;
   recipient: string;
   amount: string;
-  address?: string;
 }
 
 export interface QueryOption {
   currencies: DENOMS[];
-  address?: string;
 }
 
 export interface AnchorEarnOperations {
@@ -44,49 +45,9 @@ export interface AnchorEarnOperations {
   market(options: QueryOption): Promise<MarketOutput>;
 }
 
-export interface InProgress {
-  type: 'in-progress';
-  chain: CHAINS;
-  tx_hash: string;
-  timestamp: Date;
-}
-
-export enum TxType {
+export enum OperationType {
   SEND = 'send',
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
-  SENDAUST = 'sendAUST',
-}
-
-export interface TxDetails {
-  chain: string;
-  height: number;
-  timestamp: Date;
-  txHash: string;
-}
-export interface Output {
-  chain: string;
-  network: string;
-  status: STATUS;
-  type: TxType;
-  currency: string;
-  amount: string;
-  txDetails: TxDetails[];
-  txFee: string;
-  deductedTax?: string;
-}
-
-export enum STATUS {
-  SUCCESSFUL = 'successful',
-  UNSUCCESSFUL = 'unsuccessful',
-}
-
-export enum CHAINS {
-  TERRA = 'terra',
-  ETH = 'ethereum',
-}
-
-export enum NETWORKS {
-  MAINNET,
-  TESTNET,
+  SENDAUST = 'send-aust',
 }

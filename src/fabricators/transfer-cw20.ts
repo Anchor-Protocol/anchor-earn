@@ -1,11 +1,12 @@
 import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import accAddress = Parse.accAddress;
 import dec = Parse.dec;
+import { AddressProvider, DENOMS } from '../address-provider';
 
 interface Option {
   address: string;
-  contract_address: string;
+  currency: DENOMS;
   amount: string;
   recipient: string;
 }
@@ -18,12 +19,13 @@ interface Option {
  */
 export const fabricateCw20Transfer = ({
   address,
-  contract_address,
+  currency,
   amount,
   recipient,
-}: Option): MsgExecuteContract[] => {
+}: Option) => (addressProvider: AddressProvider): MsgExecuteContract[] => {
+  const aTerra = addressProvider.aTerra(currency);
   return [
-    new MsgExecuteContract(address, contract_address, {
+    new MsgExecuteContract(address, aTerra, {
       transfer: {
         recipient: accAddress(recipient),
         amount: new Int(new Dec(dec(amount)).mul(1000000)).toString(),

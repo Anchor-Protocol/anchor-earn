@@ -1,7 +1,7 @@
 import { Dec, Int, MsgExecuteContract } from '@terra-money/terra.js';
-import { AddressProvider } from '../address-provider/provider';
+import { AddressProvider } from '../address-provider';
 import { DENOMS } from '../address-provider';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import accAddress = Parse.accAddress;
 import dec = Parse.dec;
 
