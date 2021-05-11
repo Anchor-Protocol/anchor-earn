@@ -1,9 +1,6 @@
 import {
   AnchorEarnOperations,
-  CHAINS,
   DepositOption,
-  NETWORKS,
-  Output,
   QueryOption,
   SendOption,
   WithdrawOption,
@@ -13,6 +10,9 @@ import {
   OperationError,
   BalanceOutput,
   TerraAnchorEarn,
+  CHAINS,
+  NETWORKS,
+  Output,
 } from '../facade';
 
 export interface AnchorEarnOption {
@@ -25,8 +25,8 @@ export interface AnchorEarnOption {
 
 /**
  * @param {CHAINS} The blockchain that user wants to execute his message in.
- * @param {NETWORKS} the chain networks: It Could be either NETWORKS.TESTNET and NETWORKS.MAINNET.
- * The default network is NETWORKS.MAINNET.
+ * @param {NETWORKS} the chain networks: It Could be either NETWORKS.TEQUILA_0004 and NETWORKS.COLUMBUS_4.
+ * The default network is NETWORKS.COLUMBUS_4.
  * @param {privateKey} chain account private key.
  * @param {mnemonic} list of words that is used to retrieve private key.
  * @param {address}: Client’s Terra address. It can be only used for queries.

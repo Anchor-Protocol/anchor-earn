@@ -88,7 +88,7 @@ To create the `AnchorEarn` object.
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
 });
 ```
@@ -103,7 +103,7 @@ const account = new MnemonicKey({
 
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
 });
 ```
@@ -154,7 +154,7 @@ To get the current state of an account, use the following example:
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
     });
 const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
@@ -205,7 +205,7 @@ Anchor Earn facilitates a custom broadcast. This can be helpful in the case of a
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       mnemonic:
         '...',
 });

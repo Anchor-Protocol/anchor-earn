@@ -7,7 +7,7 @@ import {
   TxLog,
 } from '@terra-money/terra.js';
 import { DENOMS } from '../address-provider';
-import { TxType } from '../facade/types';
+import { OperationType } from '../facade/types';
 
 export const TERRA = 'TERRA_';
 export const UST = 'UST';
@@ -105,10 +105,13 @@ export namespace Parse {
     return input;
   }
 
-  export function processLog(txLogs: TxLog[], type: TxType): [string, string] {
+  export function processLog(
+    txLogs: TxLog[],
+    type: OperationType,
+  ): [string, string] {
     let result;
     switch (type) {
-      case TxType.DEPOSIT: {
+      case OperationType.DEPOSIT: {
         txLogs[0].events.forEach((e) => {
           if (e.type === 'transfer') {
             e.attributes.forEach((k) => {
@@ -121,7 +124,7 @@ export namespace Parse {
         });
         break;
       }
-      case TxType.WITHDRAW: {
+      case OperationType.WITHDRAW: {
         txLogs[0].events.forEach((e) => {
           if (e.type === 'transfer') {
             e.attributes.forEach((k) => {
@@ -134,7 +137,7 @@ export namespace Parse {
         });
         break;
       }
-      case TxType.SEND: {
+      case OperationType.SEND: {
         txLogs[0].events.forEach((e) => {
           if (e.type === 'transfer') {
             e.attributes.forEach((k) => {
@@ -147,12 +150,12 @@ export namespace Parse {
         });
         break;
       }
-      case TxType.SENDAUST: {
+      case OperationType.SENDAUST: {
         txLogs[0].events.forEach((e) => {
           if (e.type === 'from_contract') {
             e.attributes.forEach((k) => {
               if (k.key === 'amount') {
-                result = [k.value, aUST];
+                result = [getNaturalDecimals(k.value), aUST];
               }
             });
           }

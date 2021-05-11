@@ -4,14 +4,9 @@ import { MarketOutput } from './market-query-output';
 import { DENOMS } from '../address-provider';
 import { Loggable } from './loggable';
 import { CustomSigner } from './custom-signer';
-import {
-  Msg,
-  MsgSend,
-  StdTx,
-  LCDClient,
-  LCDClientConfig,
-} from '@terra-money/terra.js';
+import { Msg, MsgSend, StdTx } from '@terra-money/terra.js';
 import { CustomBroadcaster } from './custom-broadcaster';
+import { Output } from './output';
 
 export interface DepositOption
   extends CustomSigner<Msg[], StdTx>,
@@ -19,7 +14,6 @@ export interface DepositOption
     Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
-  address?: string;
 }
 
 export interface WithdrawOption
@@ -28,7 +22,6 @@ export interface WithdrawOption
     Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
-  address?: string;
 }
 
 export interface SendOption
@@ -38,12 +31,10 @@ export interface SendOption
   currency: DENOMS;
   recipient: string;
   amount: string;
-  address?: string;
 }
 
 export interface QueryOption {
   currencies: DENOMS[];
-  address?: string;
 }
 
 export interface AnchorEarnOperations {
@@ -54,47 +45,9 @@ export interface AnchorEarnOperations {
   market(options: QueryOption): Promise<MarketOutput>;
 }
 
-/// TxType are send, withdraw and deposit.
-/// SENDAUST usage is only for processing logs.
-export enum TxType {
+export enum OperationType {
   SEND = 'send',
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
-  SENDAUST = 'sendAUST',
+  SENDAUST = 'send-aust',
 }
-
-export interface TxDetails {
-  chain: string;
-  height: number;
-  timestamp: Date;
-  txHash: string;
-}
-
-export interface Output {
-  chain: string;
-  network: string;
-  status: STATUS;
-  type: TxType;
-  currency: string;
-  amount: string;
-  txDetails: TxDetails[];
-  txFee: string;
-  deductedTax?: string;
-}
-
-export enum STATUS {
-  SUCCESSFUL = 'successful',
-  UNSUCCESSFUL = 'unsuccessful',
-}
-
-export enum CHAINS {
-  TERRA = 'terra',
-  ETH = 'ethereum',
-}
-
-export enum NETWORKS {
-  MAINNET,
-  TESTNET,
-}
-
-export { Msg, StdTx, LCDClient, LCDClientConfig };

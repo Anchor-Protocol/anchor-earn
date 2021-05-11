@@ -11,6 +11,8 @@ import { DENOMS } from '../address-provider';
 
 //accounts were created for test purposes and they have 5000ust and 5000aust.
 
+//TODO: Using macks for all lcd touches.
+
 describe('anchor-earn', () => {
   it('deposit', async () => {
     //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
@@ -21,7 +23,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
 
@@ -35,7 +37,7 @@ describe('anchor-earn', () => {
     }
   });
 
-  it('failed-deposit', () => {
+  it('failed-deposit', async () => {
     //address: terra1arf9420dd8suu4a7cmw6wap5zfjt7wxaadrt74
     const account = new MnemonicKey({
       mnemonic:
@@ -44,10 +46,11 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
-    anchorEarn
+
+    await anchorEarn
       .deposit({
         amount: '10000000',
         currency: DENOMS.UST,
@@ -64,10 +67,10 @@ describe('anchor-earn', () => {
 
     const anchorEarn2 = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account2.privateKey,
     });
-    anchorEarn2
+    await anchorEarn2
       .deposit({
         amount: '10000000',
         currency: DENOMS.UST,
@@ -81,7 +84,8 @@ describe('anchor-earn', () => {
     //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
     const deposit = await anchorEarn.deposit({
       amount: '0.01',
@@ -109,43 +113,11 @@ describe('anchor-earn', () => {
           gasPrices: { uusd: 0.15 },
         });
       },
-      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
     if (deposit instanceof TxOutput) {
       console.log(deposit.toData());
     }
-
-    // signer is different from the address
-    // signer is terra1chxrckyqauguv268kg0vjp9qrzefv8vff392x6
-    await anchorEarn.deposit({
-      amount: '0.01',
-      currency: DENOMS.UST,
-      log: (data) => {
-        console.log(data);
-      },
-      customSigner: async (tx: Msg[]) => {
-        const account = new MnemonicKey({
-          mnemonic:
-            'twice monitor exact gaze ugly spread taste prefer system latin remain swarm pause rubber lens jump young sheriff float fish second royal talk have',
-        });
-
-        const wallet = new Wallet(
-          new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
-          }),
-          account,
-        );
-
-        return await wallet.createAndSignTx({
-          msgs: tx,
-          gasAdjustment: 2,
-          gasPrices: { uusd: 0.15 },
-        });
-      },
-      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
-    });
 
     await anchorEarn
       .deposit({
@@ -174,13 +146,12 @@ describe('anchor-earn', () => {
             gasPrices: { uusd: 0.15 },
           });
         },
-        address: 'invalid address',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Invalid Terra account address:'),
       );
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -212,27 +183,25 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be provided'),
       );
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
         log: (data) => {
           console.log(data);
         },
-        address: 'some address',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Address must be used with customSigner'),
       );
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
         log: (data) => {
           console.log(data);
         },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Address must be used with customSigner'),
@@ -243,7 +212,8 @@ describe('anchor-earn', () => {
     //address: terra1cd8sj2dfmcjcujafwx59yuk2xd9j8e86c2pyva
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra1cd8sj2dfmcjcujafwx59yuk2xd9j8e86c2pyva',
     });
 
     await anchorEarn.deposit({
@@ -276,12 +246,11 @@ describe('anchor-earn', () => {
           return result.txhash;
         });
       },
-      address: 'terra1cd8sj2dfmcjcujafwx59yuk2xd9j8e86c2pyva',
     });
   });
 
   // test amount assertion
-  it('deposit-assert-input-1', () => {
+  it('deposit-assert-input-1', async () => {
     //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
     const account = new MnemonicKey({
       mnemonic:
@@ -290,11 +259,11 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: 'invalid',
         currency: DENOMS.UST,
@@ -305,20 +274,20 @@ describe('anchor-earn', () => {
   });
 
   // test input assertion except amount
-  it('deposit-assert-input-2', () => {
+  it('deposit-assert-input-2', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
         log: (data) => {
           console.log(data);
         },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       })
       .catch((e: Error) =>
         expect(e.message).toContain(
@@ -326,7 +295,7 @@ describe('anchor-earn', () => {
         ),
       );
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
@@ -358,14 +327,13 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be provided'),
       );
 
-    anchorEarn
+    await anchorEarn
       .deposit({
         amount: '0.01',
         currency: DENOMS.UST,
         log: (data) => {
           console.log(data);
         },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Address must be used with customSigner'),
@@ -380,7 +348,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
     const sendAust = await anchorEarn.send({
@@ -398,7 +366,8 @@ describe('anchor-earn', () => {
     //address: terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
     });
     await anchorEarn.send({
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
@@ -427,55 +396,7 @@ describe('anchor-earn', () => {
           gasPrices: { uusd: 0.15 },
         });
       },
-      address: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
     });
-
-    await anchorEarn
-      .send({
-        recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
-        amount: '0.01',
-        currency: DENOMS.AUST,
-        log: (data) => {
-          console.log(data);
-        },
-        address: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
-      })
-      .catch((e: Error) =>
-        expect(e.message).toContain('Address must be used with customSigner'),
-      );
-
-    await anchorEarn
-      .send({
-        recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
-        amount: '0.01',
-        currency: DENOMS.AUST,
-        log: (data) => {
-          console.log(data);
-        },
-        customSigner: async (tx: Msg[]) => {
-          const account = new MnemonicKey({
-            mnemonic:
-              'frozen nation brand marriage tuition return symbol creek father forward invite invite eternal debris solve popular life decorate effort ranch wrist galaxy rich guilt',
-          });
-
-          const wallet = new Wallet(
-            new LCDClient({
-              URL: 'https://tequila-lcd.terra.dev',
-              chainID: 'tequila-0004',
-            }),
-            account,
-          );
-
-          return await wallet.createAndSignTx({
-            msgs: tx,
-            gasAdjustment: 2,
-            gasPrices: { uusd: 0.15 },
-          });
-        },
-      })
-      .catch((e: Error) =>
-        expect(e.message).toEqual('Address must be provided'),
-      );
   });
 
   // test amount assertion
@@ -488,7 +409,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
 
@@ -504,7 +425,7 @@ describe('anchor-earn', () => {
   });
 
   // test input assertion except amount
-  it('send-aust-assert-input', () => {
+  it('send-aust-assert-input', async () => {
     //address: terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj
     const account = new MnemonicKey({
       mnemonic:
@@ -513,11 +434,11 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
 
-    anchorEarn
+    await anchorEarn
       .send({
         currency: DENOMS.AUST,
         recipient: 'invalid',
@@ -525,72 +446,6 @@ describe('anchor-earn', () => {
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Invalid Terra account address'),
-      );
-
-    const anchorEarn2 = new AnchorEarn({
-      chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
-    });
-
-    anchorEarn2
-      .send({
-        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
-        amount: '0.01',
-        currency: DENOMS.AUST,
-        log: (data) => {
-          console.log(data);
-        },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
-      })
-      .catch((e: Error) =>
-        expect(e.message).toContain('Address must be used with customSigner'),
-      );
-
-    anchorEarn2
-      .send({
-        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
-        amount: '0.01',
-        currency: DENOMS.AUST,
-        log: (data) => {
-          console.log(data);
-        },
-        customSigner: async (tx: Msg[]) => {
-          const account = new MnemonicKey({
-            mnemonic:
-              'frozen nation brand marriage tuition return symbol creek father forward invite invite eternal debris solve popular life decorate effort ranch wrist galaxy rich guilt',
-          });
-
-          const wallet = new Wallet(
-            new LCDClient({
-              URL: 'https://tequila-lcd.terra.dev',
-              chainID: 'tequila-0004',
-            }),
-            account,
-          );
-
-          return await wallet.createAndSignTx({
-            msgs: tx,
-            gasAdjustment: 2,
-            gasPrices: { uusd: 0.15 },
-          });
-        },
-      })
-      .catch((e: Error) =>
-        expect(e.message).toEqual('Address must be provided'),
-      );
-
-    anchorEarn2
-      .send({
-        recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
-        amount: '0.01',
-        currency: DENOMS.AUST,
-        log: (data) => {
-          console.log(data);
-        },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
-      })
-      .catch((e: Error) =>
-        expect(e.message).toContain('Address must be used with customSigner'),
       );
   });
 
@@ -602,7 +457,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
     const sendUst = await anchorEarn.send({
@@ -620,7 +475,8 @@ describe('anchor-earn', () => {
     //address: terra1jtuzr0k9765tjnmqxm4c2y2ufrld6htwgfznyn
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra1jtuzr0k9765tjnmqxm4c2y2ufrld6htwgfznyn',
     });
     await anchorEarn.send({
       recipient: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
@@ -649,7 +505,6 @@ describe('anchor-earn', () => {
           gasPrices: { uusd: 0.15 },
         });
       },
-      address: 'terra1jtuzr0k9765tjnmqxm4c2y2ufrld6htwgfznyn',
     });
   });
 
@@ -657,7 +512,7 @@ describe('anchor-earn', () => {
     //address: terra1tu97t4zkw2xrepplmphyfjnnf5grf54t7drsq5
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       mnemonic:
         'jungle asthma machine bring result credit wisdom dinosaur office book reopen ladder dune gadget choice insane festival inspire drive female speed evil wreck acid',
     });
@@ -693,12 +548,11 @@ describe('anchor-earn', () => {
           return result.txhash;
         });
       },
-      address: 'terra1jtuzr0k9765tjnmqxm4c2y2ufrld6htwgfznyn',
     });
   });
 
   // test input assertion except amount
-  it('send-ust-assert-input', () => {
+  it('send-ust-assert-input', async () => {
     //address: terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj
     const account = new MnemonicKey({
       mnemonic:
@@ -707,11 +561,11 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
 
-    anchorEarn
+    await anchorEarn
       .send({
         currency: DENOMS.UST,
         recipient: 'invalid',
@@ -723,10 +577,11 @@ describe('anchor-earn', () => {
 
     const anchorEarn2 = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra1grng2qchtur284ylk6g5xplnutjg6smnwlwrhj',
     });
 
-    anchorEarn2
+    await anchorEarn2
       .send({
         recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
         amount: '0.01',
@@ -734,13 +589,12 @@ describe('anchor-earn', () => {
         log: (data) => {
           console.log(data);
         },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Address must be used with customSigner'),
       );
 
-    anchorEarn2
+    await anchorEarn2
       .send({
         recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
         amount: '0.01',
@@ -773,7 +627,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('Address must be provided'),
       );
 
-    anchorEarn2
+    await anchorEarn2
       .send({
         recipient: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
         amount: '0.01',
@@ -781,7 +635,6 @@ describe('anchor-earn', () => {
         log: (data) => {
           console.log(data);
         },
-        address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Address must be used with customSigner'),
@@ -796,7 +649,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
     const withdraw = await anchorEarn.withdraw({
@@ -810,7 +663,7 @@ describe('anchor-earn', () => {
     expect(withdraw.type).toEqual('withdraw');
   });
 
-  it('failed-withdraw', () => {
+  it('failed-withdraw', async () => {
     //failure: account does not have deposit
     //address: terra1ypnfshpkyh8rzyh39unz0xsj3x8jd59hru8fwe
     const failure_account = new MnemonicKey({
@@ -820,11 +673,11 @@ describe('anchor-earn', () => {
 
     const failedAnchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: failure_account.privateKey,
     });
 
-    failedAnchorEarn
+    await failedAnchorEarn
       .withdraw({
         amount: '1000000000000',
         currency: DENOMS.UST,
@@ -833,7 +686,7 @@ describe('anchor-earn', () => {
         expect(e.message).toEqual('There is no deposit for the user');
       });
 
-    failedAnchorEarn
+    await failedAnchorEarn
       .withdraw({
         amount: '0',
         currency: DENOMS.UST,
@@ -848,7 +701,8 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q',
     });
 
     await anchorEarn.withdraw({
@@ -877,7 +731,6 @@ describe('anchor-earn', () => {
           gasPrices: { uusd: 0.15 },
         });
       },
-      address: 'terra10zkyac50dgx830uepym5508h7vukqufr6y5wdy',
     });
 
     // signer is different from the address
@@ -908,7 +761,6 @@ describe('anchor-earn', () => {
           gasPrices: { uusd: 0.15 },
         });
       },
-      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
     await anchorEarn
@@ -918,7 +770,6 @@ describe('anchor-earn', () => {
         log: (data) => {
           console.log(data);
         },
-        address: 'terra10zkyac50dgx830uepym5508h7vukqufr6y5wdy',
       })
       .catch((e: Error) =>
         expect(e.message).toContain('Address must be used with customSigner'),
@@ -955,39 +806,6 @@ describe('anchor-earn', () => {
       .catch((e: Error) =>
         expect(e.message).toEqual('Address must be provided'),
       );
-
-    await anchorEarn
-      .withdraw({
-        amount: '0.01',
-        currency: DENOMS.UST,
-        log: (data) => {
-          console.log(data);
-        },
-        customSigner: async (tx: Msg[]) => {
-          const account = new MnemonicKey({
-            mnemonic:
-              'duck east orange tonight canvas denial pudding ill vital thunder action survey teach horror add secret maze team young clarify enact repair mass team',
-          });
-
-          const wallet = new Wallet(
-            new LCDClient({
-              URL: 'https://tequila-lcd.terra.dev',
-              chainID: 'tequila-0004',
-            }),
-            account,
-          );
-
-          return await wallet.createAndSignTx({
-            msgs: tx,
-            gasAdjustment: 2,
-            gasPrices: { uusd: 0.15 },
-          });
-        },
-        address: 'invalid address',
-      })
-      .catch((e: Error) =>
-        expect(e.message).toContain('Invalid Terra account address:'),
-      );
   });
 
   it('withdraw-aust', async () => {
@@ -998,7 +816,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
     });
     const withdraw = await anchorEarn.withdraw({
@@ -1015,7 +833,7 @@ describe('anchor-earn', () => {
     //address: terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       mnemonic:
         'carpet glue angle people endorse thunder unknown fly choose fat dash hurt jeans lottery omit reject immense vocal hockey slide loop episode host comic',
     });
@@ -1049,44 +867,28 @@ describe('anchor-earn', () => {
           return result.txhash;
         });
       },
-      address: 'terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q',
     });
   });
 
   it('balance', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q',
     });
 
     const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
-      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
     console.log(userBalance.toData());
   });
 
-  it('failed-balance', () => {
-    const anchorEarn = new AnchorEarn({
-      chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
-    });
-
-    anchorEarn
-      .balance({
-        currencies: [DENOMS.UST],
-        address: 'invalid address',
-      })
-      .catch((e: Error) =>
-        expect(e.message).toContain('Invalid Terra account address:'),
-      );
-  });
-
   it('market', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
+      address: 'terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q',
     });
 
     const market = await anchorEarn.market({
