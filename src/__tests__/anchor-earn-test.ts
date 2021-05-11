@@ -3,7 +3,7 @@ import {
   CHAINS,
   MnemonicKey,
   NETWORKS,
-  OutputImpl,
+  TxOutput,
   Wallet,
 } from '../facade';
 import { LCDClient, Msg } from '@terra-money/terra.js';
@@ -30,7 +30,7 @@ describe('anchor-earn', () => {
       currency: DENOMS.UST,
     });
 
-    if (deposit instanceof OutputImpl) {
+    if (deposit instanceof TxOutput) {
       console.log(deposit.toData());
     }
   });
@@ -112,7 +112,7 @@ describe('anchor-earn', () => {
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
 
-    if (deposit instanceof OutputImpl) {
+    if (deposit instanceof TxOutput) {
       console.log(deposit.toData());
     }
 
@@ -389,7 +389,7 @@ describe('anchor-earn', () => {
       amount: '0.01',
     });
 
-    if (sendAust instanceof OutputImpl) {
+    if (sendAust instanceof TxOutput) {
       console.log(sendAust.toData());
     }
   });
@@ -611,7 +611,7 @@ describe('anchor-earn', () => {
       amount: '0.01',
     });
 
-    if (sendUst instanceof OutputImpl) {
+    if (sendUst instanceof TxOutput) {
       console.log(sendUst.toData());
     }
   });
@@ -804,7 +804,7 @@ describe('anchor-earn', () => {
       currency: DENOMS.UST,
     });
 
-    if (withdraw instanceof OutputImpl) {
+    if (withdraw instanceof TxOutput) {
       console.log(withdraw.toData());
     }
     expect(withdraw.type).toEqual('withdraw');
@@ -1005,7 +1005,7 @@ describe('anchor-earn', () => {
       amount: '0.01',
       currency: DENOMS.AUST,
     });
-    if (withdraw instanceof OutputImpl) {
+    if (withdraw instanceof TxOutput) {
       console.log(withdraw.toData());
     }
     expect(withdraw.type).toEqual('withdraw');

@@ -35,7 +35,7 @@ import {
   AddressProviderFromJson,
   DENOMS,
 } from '../address-provider';
-import { OperationError, OutputImpl } from './output-impl';
+import { OperationError, TxOutput } from './tx-output';
 import { Coins, Numeric } from '@terra-money/terra.js/dist/core';
 import { BalanceEntry, BalanceOutput } from './user-query-output';
 import { MarketEntry } from './market-query-output';
@@ -199,7 +199,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
    */
   async deposit(
     depositOption: DepositOption,
-  ): Promise<OutputImpl | OperationError> {
+  ): Promise<TxOutput | OperationError> {
     console.log(' asdasdasd');
     const customSigner = depositOption.customSigner;
     const customBroadcaster = depositOption.customBroadcaster;
@@ -244,7 +244,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
    */
   async withdraw(
     withdrawOption: WithdrawOption,
-  ): Promise<OutputImpl | OperationError> {
+  ): Promise<TxOutput | OperationError> {
     const customSigner = withdrawOption.customSigner;
     const customBroadcaster = withdrawOption.customBroadcaster;
 
@@ -313,7 +313,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
 
-  async send(options: SendOption): Promise<OutputImpl | OperationError> {
+  async send(options: SendOption): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
     const address = options.address;
@@ -651,10 +651,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     tx: BlockTxBroadcastResult,
     type: TxType,
     taxFee: string,
-    loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
+    loggable?: (data: OperationError | TxOutput) => Promise<void> | void,
     requestedAmount?: string,
-  ): OutputImpl | OperationError {
-    let result: OperationError | OutputImpl;
+  ): TxOutput | OperationError {
+    let result: OperationError | TxOutput;
     if (isTxError(tx)) {
       result = {
         type: type,
@@ -665,7 +665,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         loggable(result);
       }
     } else {
-      result = new OutputImpl(
+      result = new TxOutput(
         tx,
         type,
         CHAINS.TERRA,
@@ -686,7 +686,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     operation: OperationImpl<T>,
     txType: TxType,
     requestedAmount?: string,
-  ): Promise<OutputImpl | OperationError> {
+  ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
     const loggable = options.log;
     const customBroadcaster = options.customBroadcaster;
@@ -727,7 +727,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
   private async sendUSTHelper(
     options: SendOption,
-  ): Promise<OutputImpl | OperationError> {
+  ): Promise<TxOutput | OperationError> {
     const loggable = options.log;
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
@@ -795,7 +795,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
   private async sendAUSTHelper(
     options: SendOption,
-  ): Promise<OutputImpl | OperationError> {
+  ): Promise<TxOutput | OperationError> {
     const loggable = options.log;
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
@@ -863,9 +863,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     type: TxType,
     taxFee: string,
     txHash?: string,
-    loggable?: (data: OperationError | OutputImpl) => Promise<void> | void,
+    loggable?: (data: OperationError | TxOutput) => Promise<void> | void,
     requestedAmount?: string,
-  ): Promise<OutputImpl | OperationError> {
+  ): Promise<TxOutput | OperationError> {
     const txInfo = await this.getTxInfo(txHash);
     return this.generateOutput(txInfo, type, taxFee, loggable, requestedAmount);
   }

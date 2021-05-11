@@ -15,8 +15,8 @@ export interface OperationError {
   error_msg: string;
 }
 
-export class OutputImpl
-  extends JSONSerializable<OutputImpl.Data>
+export class TxOutput
+  extends JSONSerializable<TxOutput.Data>
   implements Output {
   chain: string;
   network: string;
@@ -64,7 +64,7 @@ export class OutputImpl
     }
   }
 
-  public toData(): OutputImpl.Data {
+  public toData(): TxOutput.Data {
     return {
       type: this.type,
       status: this.status,
@@ -79,7 +79,7 @@ export class OutputImpl
   }
 }
 
-export namespace OutputImpl {
+export namespace TxOutput {
   export interface Data {
     type: string;
     status: string;

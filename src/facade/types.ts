@@ -1,4 +1,4 @@
-import { OperationError } from './output-impl';
+import { OperationError } from './tx-output';
 import { BalanceOutput } from './user-query-output';
 import { MarketOutput } from './market-query-output';
 import { DENOMS } from '../address-provider';
