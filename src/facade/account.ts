@@ -1,7 +1,8 @@
 import { AccAddress, MnemonicKey, Wallet } from '@terra-money/terra.js';
 import { JSONSerializable } from '../utils/json';
-import { CHAINS } from './types';
+import { CHAINS } from './output';
 
+//TODO: use an interface for Account
 export class Account extends JSONSerializable<Account.Data> {
   accAddress: AccAddress;
   publicKey: string;

@@ -101,15 +101,8 @@ export class OperationImpl<FabricatorInputType> implements Operation {
 export async function sendSignedTransaction(
   lcd: LCDClient,
   tx: StdTx,
-): Promise<BlockTxBroadcastResult> {
-  return Promise.resolve()
-    .then(() => lcd.tx.broadcast(tx))
-    .then(async (result) => {
-      await Promise.resolve().then(
-        () => new Promise((resolve) => setTimeout(resolve, 6000)),
-      );
-      return result;
-    });
+): Promise<SyncTxBroadcastResult> {
+  return await lcd.tx.broadcastSync(tx);
 }
 
 export function createNativeSend(

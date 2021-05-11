@@ -1,4 +1,5 @@
 import { JSONSerializable } from '../utils/json';
+import { CHAINS } from './output';
 
 export interface BalanceEntry {
   currency: string;
@@ -6,6 +7,7 @@ export interface BalanceEntry {
   deposit_balance: string;
 }
 export class BalanceOutput extends JSONSerializable<BalanceOutput.Data> {
+  chain: CHAINS;
   network: string;
   height: number;
   timestamp: Date;
@@ -15,6 +17,7 @@ export class BalanceOutput extends JSONSerializable<BalanceOutput.Data> {
   total_deposit_balance_in_ust: string;
 
   constructor(
+    chain: CHAINS,
     network: string,
     height: number,
     address: string,
@@ -23,6 +26,7 @@ export class BalanceOutput extends JSONSerializable<BalanceOutput.Data> {
     total_deposit_balance_in_ust: string,
   ) {
     super();
+    this.chain = chain;
     this.network = network;
     this.height = height;
     this.address = address;
@@ -34,6 +38,7 @@ export class BalanceOutput extends JSONSerializable<BalanceOutput.Data> {
 
   public toData(): BalanceOutput.Data {
     return {
+      chain: this.chain,
       network: this.network,
       height: this.height,
       timestamp: this.timestamp,
@@ -47,6 +52,7 @@ export class BalanceOutput extends JSONSerializable<BalanceOutput.Data> {
 
 export namespace BalanceOutput {
   export interface Data {
+    chain: string;
     network: string;
     height: number;
     timestamp: Date;

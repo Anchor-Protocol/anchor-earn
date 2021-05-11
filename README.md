@@ -58,12 +58,12 @@ const account = new Account();
 console.log(account.toData());
 ```
 ```
-Account {
-    acc_address: 'terra15kwnsu3a539l8l6pcs6yspzas7urrtsgs4w5v4',
-    public_key: 'terrapub1addwnpepq2wc706a537ct954wfxxxwe8yhrqpuwxs2ejykya9jadwk0jj3ud5935v95',
-    private_key: 'TERRA_m2rIfcnwpIZXlxrdjpcSj7VOZHoRj8Sc1Wv8C9F09vY=',
-    mnemonic: 'weird rent soft alien write globe october wish arena cream agree toe gain chunk club clip green night hobby keep void garden help diagram'
-}
+Account{
+      acc_address: 'terra1awnxng53rlnzw3lcwwzsydrx2nj2fuas5nm3gm',
+      public_key: 'terrapub1addwnpepqwke39mta5903ac05a42ug37hs5khrmsw7ffc7lzemy3vwzypjpzqju9f5d',
+      private_key: <Buffer da 8e 5d b9 c4 df 74 57 9c ea d5 a7 c5 8b 50 80 7e 1c 1c e6 39 ce e2 60 10 9c cd bf 26 36 31 26>,
+      mnemonic: 'cry pilot west bench pepper jeans joke slow gadget cloud chuckle wedding canal crop dolphin route ridge mouse canoe rural actor luxury guide buzz'
+ }
 ```
 `private_key` and `mnemonic` are essential for later usage. 
 
@@ -88,7 +88,7 @@ To create the `AnchorEarn` object.
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
 });
 ```
@@ -103,7 +103,7 @@ const account = new MnemonicKey({
 
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       privateKey: account.privateKey,
 });
 ```
@@ -150,15 +150,15 @@ To send `UST` and `AUST` to other accounts, use the following example:
 If a user wishes to use only the queries, there is no need to instantiate the object as explained [here](#anchorearn-object);
 instead, they can provide the address for queries as demonstrated by the following examples: 
 #### Balance
-To get the current state of an account, use the following example: 
+To get the current state of an account, use the following example:
+> > **Note**: The address of the account must be specified in construction.
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
     });
 const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
-      address: 'terra1...'
 });
 ```
 #### Market
@@ -174,30 +174,35 @@ Anchor Earn also provides users with the functionality to sign transactions and 
  `CustomSigner` is a callback function with which the users can sign `deposit`, `withdraw`, and `send` transactions.
   
 The following code snippet specifies an example of the `CustomSigner` usage:
-> **Note**: The address must be specified. 
 ```ts
-const deposit = await anchorEarn.deposit({
+const customSigner = async (tx: Msg[]) => {
+      const account = new MnemonicKey({
+        mnemonic:
+          '...',
+      });
+
+      const wallet = new Wallet(
+        new LCDClient({
+          URL: 'https://tequila-lcd.terra.dev',
+          chainID: 'tequila-0004',
+        }),
+        account,
+      );
+
+      return await wallet.createAndSignTx({
+        msgs: tx,
+        gasAdjustment: 2,
+        gasPrices: { uusd: 0.15 },
+      });
+    };
+
+    await anchorEarn.deposit({
       amount: '0.01',
       currency: DENOMS.UST,
-      customSigner: async (tx: Msg[]) => {
-        const account = new MnemonicKey({
-          mnemonic:
-            '...',
-        });
-        const wallet = new Wallet(
-          new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
-          }),
-          account,
-        );
-        return await wallet.createAndSignTx({
-          msgs: tx,
-          gasAdjustment: 2,
-          gasPrices: { uusd: 0.15 },
-        });
+      log: (data) => {
+        console.log(data);
       },
-      address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
+      customSigner: customSigner,
 });
 ```
 ### CustomBroadcaster
@@ -205,24 +210,41 @@ Anchor Earn facilitates a custom broadcast. This can be helpful in the case of a
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TESTNET,
+      network: NETWORKS.TEQUILA_0004,
       mnemonic:
         '...',
 });
+const customBroadcaster = async (tx: Msg[]) => {
+          const lcd = new LCDClient({
+            URL: 'https://tequila-lcd.terra.dev',
+            chainID: 'tequila-0004',
+          });
+
+          const wallet = new Wallet(
+              lcd,
+              new MnemonicKey({
+                mnemonic:
+                    '...',
+              }),
+          );
+
+          const signedTx = await wallet.createAndSignTx({
+            msgs: tx,
+            gasAdjustment: 2,
+            gasPrices: { uusd: 0.15 },
+          });
+
+          return lcd.tx.broadcastSync(signedTx).then((result) => {
+            return result.txhash;
+          });
+};
 await anchorEarn.withdraw({
       amount: '0.01',
       currency: DENOMS.AUST,
       log: (data) => {
         console.log(data);
       },
-      customBroadcaster: async (tx: StdTx) => {
-        const lcd = new LCDClient({
-          URL: 'https://tequila-lcd.terra.dev',
-          chainID: 'tequila-0004',
-        });
-
-        return lcd.tx.broadcastSync(tx);
-      },
+      customBroadcaster: customBroadcaster
 });
 ``` 
 

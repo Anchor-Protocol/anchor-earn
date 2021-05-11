@@ -1,6 +1,6 @@
 {
   "name": "@anchor-protocol/anchor-earn",
-  "version": "1.0.0-rc.0",
+  "version": "1.0.0",
   "author": "Anchor Protocol",
   "license": "MIT",
   "engines": {
@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc --module commonjs",
     "test": "jest --testTimeout 10000000",
+	"test-watch": "jest --testTimeout 100000000 --watch",
     "doc": "typedoc",
     "format": "prettier --write ./src/**/**/*.ts",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
