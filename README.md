@@ -67,14 +67,6 @@ Account {
 ```
 `private_key` and `mnemonic` are essential for later usage. 
 
-If a user wants to use the logged version of `private_key`, the one that the user gets from `toData()` function, for `AnchorEarn` construction, they can utilize the following `Parser` function:
-```ts
-import { Parser } from '@anchor-protocol/anchor-earn';
-import getPrivateKey = Parse.getPrivateKey;
-
-const privateKey =  getPrivateKey(account.toData().private_key);
-```
-
 #### `Wallet` and `MnemonicKey` objects
 The `Wallet` and `MnemonicKey` objects are borrowed from Terra.js, but users have access to them in Anchor Earn without any dependency on Terra.js.
 In case users have a previous account on the Terra chain, they can use their private key and MnemonicKey to recover their keys.
