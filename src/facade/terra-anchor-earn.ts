@@ -200,7 +200,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   async deposit(
     depositOption: DepositOption,
   ): Promise<TxOutput | OperationError> {
-    console.log(' asdasdasd');
     const customSigner = depositOption.customSigner;
     const customBroadcaster = depositOption.customBroadcaster;
     const address = depositOption.address
