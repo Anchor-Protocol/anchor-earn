@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v1.0.1
+> 12 May 2021
+  
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/ff6a7a71d682876f8a8792135ebde1a2876736e9).
+### Added:
+ - Fix `operationHandler` function to support only `Msg[]`.
+  
+ 
 ## v1.0.0
 > 10 May 2021
   
