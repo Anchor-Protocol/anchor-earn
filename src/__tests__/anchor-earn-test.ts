@@ -576,36 +576,36 @@ describe('anchor-earn', () => {
         'carpet glue angle people endorse thunder unknown fly choose fat dash hurt jeans lottery omit reject immense vocal hockey slide loop episode host comic',
     });
     const customBroadcaster = async (tx: Msg[]) => {
-          const lcd = new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
-          });
+      const lcd = new LCDClient({
+        URL: 'https://tequila-lcd.terra.dev',
+        chainID: 'tequila-0004',
+      });
 
-          const wallet = new Wallet(
-              lcd,
-              new MnemonicKey({
-                mnemonic:
-                    'carpet glue angle people endorse thunder unknown fly choose fat dash hurt jeans lottery omit reject immense vocal hockey slide loop episode host comic',
-              }),
-          );
+      const wallet = new Wallet(
+        lcd,
+        new MnemonicKey({
+          mnemonic:
+            'carpet glue angle people endorse thunder unknown fly choose fat dash hurt jeans lottery omit reject immense vocal hockey slide loop episode host comic',
+        }),
+      );
 
-          const signedTx = await wallet.createAndSignTx({
-            msgs: tx,
-            gasAdjustment: 2,
-            gasPrices: { uusd: 0.15 },
-          });
+      const signedTx = await wallet.createAndSignTx({
+        msgs: tx,
+        gasAdjustment: 2,
+        gasPrices: { uusd: 0.15 },
+      });
 
-          return lcd.tx.broadcastSync(signedTx).then((result) => {
-            return result.txhash;
-          });
-        };
+      return lcd.tx.broadcastSync(signedTx).then((result) => {
+        return result.txhash;
+      });
+    };
     await anchorEarn.withdraw({
       amount: '0.01',
       currency: DENOMS.AUST,
       log: (data) => {
         console.log(data);
       },
-      customBroadcaster: customBroadcaster
+      customBroadcaster: customBroadcaster,
     });
   });
 

@@ -220,7 +220,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     return this.operationHelper(
       depositOption,
       OperationType.DEPOSIT,
-      operation,
+      operation.generateWithAddress(address),
     );
   }
 
@@ -287,8 +287,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     return this.operationHelper(
       withdrawOption,
       OperationType.WITHDRAW,
-      operation,
-      undefined,
+      operation.generateWithAddress(address),
       requestedAmount,
     );
   }
@@ -324,9 +323,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           recipient: options.recipient,
           coin: coin,
         });
-        return this.operationHelper(options, OperationType.SEND, undefined, [
-          msg,
-        ]);
+        return this.operationHelper(options, OperationType.SEND, [msg]);
         break;
       }
       case DENOMS.AUST: {
@@ -340,7 +337,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           options,
           this._addressProvider,
         );
-        return this.operationHelper(options, OperationType.SENDAUST, operation);
+        return this.operationHelper(
+          options,
+          OperationType.SENDAUST,
+          operation.generateWithAddress(address),
+        );
         break;
       }
     }
@@ -683,11 +684,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     return result;
   }
 
-  private async operationHelper<T>(
+  private async operationHelper(
     options: DepositOption | WithdrawOption | SendOption,
     txType: OperationType,
-    operation: OperationImpl<T>,
-    msg?: Msg[],
+    msg: Msg[],
     requestedAmount?: string,
   ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
@@ -741,7 +741,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     };
 
     return Promise.resolve()
-      .then(() => (operation ? operation.generateWithAddress(address) : msg))
+      .then(() => {
+        return msg;
+      })
       .then((tx) => signAndBroadcast(tx))
       .then((txhash) => {
         return this.getOutputFromHash(
