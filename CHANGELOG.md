@@ -1,5 +1,5 @@
 # CHANGELOG
-
+​
 ## v1.0.1
 > 12 May 2021
   
@@ -11,14 +11,14 @@
 ## v1.0.0
 > 10 May 2021
   
-  First [release](https://github.com/Anchor-Protocol/anchor-earn/commit/f30c8a580e23d07669c9b876078112e7c34ec5c1)
+  First [release](https://github.com/Anchor-Protocol/anchor-earn/commit/f30c8a580e23d07669c9b876078112e7c34ec5c1).
 ### Features:
- - Supports only Terra blockchain.   
- - Works with both Testnet(tequila-004) and Main-net(columbus-4) Anchor protocol contracts.
- - Supports deposit, withdraw, send execution functionality.
-    - Supports deposit in TerraUSD(UST) currency.
-    - Supports withdraw in both TerraUSD(UST) and aUST currency.
-    - Supports send in TerraUSD(UST) and aUST.
+ - Supports only the Terra blockchain.   
+ - Works with Anchor protocol contracts on both the testnet (Tequila-004) and mainnet (Columbus-4).
+ - Supports the `deposit`, `withdraw`, and `send` execution functionalities.
+    - Supports `deposit` in the TerraUSD (UST) currency.
+    - Supports `withdraw` in both the TerraUSD (UST) and aUST currencies.
+    - Supports `send` in both the TerraUSD (UST) and aUST currencies.
     
- - Supports market and user state queries.
- - Supports customSigner, customBroadcaster, loggable.
+ - Supports `market` and user `balance` queries.
+ - Supports `customSigner`, `customBroadcaster`, and `loggable`.
