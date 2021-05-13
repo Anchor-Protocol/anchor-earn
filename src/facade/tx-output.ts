@@ -1,6 +1,6 @@
 import { BlockTxBroadcastResult, Dec, isTxError } from '@terra-money/terra.js';
 import { OperationType } from './types';
-import { Parse } from '../utils/parse-input';
+import { Parse } from '../utils';
 import { JSONSerializable } from '../utils/json';
 import { CHAINS, Output, STATUS, TxDetails, TxType } from './output';
 import getNaturalDecimals = Parse.getNaturalDecimals;
@@ -113,19 +113,15 @@ export function getTxType(type: OperationType): TxType {
   switch (type) {
     case OperationType.DEPOSIT: {
       return TxType.DEPOSIT;
-      break;
     }
     case OperationType.SEND: {
       return TxType.SEND;
-      break;
     }
     case OperationType.SENDAUST: {
       return TxType.SEND;
-      break;
     }
     case OperationType.WITHDRAW: {
       return TxType.WITHDRAW;
-      break;
     }
   }
 }

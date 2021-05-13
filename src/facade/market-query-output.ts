@@ -21,7 +21,7 @@ export class MarketOutput extends JSONSerializable<MarketOutput.Data> {
     markets: MarketEntry[],
   ) {
     super();
-    this, (this.chain = chain);
+    this.chain = chain;
     this.network = network;
     this.height = height;
     this.markets = markets;
