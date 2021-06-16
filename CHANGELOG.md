@@ -1,5 +1,12 @@
 # CHANGELOG
-​
+## v1.0.2
+> 16 June 2021
+  
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/938bd896a5212cbc2023755eee9262e659828858).
+### Changed:
+- Change `NUMBER_OF_BLOCKS` to `BLOCKS_IN_YEAR`.
+- Change `BLOCKS_IN_YEAR` from `4_906_443` to `4_656_810`.
+ 
 ## v1.0.1
 > 12 May 2021
   
