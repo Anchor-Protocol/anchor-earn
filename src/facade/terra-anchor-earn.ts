@@ -60,7 +60,7 @@ import getNaturalDecimals = Parse.getNaturalDecimals;
 import getMicroAmount = Parse.getMicroAmount;
 import mapCoinToUST = Parse.mapCoinToUST;
 
-const NUMBER_OF_BLOCKS = 4_906_443;
+const BLOCKS_IN_YEAR = 4_656_810;
 
 export interface GetAUstBalanceOption {
   market: DENOMS;
@@ -562,7 +562,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const depositRate = await Promise.all([
       this.getDepositRate({ market: currency }),
     ]);
-    const APY = new Dec(NUMBER_OF_BLOCKS).mul(depositRate[0]);
+    const APY = new Dec(BLOCKS_IN_YEAR).mul(depositRate[0]);
 
     return {
       currency: mapCurrencyToUST(currency),
