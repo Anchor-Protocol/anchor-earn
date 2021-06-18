@@ -60,7 +60,7 @@ import getNaturalDecimals = Parse.getNaturalDecimals;
 import getMicroAmount = Parse.getMicroAmount;
 import mapCoinToUST = Parse.mapCoinToUST;
 
-const NUMBER_OF_BLOCKS = 4_906_443;
+const BLOCKS_IN_YEAR = 4_656_810;
 
 export interface GetAUstBalanceOption {
   market: DENOMS;
@@ -183,8 +183,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {market} Anchor Deposit Market. For now, it is only Denom.UST.
-   * @param {amount} Amount for deposit. The amount will be deposited in micro UST. e.g. 1 ust = 1000000 uust
+   * @param {market} depositOption.market Deposit Market. For now, it is only Denom.UST.
+   * @param {amount} depositOption.amount for deposit. The amount will be deposited in micro UST. e.g. 1 ust = 1000000 uust
    *
    * @example
    * const deposit = await anchorEarn.deposit({
@@ -225,8 +225,8 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {market} Anchor Deposit Market.
-   * @param {amount} Amount for withdraw. The amount will be withdrawn in micro UST. e.g. 1 ust = 1000000 uust
+   * @param {market} withdrawOption.market Deposit Market.
+   * @param {amount} withdrawOption.amount for withdraw. The amount will be withdrawn in micro UST. e.g. 1 ust = 1000000 uust
    *
    * @example
    * const withdraw = await anchorEarn.withdraw({
@@ -293,9 +293,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {denom} currency denomination for send. it could be either DENOMS.UST, DENOMS.AUST
-   * @param {amount} Amount for withdraw. The amount will be withdrawn in micro UST. e.g. 1 ust = 1000000 uust
-   * @param {recipient} Recipient's terra address
+   * @param {denom} options.currency denomination for send. it could be either DENOMS.UST, DENOMS.AUST
+   * @param {amount} options.amount for withdraw. The amount will be withdrawn in micro UST. e.g. 1 ust = 1000000 uust
+   * @param {recipient} options.recipient's terra address
    *
    * @example
    * const sendAust = await anchorEarn.send(DENOMS.AUST, {
@@ -324,11 +324,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           coin: coin,
         });
         return this.operationHelper(options, OperationType.SEND, [msg]);
-        break;
       }
       case DENOMS.AUST: {
         options.currency = DENOMS.UST;
-        this.assertAUSTBalance(
+        await this.assertAUSTBalance(
           options.amount,
           address ? accAddress(address) : undefined,
         );
@@ -342,13 +341,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           OperationType.SENDAUST,
           operation.generateWithAddress(address),
         );
-        break;
       }
     }
   }
 
   // /**
-  //  * @param {currencies} List of currency currencies.
+  //  * @param {currencies} options.currencies is a list of currency currencies.
   //  *
   //  * @example
   //  * const userBalance = await anchorEarn.balance({
@@ -360,11 +358,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const address = this.getAddress();
     const balances = await Promise.all(
       options.currencies.map(async (currency) => {
-        const balance = await this.getCurrencyState(
-          currency,
-          accAddress(address),
-        );
-        return balance;
+        return await this.getCurrencyState(currency, accAddress(address));
       }),
     );
 
@@ -386,7 +380,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   /**
-   * @param {currencies} List of market currencies.
+   * @param {currencies} options.currencies is a list of market currencies.
    *
    * @example
    * const userBalance = await anchorEarn.currency({
@@ -399,8 +393,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       options.currencies
         .filter((currency) => assertMarket(currency))
         .map(async (currency) => {
-          const state = await this.getCurrencyMarketState(currency);
-          return state;
+          return await this.getCurrencyMarketState(currency);
         }),
     );
 
@@ -510,7 +503,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       market: currency,
     });
 
-    const balance: BalanceEntry = {
+    return {
       currency: mapCurrencyToUST(currency),
       account_balance: getNaturalDecimals(accountBalance[0].amount.toString()),
       deposit_balance: getNaturalDecimals(
@@ -519,8 +512,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         ).toString(),
       ),
     };
-
-    return balance;
   }
 
   private async getTotalBalance(balances: BalanceEntry[]): Promise<string> {
@@ -571,15 +562,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const depositRate = await Promise.all([
       this.getDepositRate({ market: currency }),
     ]);
-    const APY = new Dec(NUMBER_OF_BLOCKS).mul(depositRate[0]);
+    const APY = new Dec(BLOCKS_IN_YEAR).mul(depositRate[0]);
 
-    const entry: MarketEntry = {
+    return {
       currency: mapCurrencyToUST(currency),
       liquidity: getNaturalDecimals(contractBalance.amount.toString()),
       APY: APY.toString(),
     };
-
-    return entry;
   }
 
   private async assertUSTBalance(
@@ -693,8 +682,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const customSigner = options.customSigner;
     const loggable = options.log || (() => void 0);
     const customBroadcaster = options.customBroadcaster;
-    const address = this.getAddress();
-
     const taxFee = await Promise.all([this.getTax(options.amount)]);
 
     const signAndBroadcast = async (unsignedTx: Msg[]): Promise<string> => {
