@@ -14,10 +14,12 @@ import {
   NETWORKS,
   Output,
 } from '../facade';
+import EtherAnchorEarn from './ether-anchor-earn';
 
 export interface AnchorEarnOption {
   chain: CHAINS;
   network: NETWORKS;
+  endpoint: string;
   privateKey?: Buffer | any;
   mnemonic?: string | any;
   address?: string;
@@ -49,6 +51,14 @@ export class AnchorEarn implements AnchorEarnOperations {
           privateKey: options.privateKey as Buffer,
           mnemonic: options.mnemonic as string,
           address: options.address,
+        });
+        break;
+      }
+      case CHAINS.ETHER: {
+        this.earn = new EtherAnchorEarn({
+          network: options.network,
+          endpoint: options.endpoint,
+          privateKey: options.privateKey as Buffer,
         });
       }
     }
