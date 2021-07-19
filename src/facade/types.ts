@@ -8,25 +8,25 @@ import { Msg, MsgSend, StdTx } from '@terra-money/terra.js';
 import { CustomBroadcaster } from './custom-broadcaster';
 import { Output } from './output';
 
-export interface DepositOption
-  extends CustomSigner<Msg[], StdTx>,
-    CustomBroadcaster<Msg[], string>,
+export interface DepositOption<UnsignedTx, SignedTx>
+  extends CustomSigner<UnsignedTx, SignedTx>,
+    CustomBroadcaster<UnsignedTx, string>,
     Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
 }
 
-export interface WithdrawOption
-  extends CustomSigner<Msg[], StdTx>,
-    CustomBroadcaster<Msg[], string>,
+export interface WithdrawOption<UnsignedTx, SignedTx>
+  extends CustomSigner<UnsignedTx, SignedTx>,
+    CustomBroadcaster<UnsignedTx, string>,
     Loggable<Output | OperationError> {
   currency: DENOMS;
   amount: string;
 }
 
-export interface SendOption
-  extends CustomSigner<Msg[] | MsgSend, StdTx>,
-    CustomBroadcaster<Msg[], string>,
+export interface SendOption<UnsignedTx, SignedTx>
+  extends CustomSigner<UnsignedTx, SignedTx>,
+    CustomBroadcaster<UnsignedTx, string>,
     Loggable<Output | OperationError> {
   currency: DENOMS;
   recipient: string;
@@ -37,10 +37,16 @@ export interface QueryOption {
   currencies: DENOMS[];
 }
 
-export interface AnchorEarnOperations {
-  deposit(depositOption: DepositOption): Promise<Output | OperationError>;
-  withdraw(withdrawOption: WithdrawOption): Promise<Output | OperationError>;
-  send(options: SendOption): Promise<Output | OperationError>;
+export interface AnchorEarnOperations<UnsignedTx, SignedTx> {
+  deposit(
+    depositOption: DepositOption<UnsignedTx, SignedTx>,
+  ): Promise<Output | OperationError>;
+  withdraw(
+    withdrawOption: WithdrawOption<UnsignedTx, SignedTx>,
+  ): Promise<Output | OperationError>;
+  send(
+    options: SendOption<UnsignedTx, SignedTx>,
+  ): Promise<Output | OperationError>;
   balance(options: QueryOption): Promise<BalanceOutput>;
   market(options: QueryOption): Promise<MarketOutput>;
 }
