@@ -1,54 +1,52 @@
 import { OperationError } from './tx-output';
 import { BalanceOutput } from './user-query-output';
 import { MarketOutput } from './market-query-output';
-import { DENOMS } from '../address-provider';
 import { Loggable } from './loggable';
 import { CustomSigner } from './custom-signer';
-import { Msg, MsgSend, StdTx } from '@terra-money/terra.js';
 import { CustomBroadcaster } from './custom-broadcaster';
 import { Output } from './output';
 
-export interface DepositOption<UnsignedTx, SignedTx>
+export interface DepositOption<Denoms, UnsignedTx, SignedTx>
   extends CustomSigner<UnsignedTx, SignedTx>,
     CustomBroadcaster<UnsignedTx, string>,
     Loggable<Output | OperationError> {
-  currency: DENOMS;
+  currency: Denoms;
   amount: string;
 }
 
-export interface WithdrawOption<UnsignedTx, SignedTx>
+export interface WithdrawOption<Denoms, UnsignedTx, SignedTx>
   extends CustomSigner<UnsignedTx, SignedTx>,
     CustomBroadcaster<UnsignedTx, string>,
     Loggable<Output | OperationError> {
-  currency: DENOMS;
+  currency: Denoms;
   amount: string;
 }
 
-export interface SendOption<UnsignedTx, SignedTx>
+export interface SendOption<Denoms, UnsignedTx, SignedTx>
   extends CustomSigner<UnsignedTx, SignedTx>,
     CustomBroadcaster<UnsignedTx, string>,
     Loggable<Output | OperationError> {
-  currency: DENOMS;
+  currency: Denoms;
   recipient: string;
   amount: string;
 }
 
-export interface QueryOption {
-  currencies: DENOMS[];
+export interface QueryOption<Denoms> {
+  currencies: Denoms[];
 }
 
-export interface AnchorEarnOperations<UnsignedTx, SignedTx> {
+export interface AnchorEarnOperations<Denoms, UnsignedTx, SignedTx> {
   deposit(
-    depositOption: DepositOption<UnsignedTx, SignedTx>,
+    depositOption: DepositOption<Denoms, UnsignedTx, SignedTx>,
   ): Promise<Output | OperationError>;
   withdraw(
-    withdrawOption: WithdrawOption<UnsignedTx, SignedTx>,
+    withdrawOption: WithdrawOption<Denoms, UnsignedTx, SignedTx>,
   ): Promise<Output | OperationError>;
   send(
-    options: SendOption<UnsignedTx, SignedTx>,
+    options: SendOption<Denoms, UnsignedTx, SignedTx>,
   ): Promise<Output | OperationError>;
-  balance(options: QueryOption): Promise<BalanceOutput>;
-  market(options: QueryOption): Promise<MarketOutput>;
+  balance(options: QueryOption<Denoms>): Promise<BalanceOutput>;
+  market(options: QueryOption<Denoms>): Promise<MarketOutput>;
 }
 
 export enum OperationType {
