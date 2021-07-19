@@ -52,6 +52,8 @@ import { MarketOutput } from '../facade';
 import { assertInput } from '../utils/assert-inputs';
 import { tee } from '../utils/tee';
 import { getTerraError } from '../utils/sdk-errors';
+import { NETWORKS, CHAINS } from '../types';
+
 import accAddress = Parse.accAddress;
 import assertMarket = Parse.assertMarket;
 import mapCurrencyToUST = Parse.mapCurrencyToUST;
@@ -59,7 +61,6 @@ import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import getMicroAmount = Parse.getMicroAmount;
 import mapCoinToUST = Parse.mapCoinToUST;
-import { NETWORKS, CHAINS } from 'src/types';
 
 const BLOCKS_IN_YEAR = 4_656_810;
 
