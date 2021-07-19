@@ -1,6 +1,6 @@
-import { ethers, Wallet } from 'ethers';
-import { MarketOutput } from './market-query-output';
+import { ethers, providers, Wallet } from 'ethers';
 
+import { MarketOutput } from './market-query-output';
 import { NETWORKS, Output } from './output';
 import { OperationError } from './tx-output';
 import {
@@ -11,6 +11,11 @@ import {
   WithdrawOption,
 } from './types';
 import { BalanceOutput } from './user-query-output';
+import ethAddress = Parse.ethAddress;
+import assertMarket = Parse.assertMarket;
+
+import { Parse } from '../utils';
+import { assertInput } from 'src/utils/assert-inputs';
 
 interface EtherAnchorEarnArgs {
   network: NETWORKS;
@@ -18,41 +23,73 @@ interface EtherAnchorEarnArgs {
   privateKey: Buffer;
 }
 
-export default class EtherAnchorEarn implements AnchorEarnOperations {
+export type UnsignedTxType = providers.TransactionRequest;
+export type SignedTxType = Promise<string>;
+
+export default class EtherAnchorEarn
+  implements AnchorEarnOperations<UnsignedTxType, SignedTxType> {
   public readonly network: NETWORKS;
-  private readonly wallet: Wallet;
+  private readonly provider: ethers.providers.Provider;
+  private readonly wallet: Wallet | null = null;
 
   constructor({ network, endpoint, privateKey }: EtherAnchorEarnArgs) {
     this.network = network;
 
-    const provider = new ethers.providers.JsonRpcProvider(
+    this.provider = new ethers.providers.JsonRpcProvider(
       endpoint,
       this.network.toString(),
     );
-    this.wallet = new Wallet(privateKey, provider);
+    if (privateKey) {
+      this.wallet = new Wallet(privateKey, this.provider);
+    }
   }
 
-  get address(): string {
-    return this.wallet.address;
+  get address(): string | undefined {
+    return this.wallet ? this.wallet.address : undefined;
   }
 
-  deposit(depositOption: DepositOption): Promise<Output | OperationError> {
+  get blocktime(): Promise<number> {
+    return new Promise((resolve, reject) =>
+      this.provider
+        .getBlock('latest')
+        .then(({ timestamp }) => resolve(timestamp))
+        .catch(reject),
+    );
+  }
+
+  async deposit(
+    depositOption: DepositOption<UnsignedTxType, SignedTxType>,
+  ): Promise<Output | OperationError> {
+    const customSigner = depositOption.customSigner;
+    const customBroadcaster = depositOption.customBroadcaster;
+    const address = this.address;
+    const blocktime = await this.blocktime;
+
+    if (!assertMarket()) {
+    }
+
+    assertInput<UnsignedTxType, SignedTxType>(customSigner, customBroadcaster);
+
     throw new Error('Method not implemented.');
   }
 
-  withdraw(withdrawOption: WithdrawOption): Promise<Output | OperationError> {
+  async withdraw(
+    withdrawOption: WithdrawOption<UnsignedTxType, SignedTxType>,
+  ): Promise<Output | OperationError> {
     throw new Error('Method not implemented.');
   }
 
-  send(options: SendOption): Promise<Output | OperationError> {
+  async send(
+    sendOption: SendOption<UnsignedTxType, SignedTxType>,
+  ): Promise<Output | OperationError> {
     throw new Error('Method not implemented.');
   }
 
-  balance(options: QueryOption): Promise<BalanceOutput> {
+  async balance(options: QueryOption): Promise<BalanceOutput> {
     throw new Error('Method not implemented.');
   }
 
-  market(options: QueryOption): Promise<MarketOutput> {
+  async market(options: QueryOption): Promise<MarketOutput> {
     throw new Error('Method not implemented.');
   }
 }
