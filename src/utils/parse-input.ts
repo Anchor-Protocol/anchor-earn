@@ -6,6 +6,7 @@ import {
   Int,
   TxLog,
 } from '@terra-money/terra.js';
+import { utils as ethersUtils } from 'ethers';
 import { DENOMS } from '../address-provider';
 import { OperationType } from '../facade/types';
 
@@ -19,6 +20,16 @@ export namespace Parse {
 
     if (!AccAddress.validate(input)) {
       throw new Error(`Invalid Terra account address: ${input}`);
+    }
+
+    return input;
+  }
+
+  export function ethAddress(input?: string): string {
+    if (input === undefined) return undefined;
+
+    if (!ethersUtils.isAddress(input)) {
+      throw new Error(`Invalid Ether account address: ${input}`);
     }
 
     return input;
