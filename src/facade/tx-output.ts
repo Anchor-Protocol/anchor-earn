@@ -2,7 +2,9 @@ import { BlockTxBroadcastResult, Dec, isTxError } from '@terra-money/terra.js';
 import { OperationType } from './types';
 import { Parse } from '../utils';
 import { JSONSerializable } from '../utils/json';
-import { CHAINS, Output, STATUS, TxDetails, TxType } from './output';
+import { Output, STATUS, TxDetails, TxType } from './output';
+import { CHAINS } from '../types';
+
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import processLog = Parse.processLog;
 import subNaturalDecimals = Parse.subNaturalDecimals;
