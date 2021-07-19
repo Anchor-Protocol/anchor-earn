@@ -16,6 +16,7 @@
       "es2015.iterable",
       "dom"
     ],
+    "resolveJsonModule": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -28,6 +29,6 @@
     "rootDir": "src",
     "sourceMap": false,
     "strict": false,
-    "target": "es6",
+    "target": "es6"
   }
 }
