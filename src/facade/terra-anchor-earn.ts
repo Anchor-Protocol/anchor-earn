@@ -145,16 +145,27 @@ export class TerraAnchorEarn
   private _address: string;
 
   constructor(options: AnchorEarnOptions) {
+    if (
+      ![NETWORKS.COLUMBUS_4, NETWORKS.TEQUILA_0004].includes(options.network)
+    ) {
+      throw new Error(
+        `invalid terra network ${options.network}. please use 'NETWORKS.COLUMBUS_4' or 'NETWORKS.TEQUILA_0004'`,
+      );
+    }
+
+    const network = options.network as
+      | NETWORKS.COLUMBUS_4
+      | NETWORKS.TEQUILA_0004;
     const address = options.address;
-    const gasConfig = defaultGasConfigMap[options.network] || {
+    const gasConfig = defaultGasConfigMap[network] || {
       gasPrices: mainNetDefaultConfig.lcd.gasPrices,
       gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
     };
     const addressProvider =
-      defaultAddressProvider[options.network] ||
+      defaultAddressProvider[network] ||
       new AddressProviderFromJson(mainNetDefaultConfig.contracts);
 
-    const lcd = new LCDClient(defaultLCDConfig[options.network]);
+    const lcd = new LCDClient(defaultLCDConfig[network]);
 
     const account = options.mnemonic
       ? lcd.wallet(new MnemonicKey({ mnemonic: options.mnemonic }))
