@@ -133,7 +133,11 @@ const defaultLCDConfig = {
   [NETWORKS.TEQUILA_0004]: tequilaDefaultConfig.lcd,
 };
 
-export class TerraAnchorEarn implements AnchorEarnOperations {
+export type UnsignedTxType = Msg[];
+export type SignedTxType = StdTx;
+
+export class TerraAnchorEarn
+  implements AnchorEarnOperations<UnsignedTxType, SignedTxType> {
   private _lcd: LCDClient;
   private _addressProvider: AddressProvider;
   private _account: Wallet;
@@ -193,7 +197,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
   async deposit(
-    depositOption: DepositOption,
+    depositOption: DepositOption<UnsignedTxType, SignedTxType>,
   ): Promise<TxOutput | OperationError> {
     const customSigner = depositOption.customSigner;
     const customBroadcaster = depositOption.customBroadcaster;
@@ -203,7 +207,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<UnsignedTxType, SignedTxType>(customSigner, customBroadcaster);
 
     await this.assertUSTBalance(
       depositOption.currency,
@@ -235,7 +239,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
   async withdraw(
-    withdrawOption: WithdrawOption,
+    withdrawOption: WithdrawOption<UnsignedTxType, SignedTxType>,
   ): Promise<TxOutput | OperationError> {
     const customSigner = withdrawOption.customSigner;
     const customBroadcaster = withdrawOption.customBroadcaster;
@@ -246,7 +250,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<UnsignedTxType, SignedTxType>(customSigner, customBroadcaster);
 
     await this.assertAUSTBalance(
       withdrawOption.amount,
@@ -304,12 +308,14 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
 
-  async send(options: SendOption): Promise<TxOutput | OperationError> {
+  async send(
+    options: SendOption<UnsignedTxType, SignedTxType>,
+  ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
     const address = this.getAddress();
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<UnsignedTxType, SignedTxType>(customSigner, customBroadcaster);
 
     switch (options.currency) {
       case DENOMS.UST: {
@@ -674,9 +680,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private async operationHelper(
-    options: DepositOption | WithdrawOption | SendOption,
+    options:
+      | DepositOption<UnsignedTxType, SignedTxType>
+      | WithdrawOption<UnsignedTxType, SignedTxType>
+      | SendOption<UnsignedTxType, SignedTxType>,
     txType: OperationType,
-    msg: Msg[],
+    msg: UnsignedTxType,
     requestedAmount?: string,
   ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
@@ -684,7 +693,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const customBroadcaster = options.customBroadcaster;
     const taxFee = await Promise.all([this.getTax(options.amount)]);
 
-    const signAndBroadcast = async (unsignedTx: Msg[]): Promise<string> => {
+    const signAndBroadcast = async (
+      unsignedTx: UnsignedTxType,
+    ): Promise<string> => {
       // if customBroadcaster is provided,
       // that's it!
       if (customBroadcaster) return customBroadcaster(unsignedTx);
@@ -692,7 +703,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       // control flow
       const createTx =
         customSigner ||
-        ((msg?: Msg[]) => {
+        ((msg?: UnsignedTxType) => {
           return createAndSignMsg(
             this.getAccount(),
             {
