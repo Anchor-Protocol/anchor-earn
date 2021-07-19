@@ -139,7 +139,8 @@ export type TerraUnsignedTxType = Msg[];
 export type TerraSignedTxType = StdTx;
 
 export class TerraAnchorEarn
-  implements AnchorEarnOperations<TerraUnsignedTxType, TerraSignedTxType> {
+  implements
+    AnchorEarnOperations<DENOMS, TerraUnsignedTxType, TerraSignedTxType> {
   private _lcd: LCDClient;
   private _addressProvider: AddressProvider;
   private _account: Wallet;
@@ -209,7 +210,11 @@ export class TerraAnchorEarn
     });
    */
   async deposit(
-    depositOption: DepositOption<TerraUnsignedTxType, TerraSignedTxType>,
+    depositOption: DepositOption<
+      DENOMS,
+      TerraUnsignedTxType,
+      TerraSignedTxType
+    >,
   ): Promise<TxOutput | OperationError> {
     const customSigner = depositOption.customSigner;
     const customBroadcaster = depositOption.customBroadcaster;
@@ -254,7 +259,11 @@ export class TerraAnchorEarn
     });
    */
   async withdraw(
-    withdrawOption: WithdrawOption<TerraUnsignedTxType, TerraSignedTxType>,
+    withdrawOption: WithdrawOption<
+      DENOMS,
+      TerraUnsignedTxType,
+      TerraSignedTxType
+    >,
   ): Promise<TxOutput | OperationError> {
     const customSigner = withdrawOption.customSigner;
     const customBroadcaster = withdrawOption.customBroadcaster;
@@ -327,7 +336,7 @@ export class TerraAnchorEarn
    */
 
   async send(
-    options: SendOption<TerraUnsignedTxType, TerraSignedTxType>,
+    options: SendOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>,
   ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
@@ -381,7 +390,7 @@ export class TerraAnchorEarn
   //   });
   //  */
   //
-  async balance(options: QueryOption): Promise<BalanceOutput> {
+  async balance(options: QueryOption<DENOMS>): Promise<BalanceOutput> {
     const address = this.getAddress();
     const balances = await Promise.all(
       options.currencies.map(async (currency) => {
@@ -415,7 +424,7 @@ export class TerraAnchorEarn
     });
    */
 
-  async market(options: QueryOption): Promise<MarketOutput> {
+  async market(options: QueryOption<DENOMS>): Promise<MarketOutput> {
     const markets = await Promise.all(
       options.currencies
         .filter((currency) => assertMarket(currency))
@@ -702,9 +711,9 @@ export class TerraAnchorEarn
 
   private async operationHelper(
     options:
-      | DepositOption<TerraUnsignedTxType, TerraSignedTxType>
-      | WithdrawOption<TerraUnsignedTxType, TerraSignedTxType>
-      | SendOption<TerraUnsignedTxType, TerraSignedTxType>,
+      | DepositOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>
+      | WithdrawOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>
+      | SendOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>,
     txType: OperationType,
     msg: TerraUnsignedTxType,
     requestedAmount?: string,
