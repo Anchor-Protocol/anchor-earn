@@ -10,15 +10,13 @@ import {
   OperationError,
   BalanceOutput,
   TerraAnchorEarn,
-  EtherAnchorEarn,
-  CHAINS,
-  NETWORKS,
+  Ether,
   Output,
-  TerraUnsignedTxType,
   TerraSignedTxType,
-  EtherUnsignedTxType,
-  EtherSignedTxType,
+  TerraUnsignedTxType,
 } from '../facade';
+import { CHAINS, NETWORKS } from '../types';
+import { DENOMS } from '../address-provider';
 
 export interface AnchorEarnOption<T extends CHAINS> {
   chain: T;
@@ -29,19 +27,23 @@ export interface AnchorEarnOption<T extends CHAINS> {
   address?: string;
 }
 
-namespace TxType {
-  export type Unsigned<T> = T extends CHAINS.TERRA
-    ? TerraUnsignedTxType
-    : T extends CHAINS.ETHER
-    ? EtherUnsignedTxType
-    : never;
+export type UnsignedTx<T> = T extends CHAINS.TERRA
+  ? TerraUnsignedTxType
+  : T extends CHAINS.ETHER
+  ? Ether.UnsignedTx
+  : never;
 
-  export type Signed<T> = T extends CHAINS.TERRA
-    ? TerraSignedTxType
-    : T extends CHAINS.ETHER
-    ? EtherSignedTxType
-    : never;
-}
+export type SignedTx<T> = T extends CHAINS.TERRA
+  ? TerraSignedTxType
+  : T extends CHAINS.ETHER
+  ? Ether.SignedTx
+  : never;
+
+export type Denoms<T> = T extends CHAINS.TERRA
+  ? DENOMS
+  : T extends CHAINS.ETHER
+  ? Ether.DENOMS
+  : never;
 
 /**
  * @param {CHAINS} The blockchain that user wants to execute his message in.
@@ -58,8 +60,8 @@ namespace TxType {
     });
  */
 export class AnchorEarn<T extends CHAINS>
-  implements AnchorEarnOperations<TxType.Unsigned<T>, TxType.Signed<T>> {
-  private earn: AnchorEarnOperations<TxType.Unsigned<T>, TxType.Signed<T>>;
+  implements AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>> {
+  private earn: AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
 
   constructor(options: AnchorEarnOption<T>) {
     switch (options.chain) {
@@ -69,15 +71,15 @@ export class AnchorEarn<T extends CHAINS>
           privateKey: options.privateKey as Buffer,
           mnemonic: options.mnemonic as string,
           address: options.address,
-        }) as AnchorEarnOperations<TxType.Unsigned<T>, TxType.Signed<T>>;
+        }) as AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
         break;
       }
       case CHAINS.ETHER: {
-        this.earn = new EtherAnchorEarn({
+        this.earn = new Ether.AnchorEarn({
           network: options.network,
           endpoint: options.endpoint,
           privateKey: options.privateKey as Buffer,
-        }) as AnchorEarnOperations<TxType.Unsigned<T>, TxType.Signed<T>>;
+        }) as AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
         break;
       }
       default:
@@ -85,29 +87,29 @@ export class AnchorEarn<T extends CHAINS>
     }
   }
 
-  async balance(options: QueryOption): Promise<BalanceOutput> {
+  balance(options: QueryOption<Denoms<T>>): Promise<BalanceOutput> {
     return this.earn.balance(options);
   }
 
   deposit(
-    depositOption: DepositOption<TxType.Unsigned<T>, TxType.Signed<T>>,
+    depositOption: DepositOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
   ): Promise<Output | OperationError> {
     return this.earn.deposit(depositOption);
   }
 
   withdraw(
-    withdrawOption: WithdrawOption<TxType.Unsigned<T>, TxType.Signed<T>>,
+    withdrawOption: WithdrawOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
   ): Promise<Output | OperationError> {
     return this.earn.withdraw(withdrawOption);
   }
 
   send(
-    options: SendOption<TxType.Unsigned<T>, TxType.Signed<T>>,
+    options: SendOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
   ): Promise<Output | OperationError> {
     return this.earn.send(options);
   }
 
-  market(options: QueryOption): Promise<MarketOutput> {
+  market(options: QueryOption<Denoms<T>>): Promise<MarketOutput> {
     return this.earn.market(options);
   }
 }
