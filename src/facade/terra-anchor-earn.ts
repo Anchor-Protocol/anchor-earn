@@ -155,10 +155,7 @@ export class TerraAnchorEarn
       default:
         throw new Error(`invalid terra network type: ${options.network}.`);
     }
-    const network = options.network as
-      | NETWORKS.COLUMBUS_4
-      | NETWORKS.TEQUILA_0004;
-    const address = options.address;
+    const { network, address } = options;
     const gasConfig = defaultGasConfigMap[network] || {
       gasPrices: mainNetDefaultConfig.lcd.gasPrices,
       gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
