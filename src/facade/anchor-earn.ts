@@ -42,7 +42,7 @@ export type SignedTx<T> = T extends CHAINS.TERRA
 export type Denoms<T> = T extends CHAINS.TERRA
   ? DENOMS
   : T extends CHAINS.ETHER
-  ? Ether.DENOMS
+  ? Ether.Denoms
   : never;
 
 /**
