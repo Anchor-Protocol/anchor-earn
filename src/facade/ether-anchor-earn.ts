@@ -69,6 +69,12 @@ interface Contracts {
 
 type ConversionAsset = Exclude<Tokens | aTokens, Tokens.UST | aTokens.aUST>;
 
+type ConvertedAssetType<T> = T extends Tokens
+  ? Exclude<aTokens, aTokens.aUST>
+  : T extends aTokens
+  ? Exclude<Tokens, Tokens.UST>
+  : never;
+
 function isTokens(denom: Tokens | aTokens): denom is Tokens {
   return Object.values(Tokens)
     .map((v) => v.toString())
@@ -88,9 +94,9 @@ function isConversionAsset(denom: Tokens | aTokens): denom is ConversionAsset {
   );
 }
 
-interface ConversionAssetInfo {
+interface ConversionAssetInfo<T> {
   pool: string;
-  converted: ConversionAsset;
+  converted: ConvertedAssetType<T>;
 }
 
 export namespace Ether {
@@ -152,7 +158,7 @@ export namespace Ether {
     public readonly chain: CHAINS;
     public readonly network: Network;
     public readonly conversionAssets: {
-      [asset in ConversionAsset]: ConversionAssetInfo;
+      [asset in ConversionAsset]: ConversionAssetInfo<asset>;
     };
     public readonly address: string | null = null;
 
@@ -202,11 +208,14 @@ export namespace Ether {
       // ========================== assets
       this.conversionAssets = Object.entries(
         this._deployments.conversionPools,
-      ).reduce((acc, [address, { token, atoken }]) => {
-        acc[token] = { pool: address, converted: atoken };
-        acc[atoken] = { pool: address, converted: token };
-        return acc;
-      }, {} as { [denom in ConversionAsset]: ConversionAssetInfo });
+      ).reduce(
+        (acc, [pool, { token, atoken }]) => ({
+          ...acc,
+          token: { pool, converted: atoken },
+          atoken: { pool, converted: token },
+        }),
+        {} as { [asset in ConversionAsset]: ConversionAssetInfo<asset> },
+      );
     }
 
     private contract(type: ContractType, addr: string): Contract {
@@ -229,6 +238,7 @@ export namespace Ether {
           ContractType.Token,
           this.conversionAssets[token].pool,
         );
+        /* eslint-disable  @typescript-eslint/no-unsafe-call */
         return isTokens(token)
           ? await pool.inputToken()
           : await pool.outputToken();
@@ -237,6 +247,7 @@ export namespace Ether {
           ContractType.Router,
           this._deployments.router,
         );
+        /* eslint-disable  @typescript-eslint/no-unsafe-call */
         return isTokens(token) ? await router.wUST() : await router.aUST();
       }
     }
@@ -246,10 +257,6 @@ export namespace Ether {
     ): Promise<Output | OperationError> {
       const { amount: rawAmount, currency } = option;
       const amount = utils.parseEther(rawAmount);
-
-      if (!isTokens(currency)) {
-        throw new Error(`invalid deposit currency ${currency}`);
-      }
 
       const tokenAddr = await this.fetchAddressesOf(currency);
 
@@ -304,10 +311,6 @@ export namespace Ether {
     ): Promise<Output | OperationError> {
       const { amount: rawAmount, currency } = option;
       const amount = utils.parseEther(rawAmount);
-
-      if (!isATokens(currency)) {
-        throw new Error(`invalid withdraw currency ${currency}`);
-      }
 
       const atokenAddr = await this.fetchAddressesOf(currency);
 
@@ -387,13 +390,7 @@ export namespace Ether {
       );
     }
 
-    async balance({ currencies }: QueryOption<Denoms>): Promise<BalanceOutput> {
-      for (const currency of currencies) {
-        if (!isTokens(currency)) {
-          throw new Error(`invalid currency input ${currency}`);
-        }
-      }
-
+    async balance({ currencies }: QueryOption<Tokens>): Promise<BalanceOutput> {
       const balances = await Promise.all(
         currencies.map(
           async (currency): Promise<BalanceEntry> => {
@@ -405,13 +402,12 @@ export namespace Ether {
             if (currency === Tokens.UST) {
               conversionAsset = aTokens.aUST;
             } else {
-              conversionAsset = this.conversionAssets[
-                currency as Exclude<Tokens, Tokens.UST>
-              ].converted as aTokens;
+              conversionAsset = this.conversionAssets[currency].converted;
             }
 
             const atokenAddr = await this.fetchAddressesOf(conversionAsset);
             const atoken = this.contract(ContractType.Token, atokenAddr);
+            /* eslint-disable  @typescript-eslint/no-unsafe-call */
             const atokenBalance = await atoken.balanceOf(this.address);
 
             const feeder = this.contract(
@@ -455,13 +451,7 @@ export namespace Ether {
       );
     }
 
-    async market({ currencies }: QueryOption<Denoms>): Promise<MarketOutput> {
-      for (const currency of currencies) {
-        if (!isTokens(currency)) {
-          throw new Error(`invalid currency input ${currency}`);
-        }
-      }
-
+    async market({ currencies }: QueryOption<Tokens>): Promise<MarketOutput> {
       const markets = await Promise.all(
         currencies.map(
           async (currency): Promise<MarketEntry> => {
@@ -480,8 +470,7 @@ export namespace Ether {
             } else {
               const pool = this.contract(
                 ContractType.ConversionPool,
-                this.conversionAssets[currency as Exclude<Tokens, Tokens.UST>]
-                  .pool,
+                this.conversionAssets[currency].pool,
               );
               const feeder = this.contract(
                 ContractType.Feeder,
