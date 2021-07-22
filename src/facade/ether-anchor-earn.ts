@@ -441,7 +441,7 @@ export namespace Ether {
       const blockNumber = await this._provider.getBlockNumber();
 
       return new BalanceOutput(
-        this.chain.toString(),
+        this.chain,
         this.network.toString(),
         blockNumber,
         this.address,
@@ -512,7 +512,7 @@ export namespace Ether {
       const blockNumber = await this._provider.getBlockNumber();
 
       return new MarketOutput(
-        this.chain.toString(),
+        this.chain,
         this.network.toString(),
         blockNumber,
         markets,

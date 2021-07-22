@@ -21,7 +21,7 @@ import { DENOMS } from '../address-provider';
 export interface AnchorEarnOption<T extends CHAINS> {
   chain: T;
   network: NETWORKS;
-  endpoint: string;
+  endpoint?: string;
   privateKey?: Buffer | any;
   mnemonic?: string | any;
   address?: string;
