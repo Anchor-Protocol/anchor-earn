@@ -87,10 +87,6 @@ export class AnchorEarn<T extends CHAINS>
     }
   }
 
-  balance(options: QueryOption<Denoms<T>>): Promise<BalanceOutput> {
-    return this.earn.balance(options);
-  }
-
   deposit(
     depositOption: DepositOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
   ): Promise<Output | OperationError> {
@@ -107,6 +103,10 @@ export class AnchorEarn<T extends CHAINS>
     options: SendOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
   ): Promise<Output | OperationError> {
     return this.earn.send(options);
+  }
+
+  balance(options: QueryOption<Denoms<T>>): Promise<BalanceOutput> {
+    return this.earn.balance(options);
   }
 
   market(options: QueryOption<Denoms<T>>): Promise<MarketOutput> {
