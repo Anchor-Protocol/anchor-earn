@@ -4,7 +4,7 @@ import { CHAINS, NETWORKS } from '../src/types';
 
 const chain = CHAINS.ETHER;
 const network = NETWORKS.ETHER_ROPSTEN;
-const endpoint = '';
+const endpoint = '<endpoint>';
 const wallet = new Wallet('<private_key>');
 
 describe('ether-anchor-earn', () => {
