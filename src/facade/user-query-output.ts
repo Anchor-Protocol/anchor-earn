@@ -1,5 +1,5 @@
+import { CHAINS } from '../types';
 import { JSONSerializable } from '../utils/json';
-import { CHAINS } from './output';
 
 export interface BalanceEntry {
   currency: string;

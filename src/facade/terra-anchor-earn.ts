@@ -46,12 +46,14 @@ import {
   SendOption,
   WithdrawOption,
 } from './types';
-import { CHAINS, NETWORKS, Output, STATUS, TxType } from './output';
+import { Output, STATUS, TxType } from './output';
 import { BlockTxBroadcastResult } from '@terra-money/terra.js/dist/client/lcd/api/TxAPI';
 import { MarketOutput } from '../facade';
 import { assertInput } from '../utils/assert-inputs';
 import { tee } from '../utils/tee';
 import { getTerraError } from '../utils/sdk-errors';
+import { NETWORKS, CHAINS } from '../types';
+
 import accAddress = Parse.accAddress;
 import assertMarket = Parse.assertMarket;
 import mapCurrencyToUST = Parse.mapCurrencyToUST;
@@ -133,7 +135,12 @@ const defaultLCDConfig = {
   [NETWORKS.TEQUILA_0004]: tequilaDefaultConfig.lcd,
 };
 
-export class TerraAnchorEarn implements AnchorEarnOperations {
+export type TerraUnsignedTxType = Msg[];
+export type TerraSignedTxType = StdTx;
+
+export class TerraAnchorEarn
+  implements
+    AnchorEarnOperations<DENOMS, TerraUnsignedTxType, TerraSignedTxType> {
   private _lcd: LCDClient;
   private _addressProvider: AddressProvider;
   private _account: Wallet;
@@ -141,16 +148,23 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   private _address: string;
 
   constructor(options: AnchorEarnOptions) {
-    const address = options.address;
-    const gasConfig = defaultGasConfigMap[options.network] || {
+    switch (options.network) {
+      case NETWORKS.COLUMBUS_4:
+      case NETWORKS.TEQUILA_0004:
+        break;
+      default:
+        throw new Error(`invalid terra network type: ${options.network}.`);
+    }
+    const { network, address } = options;
+    const gasConfig = defaultGasConfigMap[network] || {
       gasPrices: mainNetDefaultConfig.lcd.gasPrices,
       gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
     };
     const addressProvider =
-      defaultAddressProvider[options.network] ||
+      defaultAddressProvider[network] ||
       new AddressProviderFromJson(mainNetDefaultConfig.contracts);
 
-    const lcd = new LCDClient(defaultLCDConfig[options.network]);
+    const lcd = new LCDClient(defaultLCDConfig[network]);
 
     const account = options.mnemonic
       ? lcd.wallet(new MnemonicKey({ mnemonic: options.mnemonic }))
@@ -193,7 +207,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
   async deposit(
-    depositOption: DepositOption,
+    depositOption: DepositOption<
+      DENOMS,
+      TerraUnsignedTxType,
+      TerraSignedTxType
+    >,
   ): Promise<TxOutput | OperationError> {
     const customSigner = depositOption.customSigner;
     const customBroadcaster = depositOption.customBroadcaster;
@@ -203,7 +221,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<TerraUnsignedTxType, TerraSignedTxType>(
+      customSigner,
+      customBroadcaster,
+    );
 
     await this.assertUSTBalance(
       depositOption.currency,
@@ -235,7 +256,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
   async withdraw(
-    withdrawOption: WithdrawOption,
+    withdrawOption: WithdrawOption<
+      DENOMS,
+      TerraUnsignedTxType,
+      TerraSignedTxType
+    >,
   ): Promise<TxOutput | OperationError> {
     const customSigner = withdrawOption.customSigner;
     const customBroadcaster = withdrawOption.customBroadcaster;
@@ -246,7 +271,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<TerraUnsignedTxType, TerraSignedTxType>(
+      customSigner,
+      customBroadcaster,
+    );
 
     await this.assertAUSTBalance(
       withdrawOption.amount,
@@ -304,12 +332,17 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
 
-  async send(options: SendOption): Promise<TxOutput | OperationError> {
+  async send(
+    options: SendOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>,
+  ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
     const customBroadcaster = options.customBroadcaster;
     const address = this.getAddress();
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<TerraUnsignedTxType, TerraSignedTxType>(
+      customSigner,
+      customBroadcaster,
+    );
 
     switch (options.currency) {
       case DENOMS.UST: {
@@ -354,7 +387,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   //   });
   //  */
   //
-  async balance(options: QueryOption): Promise<BalanceOutput> {
+  async balance(options: QueryOption<DENOMS>): Promise<BalanceOutput> {
     const address = this.getAddress();
     const balances = await Promise.all(
       options.currencies.map(async (currency) => {
@@ -388,7 +421,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     });
    */
 
-  async market(options: QueryOption): Promise<MarketOutput> {
+  async market(options: QueryOption<DENOMS>): Promise<MarketOutput> {
     const markets = await Promise.all(
       options.currencies
         .filter((currency) => assertMarket(currency))
@@ -674,9 +707,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private async operationHelper(
-    options: DepositOption | WithdrawOption | SendOption,
+    options:
+      | DepositOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>
+      | WithdrawOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>
+      | SendOption<DENOMS, TerraUnsignedTxType, TerraSignedTxType>,
     txType: OperationType,
-    msg: Msg[],
+    msg: TerraUnsignedTxType,
     requestedAmount?: string,
   ): Promise<TxOutput | OperationError> {
     const customSigner = options.customSigner;
@@ -684,7 +720,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const customBroadcaster = options.customBroadcaster;
     const taxFee = await Promise.all([this.getTax(options.amount)]);
 
-    const signAndBroadcast = async (unsignedTx: Msg[]): Promise<string> => {
+    const signAndBroadcast = async (
+      unsignedTx: TerraUnsignedTxType,
+    ): Promise<string> => {
       // if customBroadcaster is provided,
       // that's it!
       if (customBroadcaster) return customBroadcaster(unsignedTx);
@@ -692,7 +730,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       // control flow
       const createTx =
         customSigner ||
-        ((msg?: Msg[]) => {
+        ((msg?: TerraUnsignedTxType) => {
           return createAndSignMsg(
             this.getAccount(),
             {

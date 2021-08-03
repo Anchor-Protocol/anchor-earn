@@ -1,5 +1,5 @@
 {
-  "include": ["src", "types"],
+  "include": ["src", "types", "tests"],
   "exclude": ["/node_modules/", "./src/**/*.spec.ts"],
   "compilerOptions": {
     "allowSyntheticDefaultImports": false,
@@ -16,6 +16,7 @@
       "es2015.iterable",
       "dom"
     ],
+    "resolveJsonModule": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -25,9 +26,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "sourceMap": false,
     "strict": false,
-    "target": "es6",
+    "target": "es6"
   }
 }

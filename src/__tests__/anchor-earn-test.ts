@@ -1,13 +1,7 @@
-import {
-  AnchorEarn,
-  CHAINS,
-  MnemonicKey,
-  NETWORKS,
-  TxOutput,
-  Wallet,
-} from '../facade';
+import { AnchorEarn, MnemonicKey, TxOutput, Wallet } from '../facade';
 import { LCDClient, Msg } from '@terra-money/terra.js';
 import { DENOMS } from '../address-provider';
+import { CHAINS, NETWORKS } from '../types';
 
 //accounts were created for test purposes and they have 5000ust and 5000aust.
 

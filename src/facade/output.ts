@@ -31,12 +31,3 @@ export enum STATUS {
   UNSUCCESSFUL = 'unsuccessful',
   IN_PROGRESS = 'in-progress',
 }
-
-export enum CHAINS {
-  TERRA = 'terra',
-}
-
-export enum NETWORKS {
-  COLUMBUS_4,
-  TEQUILA_0004,
-}

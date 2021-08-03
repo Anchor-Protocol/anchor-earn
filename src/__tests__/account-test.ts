@@ -1,4 +1,5 @@
-import { Account, CHAINS } from '../facade';
+import { CHAINS } from '../types';
+import { Account } from '../facade';
 
 describe('account', () => {
   it('decode', () => {

@@ -10,18 +10,40 @@ import {
   OperationError,
   BalanceOutput,
   TerraAnchorEarn,
-  CHAINS,
-  NETWORKS,
+  Eth,
   Output,
+  TerraSignedTxType,
+  TerraUnsignedTxType,
 } from '../facade';
+import { CHAINS, NETWORKS } from '../types';
+import { DENOMS } from '../address-provider';
 
-export interface AnchorEarnOption {
-  chain: CHAINS;
+export interface AnchorEarnOption<T extends CHAINS> {
+  chain: T;
   network: NETWORKS;
+  endpoint?: string;
   privateKey?: Buffer | any;
   mnemonic?: string | any;
   address?: string;
 }
+
+export type UnsignedTx<T> = T extends CHAINS.TERRA
+  ? TerraUnsignedTxType
+  : T extends CHAINS.ETH
+  ? Eth.UnsignedTx
+  : never;
+
+export type SignedTx<T> = T extends CHAINS.TERRA
+  ? TerraSignedTxType
+  : T extends CHAINS.ETH
+  ? Eth.SignedTx
+  : never;
+
+export type Denoms<T> = T extends CHAINS.TERRA
+  ? DENOMS
+  : T extends CHAINS.ETH
+  ? Eth.Denoms
+  : never;
 
 /**
  * @param {CHAINS} The blockchain that user wants to execute his message in.
@@ -37,11 +59,11 @@ export interface AnchorEarnOption {
       private_key: '....',
     });
  */
+export class AnchorEarn<T extends CHAINS>
+  implements AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>> {
+  private earn: AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
 
-export class AnchorEarn implements AnchorEarnOperations {
-  private earn: AnchorEarnOperations;
-
-  constructor(options: AnchorEarnOption) {
+  constructor(options: AnchorEarnOption<T>) {
     switch (options.chain) {
       case CHAINS.TERRA: {
         this.earn = new TerraAnchorEarn({
@@ -49,28 +71,45 @@ export class AnchorEarn implements AnchorEarnOperations {
           privateKey: options.privateKey as Buffer,
           mnemonic: options.mnemonic as string,
           address: options.address,
-        });
+        }) as AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
+        break;
       }
+      case CHAINS.ETH: {
+        this.earn = new Eth.AnchorEarn({
+          network: options.network,
+          endpoint: options.endpoint,
+          privateKey: options.privateKey as Buffer,
+        }) as AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
+        break;
+      }
+      default:
+        throw new Error(`invalid chain option ${options.chain}`);
     }
   }
 
-  async balance(options: QueryOption): Promise<BalanceOutput> {
-    return this.earn.balance(options);
-  }
-
-  deposit(depositOption: DepositOption): Promise<Output | OperationError> {
+  deposit(
+    depositOption: DepositOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
+  ): Promise<Output | OperationError> {
     return this.earn.deposit(depositOption);
   }
 
-  market(options: QueryOption): Promise<MarketOutput> {
-    return this.earn.market(options);
+  withdraw(
+    withdrawOption: WithdrawOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
+  ): Promise<Output | OperationError> {
+    return this.earn.withdraw(withdrawOption);
   }
 
-  send(options: SendOption): Promise<Output | OperationError> {
+  send(
+    options: SendOption<Denoms<T>, UnsignedTx<T>, SignedTx<T>>,
+  ): Promise<Output | OperationError> {
     return this.earn.send(options);
   }
 
-  withdraw(withdrawOption: WithdrawOption): Promise<Output | OperationError> {
-    return this.earn.withdraw(withdrawOption);
+  balance(options: QueryOption<Denoms<T>>): Promise<BalanceOutput> {
+    return this.earn.balance(options);
+  }
+
+  market(options: QueryOption<Denoms<T>>): Promise<MarketOutput> {
+    return this.earn.market(options);
   }
 }
