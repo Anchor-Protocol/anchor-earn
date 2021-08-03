@@ -6,5 +6,5 @@ export * from './tx-output';
 export * from './output';
 export * from './market-query-output';
 export * from './terra-anchor-earn';
-export * from './ether-anchor-earn';
+export * from './eth-anchor-earn';
 export * from './types';

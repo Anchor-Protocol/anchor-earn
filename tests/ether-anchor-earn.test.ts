@@ -2,13 +2,13 @@ import { Wallet } from 'ethers';
 import { AnchorEarn } from '../src/facade';
 import { CHAINS, NETWORKS } from '../src/types';
 
-const chain = CHAINS.ETHER;
-const network = NETWORKS.ETHER_ROPSTEN;
+const chain = CHAINS.ETH;
+const network = NETWORKS.ETH_ROPSTEN;
 const endpoint = '<endpoint>';
 const wallet = new Wallet('<private_key>');
 
 describe('ether-anchor-earn', () => {
-  let earn: AnchorEarn<CHAINS.ETHER>;
+  let earn: AnchorEarn<CHAINS.ETH>;
 
   beforeEach(() => {
     earn = new AnchorEarn({

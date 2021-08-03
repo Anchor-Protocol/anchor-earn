@@ -10,7 +10,7 @@ import {
   OperationError,
   BalanceOutput,
   TerraAnchorEarn,
-  Ether,
+  Eth,
   Output,
   TerraSignedTxType,
   TerraUnsignedTxType,
@@ -29,20 +29,20 @@ export interface AnchorEarnOption<T extends CHAINS> {
 
 export type UnsignedTx<T> = T extends CHAINS.TERRA
   ? TerraUnsignedTxType
-  : T extends CHAINS.ETHER
-  ? Ether.UnsignedTx
+  : T extends CHAINS.ETH
+  ? Eth.UnsignedTx
   : never;
 
 export type SignedTx<T> = T extends CHAINS.TERRA
   ? TerraSignedTxType
-  : T extends CHAINS.ETHER
-  ? Ether.SignedTx
+  : T extends CHAINS.ETH
+  ? Eth.SignedTx
   : never;
 
 export type Denoms<T> = T extends CHAINS.TERRA
   ? DENOMS
-  : T extends CHAINS.ETHER
-  ? Ether.Denoms
+  : T extends CHAINS.ETH
+  ? Eth.Denoms
   : never;
 
 /**
@@ -74,8 +74,8 @@ export class AnchorEarn<T extends CHAINS>
         }) as AnchorEarnOperations<Denoms<T>, UnsignedTx<T>, SignedTx<T>>;
         break;
       }
-      case CHAINS.ETHER: {
-        this.earn = new Ether.AnchorEarn({
+      case CHAINS.ETH: {
+        this.earn = new Eth.AnchorEarn({
           network: options.network,
           endpoint: options.endpoint,
           privateKey: options.privateKey as Buffer,

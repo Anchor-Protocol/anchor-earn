@@ -1,13 +1,13 @@
 export enum CHAINS {
   TERRA = 'terra',
-  ETHER = 'ether',
+  ETH = 'ether',
 }
 
 export enum NETWORKS {
   COLUMBUS_4,
   TEQUILA_0004,
-  ETHER_MAINNET = 'homestead',
-  ETHER_ROPSTEN = 'ropsten',
+  ETH_MAINNET = 'homestead',
+  ETH_ROPSTEN = 'ropsten',
   // BSC_MAINNET = 'bnb',
   // BSC_TESTNET = 'bnbt',
 }

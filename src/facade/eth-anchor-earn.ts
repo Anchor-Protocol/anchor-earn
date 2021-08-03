@@ -99,11 +99,11 @@ interface ConversionAssetInfo<T> {
   converted: ConvertedAssetType<T>;
 }
 
-export namespace Ether {
+export namespace Eth {
   export type UnsignedTx = providers.TransactionRequest;
   export type SignedTx = string;
   export type Denoms = Tokens | aTokens;
-  export type Network = NETWORKS.ETHER_MAINNET | NETWORKS.ETHER_ROPSTEN;
+  export type Network = NETWORKS.ETH_MAINNET | NETWORKS.ETH_ROPSTEN;
 
   export const EthAnchorAPI: { [network in Network]: string } = {
     homestead: 'https://eth-api.anchorprotocol.com/api/v1/stablecoin_info/uusd',
@@ -169,15 +169,15 @@ export namespace Ether {
     private readonly _confirmation: number = 2;
 
     constructor({ network, endpoint, privateKey, address }: Args) {
-      this.chain = CHAINS.ETHER;
+      this.chain = CHAINS.ETH;
 
       // ========================== network
       switch (network) {
-        case NETWORKS.ETHER_MAINNET:
-        case NETWORKS.ETHER_ROPSTEN:
+        case NETWORKS.ETH_MAINNET:
+        case NETWORKS.ETH_ROPSTEN:
           break;
         default:
-          throw new Error(`invalid ether network type: ${network}.`);
+          throw new Error(`invalid eth network type: ${network}.`);
       }
 
       this.network = network;
