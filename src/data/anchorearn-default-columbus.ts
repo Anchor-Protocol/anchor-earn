@@ -5,9 +5,9 @@ const mainNetDefaultConfig: AnchorConfig = {
     URL: 'https://lcd.terra.dev',
     chainID: 'columbus-4',
     gasPrices: {
-      uusd: 0.15,
+      uusd: 0.38,
     },
-    gasAdjustment: 1.4,
+    gasAdjustment: 2,
   },
   contracts: {
     mmMarket: 'terra1sepfj7s0aeg5967uxnfk4thzlerrsktkpelm5s',
