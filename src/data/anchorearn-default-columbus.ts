@@ -5,7 +5,7 @@ const mainNetDefaultConfig: AnchorConfig = {
     URL: 'https://lcd.terra.dev',
     chainID: 'columbus-4',
     gasPrices: {
-      uusd: 0.38,
+      uusd: 0.456,
     },
     gasAdjustment: 2,
   },
