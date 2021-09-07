@@ -25,7 +25,7 @@ export interface AnchorEarnOption {
 
 /**
  * @param {CHAINS} The blockchain that user wants to execute his message in.
- * @param {NETWORKS} the chain networks: It Could be either NETWORKS.TEQUILA_0004 and NETWORKS.COLUMBUS_4.
+ * @param {NETWORKS} the chain networks: It Could be either NETWORKS.BOMBAY_10 and NETWORKS.COLUMBUS_4.
  * The default network is NETWORKS.COLUMBUS_4.
  * @param {privateKey} chain account private key.
  * @param {mnemonic} list of words that is used to retrieve private key.
@@ -33,7 +33,7 @@ export interface AnchorEarnOption {
  *
  * @example
  * const anchorEarn = new AnchorEarn({
-      network: NETWORKS.TEQUILA0004,
+      network: NETWORKS.BOMBAY_10,
       private_key: '....',
     });
  */

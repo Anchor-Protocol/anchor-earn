@@ -27,7 +27,7 @@ import {
   queryOverseerEpochState,
 } from '../fabricators';
 import mainNetDefaultConfig from '../data/anchorearn-default-columbus';
-import tequilaDefaultConfig from '../data/anchorearn-default-tequila';
+import bombayDefaultConfig from '../data/anchorearn-default-bombay';
 import { Parse } from '../utils';
 import {
   AddressProvider,
@@ -86,7 +86,7 @@ interface GasConfig {
 }
 
 /**
- * @param {NETWORKS} Terra networks: It Could be either NETWORKS.TEQUILA_0004 and NETWORKS.COLUMBUS_4.
+ * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_10 and NETWORKS.COLUMBUS_4.
  * The default network is NETWORKS.COLUMBUS_4.
  * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
@@ -95,7 +95,7 @@ interface GasConfig {
  *
  * @example
  * const anchorEarn = new AnchorEarn({
-      network: NETWORKS.TEQUILA0004,
+      network: NETWORKS.BOMBAY_10,
       private_key: '....',
     });
  */
@@ -113,9 +113,9 @@ const defaultGasConfigMap = {
     gasPrices: mainNetDefaultConfig.lcd.gasPrices,
     gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
   },
-  [NETWORKS.TEQUILA_0004]: {
-    gasPrices: tequilaDefaultConfig.lcd.gasPrices,
-    gasAdjustment: tequilaDefaultConfig.lcd.gasAdjustment,
+  [NETWORKS.BOMBAY_10]: {
+    gasPrices: bombayDefaultConfig.lcd.gasPrices,
+    gasAdjustment: bombayDefaultConfig.lcd.gasAdjustment,
   },
 };
 
@@ -123,14 +123,14 @@ const defaultAddressProvider = {
   [NETWORKS.COLUMBUS_4]: new AddressProviderFromJson(
     mainNetDefaultConfig.contracts,
   ),
-  [NETWORKS.TEQUILA_0004]: new AddressProviderFromJson(
-    tequilaDefaultConfig.contracts,
+  [NETWORKS.BOMBAY_10]: new AddressProviderFromJson(
+    bombayDefaultConfig.contracts,
   ),
 };
 
 const defaultLCDConfig = {
   [NETWORKS.COLUMBUS_4]: mainNetDefaultConfig.lcd,
-  [NETWORKS.TEQUILA_0004]: tequilaDefaultConfig.lcd,
+  [NETWORKS.BOMBAY_10]: bombayDefaultConfig.lcd,
 };
 
 export class TerraAnchorEarn implements AnchorEarnOperations {

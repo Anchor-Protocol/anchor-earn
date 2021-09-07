@@ -88,7 +88,7 @@ To create the `AnchorEarn` object.
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_10,
       privateKey: account.privateKey,
 });
 ```
@@ -103,12 +103,12 @@ const account = new MnemonicKey({
 
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_10,
       privateKey: account.privateKey,
 });
 ```
 ### Fund Account with UST
-For Terra testnet (tequila-0004), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
+For Terra testnet (bombay-10), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
 ### Executor
 `AnchorEarn` helps execute three functionalities:
 - deposit: deposit funds in the Anchor protocol
@@ -155,7 +155,7 @@ To get the current state of an account, use the following example:
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_10,
     });
 const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
@@ -183,8 +183,8 @@ const customSigner = async (tx: Msg[]) => {
 
       const wallet = new Wallet(
         new LCDClient({
-          URL: 'https://tequila-lcd.terra.dev',
-          chainID: 'tequila-0004',
+          URL: 'https://bombay-lcd.terra.dev',
+          chainID: 'bombay-10',
         }),
         account,
       );
@@ -210,14 +210,14 @@ Anchor Earn facilitates a custom broadcast. This can be helpful in the case of a
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_10,
       mnemonic:
         '...',
 });
 const customBroadcaster = async (tx: Msg[]) => {
           const lcd = new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
+            URL: 'https://bombay-lcd.terra.dev',
+            chainID: 'bombay-10',
           });
 
           const wallet = new Wallet(
