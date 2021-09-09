@@ -86,8 +86,8 @@ interface GasConfig {
 }
 
 /**
- * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_10 and NETWORKS.COLUMBUS_4.
- * The default network is NETWORKS.COLUMBUS_4.
+ * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_10 and NETWORKS.COLUMBUS_5.
+ * The default network is NETWORKS.COLUMBUS_5.
  * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
  * @param {mnemonic} The user's mnemonic key. It will be generated when an account is created.
@@ -109,7 +109,7 @@ interface AnchorEarnOptions {
 }
 
 const defaultGasConfigMap = {
-  [NETWORKS.COLUMBUS_4]: {
+  [NETWORKS.COLUMBUS_5]: {
     gasPrices: mainNetDefaultConfig.lcd.gasPrices,
     gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
   },
@@ -120,7 +120,7 @@ const defaultGasConfigMap = {
 };
 
 const defaultAddressProvider = {
-  [NETWORKS.COLUMBUS_4]: new AddressProviderFromJson(
+  [NETWORKS.COLUMBUS_5]: new AddressProviderFromJson(
     mainNetDefaultConfig.contracts,
   ),
   [NETWORKS.BOMBAY_10]: new AddressProviderFromJson(
@@ -129,7 +129,7 @@ const defaultAddressProvider = {
 };
 
 const defaultLCDConfig = {
-  [NETWORKS.COLUMBUS_4]: mainNetDefaultConfig.lcd,
+  [NETWORKS.COLUMBUS_5]: mainNetDefaultConfig.lcd,
   [NETWORKS.BOMBAY_10]: bombayDefaultConfig.lcd,
 };
 

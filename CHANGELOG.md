@@ -1,4 +1,21 @@
 # CHANGELOG
+
+## v1.0.4
+> 9 Sep 2021
+  Here is the [release]()
+
+## Changed:
+- Update `terra.js` version to `@terra-money/terra.js ^2.0.4`
+- Changed `testnet` to `bombay-10`
+- Changed `mainnet` to `columbus-5`
+
+## v1.0.3
+> 24 Aug 2021
+
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/bffe76c236752dfa3b5ca74bc72408147eb8199e)
+### Changed:
+- Update the `gas price`
+
 ## v1.0.2
 > 16 June 2021
   

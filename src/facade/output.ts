@@ -37,6 +37,6 @@ export enum CHAINS {
 }
 
 export enum NETWORKS {
-  COLUMBUS_4,
+  COLUMBUS_5,
   BOMBAY_10,
 }
