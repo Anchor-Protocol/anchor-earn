@@ -26,8 +26,8 @@ import {
   queryMarketEpochState,
   queryOverseerEpochState,
 } from '../fabricators';
-import mainNetDefaultConfig from '../data/anchorearn-default-columbus';
-import bombayDefaultConfig from '../data/anchorearn-default-bombay';
+import mainnetDefaultConfig from '../data/anchorearn-default-mainnet';
+import testnetDefaultConfig from '../data/anchorearn-default-testnet';
 import { Parse } from '../utils';
 import {
   AddressProvider,
@@ -110,27 +110,27 @@ interface AnchorEarnOptions {
 
 const defaultGasConfigMap = {
   [NETWORKS.COLUMBUS_5]: {
-    gasPrices: mainNetDefaultConfig.lcd.gasPrices,
-    gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
+    gasPrices: mainnetDefaultConfig.lcd.gasPrices,
+    gasAdjustment: mainnetDefaultConfig.lcd.gasAdjustment,
   },
   [NETWORKS.BOMBAY_10]: {
-    gasPrices: bombayDefaultConfig.lcd.gasPrices,
-    gasAdjustment: bombayDefaultConfig.lcd.gasAdjustment,
+    gasPrices: testnetDefaultConfig.lcd.gasPrices,
+    gasAdjustment: testnetDefaultConfig.lcd.gasAdjustment,
   },
 };
 
 const defaultAddressProvider = {
   [NETWORKS.COLUMBUS_5]: new AddressProviderFromJson(
-    mainNetDefaultConfig.contracts,
+    mainnetDefaultConfig.contracts,
   ),
   [NETWORKS.BOMBAY_10]: new AddressProviderFromJson(
-    bombayDefaultConfig.contracts,
+    testnetDefaultConfig.contracts,
   ),
 };
 
 const defaultLCDConfig = {
-  [NETWORKS.COLUMBUS_5]: mainNetDefaultConfig.lcd,
-  [NETWORKS.BOMBAY_10]: bombayDefaultConfig.lcd,
+  [NETWORKS.COLUMBUS_5]: mainnetDefaultConfig.lcd,
+  [NETWORKS.BOMBAY_10]: testnetDefaultConfig.lcd,
 };
 
 export class TerraAnchorEarn implements AnchorEarnOperations {
@@ -143,12 +143,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   constructor(options: AnchorEarnOptions) {
     const address = options.address;
     const gasConfig = defaultGasConfigMap[options.network] || {
-      gasPrices: mainNetDefaultConfig.lcd.gasPrices,
-      gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
+      gasPrices: mainnetDefaultConfig.lcd.gasPrices,
+      gasAdjustment: mainnetDefaultConfig.lcd.gasAdjustment,
     };
     const addressProvider =
       defaultAddressProvider[options.network] ||
-      new AddressProviderFromJson(mainNetDefaultConfig.contracts);
+      new AddressProviderFromJson(mainnetDefaultConfig.contracts);
 
     const lcd = new LCDClient(defaultLCDConfig[options.network]);
 

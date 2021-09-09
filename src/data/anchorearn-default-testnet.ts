@@ -1,6 +1,6 @@
 import { AnchorConfig } from '../address-provider/types';
 
-const bombayDefaultConfig: AnchorConfig = {
+const testnetDefaultConfig: AnchorConfig = {
   lcd: {
     URL: 'https://bombay-lcd.terra.dev',
     chainID: 'bombay-10',
@@ -16,4 +16,4 @@ const bombayDefaultConfig: AnchorConfig = {
   },
 };
 
-export default bombayDefaultConfig;
+export default testnetDefaultConfig;
