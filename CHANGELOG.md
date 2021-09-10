@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v1.0.4
+## v1.0.5
 > 9 Sep 2021
   Here is the [release]()
 
@@ -9,10 +9,12 @@
 - Changed `testnet` to `bombay-10`
 - Changed `mainnet` to `columbus-5`
 
-## v1.0.3
+## v1.0.3, v1.0.4 
 > 24 Aug 2021
 
-  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/bffe76c236752dfa3b5ca74bc72408147eb8199e)
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/c6a016a86f4e10a842c269a0d1bfd4a95ff3bd02) (v1.0.3)
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/bffe76c236752dfa3b5ca74bc72408147eb8199e) (v1.0.4)
+  
 ### Changed:
 - Update the `gas price`
 
