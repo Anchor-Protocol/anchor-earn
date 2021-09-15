@@ -7,7 +7,7 @@ import {
   MnemonicKey,
   Msg,
   RawKey,
-  StdTx,
+  Tx,
   TxInfo,
   Wallet,
 } from '@terra-money/terra.js';
@@ -47,7 +47,6 @@ import {
   WithdrawOption,
 } from './types';
 import { CHAINS, NETWORKS, Output, STATUS, TxType } from './output';
-import { BlockTxBroadcastResult } from '@terra-money/terra.js/dist/client/lcd/api/TxAPI';
 import { MarketOutput } from '../facade';
 import { assertInput } from '../utils/assert-inputs';
 import { tee } from '../utils/tee';
@@ -203,7 +202,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
     await this.assertUSTBalance(
       depositOption.currency,
@@ -246,7 +245,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
     await this.assertAUSTBalance(
       withdrawOption.amount,
@@ -309,7 +308,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const customBroadcaster = options.customBroadcaster;
     const address = this.getAddress();
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
     switch (options.currency) {
       case DENOMS.UST: {
@@ -420,7 +419,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   private async getNativeBalance(
     getNativeBalanceOption: GetUstBalanceOption,
   ): Promise<Coin> {
-    const userCoins = await this._lcd.bank.balance(
+    const [userCoins, _] = await this._lcd.bank.balance(
       accAddress(getNativeBalanceOption.address),
     );
     return userCoins.get(getNativeBalanceOption.currency);
@@ -652,7 +651,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private generateOutput(
-    tx: BlockTxBroadcastResult,
+    tx: TxInfo,
     type: OperationType,
     taxFee: string,
     loggable?: (data: OperationError | TxOutput) => Promise<void> | void,
@@ -704,7 +703,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         });
 
       return Promise.resolve()
-        .then(() => createTx(unsignedTx))
+        .then(() => {
+          return createTx(unsignedTx)
+        })
         .then(
           tee((signedTx) => {
             loggable({
@@ -712,14 +713,15 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
               status: STATUS.IN_PROGRESS,
               currency: mapCurrencyToUST(options.currency),
               amount: options.amount,
-              txFee: mapCoinToUST(signedTx.fee.amount),
+              txFee: mapCoinToUST(signedTx.auth_info.fee.amount),
               deductedTax: '0',
             } as Output);
           }),
         )
-        .then((signedTx) => sendSignedTransaction(this._lcd, signedTx))
-        .then((result) =>
-          isTxError(result)
+        .then((signedTx) => {
+          return sendSignedTransaction(this._lcd, signedTx)
+        })
+        .then((result) => isTxError(result)
             ? Promise.reject(
                 new Error(getTerraError(result.raw_log, result.code)),
               )

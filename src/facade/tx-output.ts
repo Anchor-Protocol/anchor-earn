@@ -6,6 +6,7 @@ import { CHAINS, Output, STATUS, TxDetails, TxType } from './output';
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import processLog = Parse.processLog;
 import subNaturalDecimals = Parse.subNaturalDecimals;
+import { TxInfo } from '@terra-money/terra.js';
 
 const DEFAULT_DEDUCTED_TAX = '0';
 
@@ -31,7 +32,7 @@ export class TxOutput
   deductedTax?: string;
 
   constructor(
-    txResult: BlockTxBroadcastResult,
+    txResult: TxInfo,
     type: OperationType,
     chain: string,
     network: string,
@@ -43,7 +44,6 @@ export class TxOutput
     this.type = getTxType(type);
     this.network = network;
     this.chain = chain;
-
     if (isTxError(txResult)) {
       this.status = STATUS.UNSUCCESSFUL;
     } else {

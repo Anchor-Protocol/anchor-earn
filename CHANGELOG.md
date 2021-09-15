@@ -5,7 +5,7 @@
   Here is the [release]()
 
 ## Changed:
-- Update `terra.js` version to `@terra-money/terra.js ^2.0.4`
+- Update `terra.js` version to `@terra-money/terra.js ^2.1.0`
 - Changed `testnet` to `bombay-10`
 - Changed `mainnet` to `columbus-5`
 
