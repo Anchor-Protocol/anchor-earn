@@ -6,7 +6,7 @@
 
 ## Changed:
 - Update `terra.js` version to `@terra-money/terra.js ^2.1.0`
-- Changed `testnet` to `bombay-10`
+- Changed `testnet` to `bombay-11`
 - Changed `mainnet` to `columbus-5`
 
 ## v1.0.3, v1.0.4 
