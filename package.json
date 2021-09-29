@@ -29,7 +29,9 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "dependencies": {},
+  "dependencies": {
+    "@terra-money/terra.js": "^2.0.10"
+  },
   "devDependencies": {
     "@ssen/eslint-config": "^1.3.1",
     "@ssen/prettier-config": "^1.2.0",
