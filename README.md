@@ -88,7 +88,7 @@ To create the `AnchorEarn` object.
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.BOMBAY_11,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
 });
 ```
@@ -103,12 +103,12 @@ const account = new MnemonicKey({
 
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.BOMBAY_11,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
 });
 ```
 ### Fund Account with UST
-For Terra testnet (bombay-11), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
+For Terra testnet (bombay-12), users can top up their balance with UST using [faucet](https://faucet.terra.money/).
 ### Executor
 `AnchorEarn` helps execute three functionalities:
 - deposit: deposit funds in the Anchor protocol
@@ -155,7 +155,7 @@ To get the current state of an account, use the following example:
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.BOMBAY_11,
+      network: NETWORKS.BOMBAY_12,
     });
 const userBalance = await anchorEarn.balance({
       currencies: [DENOMS.UST],
@@ -184,7 +184,7 @@ const customSigner = async (tx: Msg[]) => {
       const wallet = new Wallet(
         new LCDClient({
           URL: 'https://bombay-lcd.terra.dev',
-          chainID: 'bombay-11',
+          chainID: 'bombay-12',
         }),
         account,
       );
@@ -210,14 +210,14 @@ Anchor Earn facilitates a custom broadcast. This can be helpful in the case of a
 ```ts
 const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.BOMBAY_11,
+      network: NETWORKS.BOMBAY_12,
       mnemonic:
         '...',
 });
 const customBroadcaster = async (tx: Msg[]) => {
           const lcd = new LCDClient({
             URL: 'https://bombay-lcd.terra.dev',
-            chainID: 'bombay-11',
+            chainID: 'bombay-12',
           });
 
           const wallet = new Wallet(

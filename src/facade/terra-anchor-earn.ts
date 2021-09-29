@@ -85,7 +85,7 @@ interface GasConfig {
 }
 
 /**
- * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_11 and NETWORKS.COLUMBUS_5.
+ * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_12 and NETWORKS.COLUMBUS_5.
  * The default network is NETWORKS.COLUMBUS_5.
  * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
@@ -94,7 +94,7 @@ interface GasConfig {
  *
  * @example
  * const anchorEarn = new AnchorEarn({
-      network: NETWORKS.BOMBAY_11,
+      network: NETWORKS.BOMBAY_12,
       private_key: '....',
     });
  */
@@ -112,7 +112,7 @@ const defaultGasConfigMap = {
     gasPrices: mainnetDefaultConfig.lcd.gasPrices,
     gasAdjustment: mainnetDefaultConfig.lcd.gasAdjustment,
   },
-  [NETWORKS.BOMBAY_11]: {
+  [NETWORKS.BOMBAY_12]: {
     gasPrices: testnetDefaultConfig.lcd.gasPrices,
     gasAdjustment: testnetDefaultConfig.lcd.gasAdjustment,
   },
@@ -122,14 +122,14 @@ const defaultAddressProvider = {
   [NETWORKS.COLUMBUS_5]: new AddressProviderFromJson(
     mainnetDefaultConfig.contracts,
   ),
-  [NETWORKS.BOMBAY_11]: new AddressProviderFromJson(
+  [NETWORKS.BOMBAY_12]: new AddressProviderFromJson(
     testnetDefaultConfig.contracts,
   ),
 };
 
 const defaultLCDConfig = {
   [NETWORKS.COLUMBUS_5]: mainnetDefaultConfig.lcd,
-  [NETWORKS.BOMBAY_11]: testnetDefaultConfig.lcd,
+  [NETWORKS.BOMBAY_12]: testnetDefaultConfig.lcd,
 };
 
 export class TerraAnchorEarn implements AnchorEarnOperations {
