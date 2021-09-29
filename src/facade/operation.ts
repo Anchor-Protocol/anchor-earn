@@ -5,8 +5,8 @@ import {
   Msg,
   MsgSend,
   Numeric,
-  Fee,
-  Tx,
+  StdFee,
+  StdTx,
   Wallet,
 } from '@terra-money/terra.js';
 import { Fabricator, OmitAddress } from '../fabricators';
@@ -19,7 +19,7 @@ import { Parse } from '../utils';
 import accAddress = Parse.accAddress;
 
 export interface OperationGasParameters {
-  fee?: Fee;
+  fee?: StdFee;
   gasPrices?: Coins.Input;
   gasAdjustment?: Numeric.Input;
 }
@@ -30,7 +30,7 @@ export interface Operation {
   creatTx(
     wallet: Wallet,
     gasParameters: OperationGasParameters,
-  ): Promise<Tx>;
+  ): Promise<StdTx>;
   execute(
     wallet: Wallet,
     gasParameters: OperationGasParameters,
@@ -66,7 +66,7 @@ export class OperationImpl<FabricatorInputType> implements Operation {
   async creatTx(
     wallet: Wallet,
     { fee, gasPrices, gasAdjustment }: OperationGasParameters,
-  ): Promise<Tx> {
+  ): Promise<StdTx> {
     return wallet.createAndSignTx({
       fee,
       gasAdjustment,
@@ -100,7 +100,7 @@ export class OperationImpl<FabricatorInputType> implements Operation {
 
 export async function sendSignedTransaction(
   lcd: LCDClient,
-  tx: Tx,
+  tx: StdTx,
 ): Promise<SyncTxBroadcastResult> {
   return await lcd.tx.broadcastSync(tx);
 }
@@ -116,7 +116,7 @@ export function createAndSignMsg(
   wallet: Wallet,
   { fee, gasPrices, gasAdjustment }: OperationGasParameters,
   msgs: Msg[],
-): Promise<Tx> {
+): Promise<StdTx> {
   return wallet.createAndSignTx({
     fee,
     gasAdjustment,

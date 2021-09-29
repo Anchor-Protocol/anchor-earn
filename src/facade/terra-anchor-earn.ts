@@ -7,7 +7,7 @@ import {
   MnemonicKey,
   Msg,
   RawKey,
-  Tx,
+  StdTx,
   TxInfo,
   Wallet,
 } from '@terra-money/terra.js';
@@ -202,7 +202,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
+    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
 
     await this.assertUSTBalance(
       depositOption.currency,
@@ -245,7 +245,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
+    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
 
     await this.assertAUSTBalance(
       withdrawOption.amount,
@@ -308,7 +308,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const customBroadcaster = options.customBroadcaster;
     const address = this.getAddress();
 
-    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
+    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
 
     switch (options.currency) {
       case DENOMS.UST: {
@@ -419,7 +419,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   private async getNativeBalance(
     getNativeBalanceOption: GetUstBalanceOption,
   ): Promise<Coin> {
-    const [userCoins, _] = await this._lcd.bank.balance(
+    const userCoins = await this._lcd.bank.balance(
       accAddress(getNativeBalanceOption.address),
     );
     return userCoins.get(getNativeBalanceOption.currency);
@@ -713,7 +713,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
               status: STATUS.IN_PROGRESS,
               currency: mapCurrencyToUST(options.currency),
               amount: options.amount,
-              txFee: mapCoinToUST(signedTx.auth_info.fee.amount),
+              txFee: mapCoinToUST(signedTx.fee.amount),
               deductedTax: '0',
             } as Output);
           }),
