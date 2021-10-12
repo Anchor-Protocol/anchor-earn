@@ -1,4 +1,9 @@
 # CHANGELOG
+## v1.0.5
+> 12 October 2021
+- Supports projects using the latest terra.js version (^2.0.14).
+- Supports updated testnet (Bombay-12) and mainnet (Columbus-5).
+
 ## v1.0.2
 > 16 June 2021
   
@@ -21,7 +26,7 @@
   First [release](https://github.com/Anchor-Protocol/anchor-earn/commit/f30c8a580e23d07669c9b876078112e7c34ec5c1).
 ### Features:
  - Supports only the Terra blockchain.   
- - Works with Anchor protocol contracts on both the testnet (Tequila-004) and mainnet (Columbus-4).
+ - Works with Anchor protocol contracts on both the testnet (Bombay-004) and mainnet (Columbus-4).
  - Supports the `deposit`, `withdraw`, and `send` execution functionalities.
     - Supports `deposit` in the TerraUSD (UST) currency.
     - Supports `withdraw` in both the TerraUSD (UST) and aUST currencies.

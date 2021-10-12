@@ -3,7 +3,7 @@ import { AnchorConfig } from '../address-provider/types';
 const mainNetDefaultConfig: AnchorConfig = {
   lcd: {
     URL: 'https://lcd.terra.dev',
-    chainID: 'columbus-4',
+    chainID: 'columbus-5',
     gasPrices: {
       uusd: 0.456,
     },

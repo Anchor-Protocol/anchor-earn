@@ -26,8 +26,8 @@ import {
   queryMarketEpochState,
   queryOverseerEpochState,
 } from '../fabricators';
-import mainNetDefaultConfig from '../data/anchorearn-default-columbus';
-import tequilaDefaultConfig from '../data/anchorearn-default-tequila';
+import mainNetDefaultConfig from '../data/anchorearn-default-mainnet';
+import testnetDefaultConfig from '../data/anchorearn-default-testnet';
 import { Parse } from '../utils';
 import {
   AddressProvider,
@@ -86,8 +86,8 @@ interface GasConfig {
 }
 
 /**
- * @param {NETWORKS} Terra networks: It Could be either NETWORKS.TEQUILA_0004 and NETWORKS.COLUMBUS_4.
- * The default network is NETWORKS.COLUMBUS_4.
+ * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_12 and NETWORKS.COLUMBUS_5.
+ * The default network is NETWORKS.COLUMBUS_5.
  * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
  * @param {mnemonic} The user's mnemonic key. It will be generated when an account is created.
@@ -95,7 +95,7 @@ interface GasConfig {
  *
  * @example
  * const anchorEarn = new AnchorEarn({
-      network: NETWORKS.TEQUILA0004,
+      network: NETWORKS.BOMBAY_12,
       private_key: '....',
     });
  */
@@ -109,28 +109,28 @@ interface AnchorEarnOptions {
 }
 
 const defaultGasConfigMap = {
-  [NETWORKS.COLUMBUS_4]: {
+  [NETWORKS.COLUMBUS_5]: {
     gasPrices: mainNetDefaultConfig.lcd.gasPrices,
     gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
   },
-  [NETWORKS.TEQUILA_0004]: {
-    gasPrices: tequilaDefaultConfig.lcd.gasPrices,
-    gasAdjustment: tequilaDefaultConfig.lcd.gasAdjustment,
+  [NETWORKS.BOMBAY_12]: {
+    gasPrices: testnetDefaultConfig.lcd.gasPrices,
+    gasAdjustment: testnetDefaultConfig.lcd.gasAdjustment,
   },
 };
 
 const defaultAddressProvider = {
-  [NETWORKS.COLUMBUS_4]: new AddressProviderFromJson(
+  [NETWORKS.COLUMBUS_5]: new AddressProviderFromJson(
     mainNetDefaultConfig.contracts,
   ),
-  [NETWORKS.TEQUILA_0004]: new AddressProviderFromJson(
-    tequilaDefaultConfig.contracts,
+  [NETWORKS.BOMBAY_12]: new AddressProviderFromJson(
+    testnetDefaultConfig.contracts,
   ),
 };
 
 const defaultLCDConfig = {
-  [NETWORKS.COLUMBUS_4]: mainNetDefaultConfig.lcd,
-  [NETWORKS.TEQUILA_0004]: tequilaDefaultConfig.lcd,
+  [NETWORKS.COLUMBUS_5]: mainNetDefaultConfig.lcd,
+  [NETWORKS.BOMBAY_12]: testnetDefaultConfig.lcd,
 };
 
 export class TerraAnchorEarn implements AnchorEarnOperations {

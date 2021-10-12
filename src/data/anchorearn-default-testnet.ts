@@ -1,13 +1,13 @@
 import { AnchorConfig } from '../address-provider/types';
 
-const tequilaDefaultConfig: AnchorConfig = {
+const testnetDefaultConfig: AnchorConfig = {
   lcd: {
-    URL: 'https://tequila-lcd.terra.dev',
-    chainID: 'tequila-0004',
+    URL: 'https://bombay-lcd.terra.dev',
+    chainID: 'bombay-12',
     gasPrices: {
       uusd: 0.15,
     },
-    gasAdjustment: 2,
+    gasAdjustment: 1.75,
   },
   contracts: {
     mmMarket: 'terra15dwd5mj8v59wpj0wvt233mf5efdff808c5tkal',
@@ -16,4 +16,4 @@ const tequilaDefaultConfig: AnchorConfig = {
   },
 };
 
-export default tequilaDefaultConfig;
+export default testnetDefaultConfig;

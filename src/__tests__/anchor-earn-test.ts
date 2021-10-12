@@ -23,7 +23,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
 
@@ -46,7 +46,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
 
@@ -67,7 +67,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn2 = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account2.privateKey,
     });
     await anchorEarn2
@@ -84,7 +84,7 @@ describe('anchor-earn', () => {
     //address: terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra1us9cs88cxhcqclusvs4lxw0pfesc8y6f44hr3u',
     });
     const deposit = await anchorEarn.deposit({
@@ -101,8 +101,8 @@ describe('anchor-earn', () => {
 
         const wallet = new Wallet(
           new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
+            URL: 'https://bombay-lcd.terra.dev',
+            chainID: 'bombay-12',
           }),
           account,
         );
@@ -134,8 +134,8 @@ describe('anchor-earn', () => {
 
           const wallet = new Wallet(
             new LCDClient({
-              URL: 'https://tequila-lcd.terra.dev',
-              chainID: 'tequila-0004',
+              URL: 'https://bombay-lcd.terra.dev',
+              chainID: 'bombay-12',
             }),
             account,
           );
@@ -156,7 +156,7 @@ describe('anchor-earn', () => {
     //address: terra1cd8sj2dfmcjcujafwx59yuk2xd9j8e86c2pyva
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra1cd8sj2dfmcjcujafwx59yuk2xd9j8e86c2pyva',
     });
 
@@ -174,8 +174,8 @@ describe('anchor-earn', () => {
 
         const wallet = new Wallet(
           new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
+            URL: 'https://bombay-lcd.terra.dev',
+            chainID: 'bombay-12',
           }),
           account,
         );
@@ -203,7 +203,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
 
@@ -225,7 +225,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
     const sendAust = await anchorEarn.send({
@@ -243,7 +243,7 @@ describe('anchor-earn', () => {
     //address: terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra1u6pnfv06dc62d35g8halz59xw3tt7l60dp4sdt',
     });
     await anchorEarn.send({
@@ -261,8 +261,8 @@ describe('anchor-earn', () => {
 
         const wallet = new Wallet(
           new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
+            URL: 'https://bombay-lcd.terra.dev',
+            chainID: 'bombay-12',
           }),
           account,
         );
@@ -286,7 +286,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
 
@@ -311,7 +311,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
 
@@ -334,7 +334,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
     const sendUst = await anchorEarn.send({
@@ -352,7 +352,7 @@ describe('anchor-earn', () => {
     //address: terra1jtuzr0k9765tjnmqxm4c2y2ufrld6htwgfznyn
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra1jtuzr0k9765tjnmqxm4c2y2ufrld6htwgfznyn',
     });
     await anchorEarn.send({
@@ -370,8 +370,8 @@ describe('anchor-earn', () => {
 
         const wallet = new Wallet(
           new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
+            URL: 'https://bombay-lcd.terra.dev',
+            chainID: 'bombay-12',
           }),
           account,
         );
@@ -389,7 +389,7 @@ describe('anchor-earn', () => {
     //address: terra1tu97t4zkw2xrepplmphyfjnnf5grf54t7drsq5
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       mnemonic:
         'jungle asthma machine bring result credit wisdom dinosaur office book reopen ladder dune gadget choice insane festival inspire drive female speed evil wreck acid',
     });
@@ -403,8 +403,8 @@ describe('anchor-earn', () => {
       },
       customBroadcaster: async (tx: Msg[]) => {
         const lcd = new LCDClient({
-          URL: 'https://tequila-lcd.terra.dev',
-          chainID: 'tequila-0004',
+          URL: 'https://bombay-lcd.terra.dev',
+          chainID: 'bombay-12',
         });
 
         const wallet = new Wallet(
@@ -438,7 +438,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
 
@@ -461,7 +461,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
     const withdraw = await anchorEarn.withdraw({
@@ -485,7 +485,7 @@ describe('anchor-earn', () => {
 
     const failedAnchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: failure_account.privateKey,
     });
 
@@ -513,7 +513,7 @@ describe('anchor-earn', () => {
 
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra10zkyac50dgx830uepym5508h7vukqufr6y5wdy',
     });
 
@@ -531,8 +531,8 @@ describe('anchor-earn', () => {
 
         const wallet = new Wallet(
           new LCDClient({
-            URL: 'https://tequila-lcd.terra.dev',
-            chainID: 'tequila-0004',
+            URL: 'https://bombay-lcd.terra.dev',
+            chainID: 'bombay-12',
           }),
           account,
         );
@@ -554,7 +554,7 @@ describe('anchor-earn', () => {
     });
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       privateKey: account.privateKey,
     });
     const withdraw = await anchorEarn.withdraw({
@@ -571,14 +571,14 @@ describe('anchor-earn', () => {
     //address: terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       mnemonic:
         'carpet glue angle people endorse thunder unknown fly choose fat dash hurt jeans lottery omit reject immense vocal hockey slide loop episode host comic',
     });
     const customBroadcaster = async (tx: Msg[]) => {
       const lcd = new LCDClient({
-        URL: 'https://tequila-lcd.terra.dev',
-        chainID: 'tequila-0004',
+        URL: 'https://bombay-lcd.terra.dev',
+        chainID: 'bombay-12',
       });
 
       const wallet = new Wallet(
@@ -612,7 +612,7 @@ describe('anchor-earn', () => {
   it('balance', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q',
     });
 
@@ -626,7 +626,7 @@ describe('anchor-earn', () => {
   it('market', async () => {
     const anchorEarn = new AnchorEarn({
       chain: CHAINS.TERRA,
-      network: NETWORKS.TEQUILA_0004,
+      network: NETWORKS.BOMBAY_12,
       address: 'terra18cs8wjs66kvqgnrj68lak6tfw26z006h00zu4q',
     });
 
