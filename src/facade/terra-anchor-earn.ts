@@ -26,8 +26,8 @@ import {
   queryMarketEpochState,
   queryOverseerEpochState,
 } from '../fabricators';
-import mainNetDefaultConfig from '../data/anchorearn-default-columbus';
-import tequilaDefaultConfig from '../data/anchorearn-default-tequila';
+import mainnetDefaultConfig from '../data/anchorearn-default-mainnet';
+import testnetDefaultConfig from '../data/anchorearn-default-testnet';
 import { Parse } from '../utils';
 import {
   AddressProvider,
@@ -47,7 +47,6 @@ import {
   WithdrawOption,
 } from './types';
 import { CHAINS, NETWORKS, Output, STATUS, TxType } from './output';
-import { BlockTxBroadcastResult } from '@terra-money/terra.js/dist/client/lcd/api/TxAPI';
 import { MarketOutput } from '../facade';
 import { assertInput } from '../utils/assert-inputs';
 import { tee } from '../utils/tee';
@@ -86,8 +85,8 @@ interface GasConfig {
 }
 
 /**
- * @param {NETWORKS} Terra networks: It Could be either NETWORKS.TEQUILA_0004 and NETWORKS.COLUMBUS_4.
- * The default network is NETWORKS.COLUMBUS_4.
+ * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_12 and NETWORKS.COLUMBUS_5.
+ * The default network is NETWORKS.COLUMBUS_5.
  * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
  * @param {mnemonic} The user's mnemonic key. It will be generated when an account is created.
@@ -95,7 +94,7 @@ interface GasConfig {
  *
  * @example
  * const anchorEarn = new AnchorEarn({
-      network: NETWORKS.TEQUILA0004,
+      network: NETWORKS.BOMBAY_12,
       private_key: '....',
     });
  */
@@ -109,28 +108,28 @@ interface AnchorEarnOptions {
 }
 
 const defaultGasConfigMap = {
-  [NETWORKS.COLUMBUS_4]: {
-    gasPrices: mainNetDefaultConfig.lcd.gasPrices,
-    gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
+  [NETWORKS.COLUMBUS_5]: {
+    gasPrices: mainnetDefaultConfig.lcd.gasPrices,
+    gasAdjustment: mainnetDefaultConfig.lcd.gasAdjustment,
   },
-  [NETWORKS.TEQUILA_0004]: {
-    gasPrices: tequilaDefaultConfig.lcd.gasPrices,
-    gasAdjustment: tequilaDefaultConfig.lcd.gasAdjustment,
+  [NETWORKS.BOMBAY_12]: {
+    gasPrices: testnetDefaultConfig.lcd.gasPrices,
+    gasAdjustment: testnetDefaultConfig.lcd.gasAdjustment,
   },
 };
 
 const defaultAddressProvider = {
-  [NETWORKS.COLUMBUS_4]: new AddressProviderFromJson(
-    mainNetDefaultConfig.contracts,
+  [NETWORKS.COLUMBUS_5]: new AddressProviderFromJson(
+    mainnetDefaultConfig.contracts,
   ),
-  [NETWORKS.TEQUILA_0004]: new AddressProviderFromJson(
-    tequilaDefaultConfig.contracts,
+  [NETWORKS.BOMBAY_12]: new AddressProviderFromJson(
+    testnetDefaultConfig.contracts,
   ),
 };
 
 const defaultLCDConfig = {
-  [NETWORKS.COLUMBUS_4]: mainNetDefaultConfig.lcd,
-  [NETWORKS.TEQUILA_0004]: tequilaDefaultConfig.lcd,
+  [NETWORKS.COLUMBUS_5]: mainnetDefaultConfig.lcd,
+  [NETWORKS.BOMBAY_12]: testnetDefaultConfig.lcd,
 };
 
 export class TerraAnchorEarn implements AnchorEarnOperations {
@@ -143,12 +142,12 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   constructor(options: AnchorEarnOptions) {
     const address = options.address;
     const gasConfig = defaultGasConfigMap[options.network] || {
-      gasPrices: mainNetDefaultConfig.lcd.gasPrices,
-      gasAdjustment: mainNetDefaultConfig.lcd.gasAdjustment,
+      gasPrices: mainnetDefaultConfig.lcd.gasPrices,
+      gasAdjustment: mainnetDefaultConfig.lcd.gasAdjustment,
     };
     const addressProvider =
       defaultAddressProvider[options.network] ||
-      new AddressProviderFromJson(mainNetDefaultConfig.contracts);
+      new AddressProviderFromJson(mainnetDefaultConfig.contracts);
 
     const lcd = new LCDClient(defaultLCDConfig[options.network]);
 
@@ -652,7 +651,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
   }
 
   private generateOutput(
-    tx: BlockTxBroadcastResult,
+    tx: TxInfo,
     type: OperationType,
     taxFee: string,
     loggable?: (data: OperationError | TxOutput) => Promise<void> | void,
@@ -704,7 +703,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         });
 
       return Promise.resolve()
-        .then(() => createTx(unsignedTx))
+        .then(() => {
+          return createTx(unsignedTx)
+        })
         .then(
           tee((signedTx) => {
             loggable({
@@ -717,9 +718,10 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
             } as Output);
           }),
         )
-        .then((signedTx) => sendSignedTransaction(this._lcd, signedTx))
-        .then((result) =>
-          isTxError(result)
+        .then((signedTx) => {
+          return sendSignedTransaction(this._lcd, signedTx)
+        })
+        .then((result) => isTxError(result)
             ? Promise.reject(
                 new Error(getTerraError(result.raw_log, result.code)),
               )

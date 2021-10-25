@@ -1,9 +1,9 @@
 import { AnchorConfig } from '../address-provider/types';
 
-const mainNetDefaultConfig: AnchorConfig = {
+const mainnetDefaultConfig: AnchorConfig = {
   lcd: {
     URL: 'https://lcd.terra.dev',
-    chainID: 'columbus-4',
+    chainID: 'columbus-5',
     gasPrices: {
       uusd: 0.456,
     },
@@ -16,4 +16,4 @@ const mainNetDefaultConfig: AnchorConfig = {
   },
 };
 
-export default mainNetDefaultConfig;
+export default mainnetDefaultConfig;
