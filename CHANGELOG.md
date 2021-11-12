@@ -1,8 +1,15 @@
 # CHANGELOG
 
-## v1.0.5
+# v1.1.1
+> 12 Nov 2021
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/673d70bbac7084f87490f71c6ea09cf1fdff7c31)
+## Changed:
+- Address the [issue](https://github.com/Anchor-Protocol/anchor-earn/issues/10).
+
+
+## v1.1.0
 > 9 Sep 2021
-  Here is the [release]()
+  Here is the [release](https://github.com/Anchor-Protocol/anchor-earn/commit/9ef75fd59fa91a74620b5602c60c1ca663e1b8f8)
 
 ## Changed:
 - Update `terra.js` version to `@terra-money/terra.js ^2.1.0`
