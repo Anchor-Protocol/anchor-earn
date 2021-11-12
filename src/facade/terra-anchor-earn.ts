@@ -504,7 +504,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     return {
       currency: mapCurrencyToUST(currency),
-      account_balance: getNaturalDecimals(accountBalance[0].amount.toString()),
+      account_balance: getNaturalDecimals(accountBalance[0]?.amount.toString()),
       deposit_balance: getNaturalDecimals(
         new Int(
           new Dec(depositBalance[0].balance).mul(exchangeRate).toString(),
