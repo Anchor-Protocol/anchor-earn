@@ -7,7 +7,7 @@ import {
   MnemonicKey,
   Msg,
   RawKey,
-  StdTx,
+  Tx,
   TxInfo,
   Wallet,
 } from '@terra-money/terra.js';
@@ -57,7 +57,6 @@ import mapCurrencyToUST = Parse.mapCurrencyToUST;
 import mapCurrencyToUSD = Parse.mapCurrencyToUSD;
 import getNaturalDecimals = Parse.getNaturalDecimals;
 import getMicroAmount = Parse.getMicroAmount;
-import mapCoinToUST = Parse.mapCoinToUST;
 
 const BLOCKS_IN_YEAR = 4_656_810;
 
@@ -87,7 +86,6 @@ interface GasConfig {
 /**
  * @param {NETWORKS} Terra networks: It Could be either NETWORKS.BOMBAY_12 and NETWORKS.COLUMBUS_5.
  * The default network is NETWORKS.COLUMBUS_5.
- * @param {accessToken} Decoded version of the user's private key.
  * @param {privateKey} The user's private key. It will be generated when an account is created.
  * @param {mnemonic} The user's mnemonic key. It will be generated when an account is created.
  * @param {address}: Client’s Terra address. It can be only used for queries.
@@ -202,7 +200,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid Market');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
     await this.assertUSTBalance(
       depositOption.currency,
@@ -245,7 +243,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
       throw new Error('Invalid zero amount');
     }
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
     await this.assertAUSTBalance(
       withdrawOption.amount,
@@ -308,7 +306,7 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const customBroadcaster = options.customBroadcaster;
     const address = this.getAddress();
 
-    assertInput<Msg[], StdTx>(customSigner, customBroadcaster);
+    assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
     switch (options.currency) {
       case DENOMS.UST: {
@@ -422,7 +420,9 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
     const userCoins = await this._lcd.bank.balance(
       accAddress(getNativeBalanceOption.address),
     );
-    return userCoins.get(getNativeBalanceOption.currency);
+
+    const coins:Coins = userCoins[0];
+    return coins.get(getNativeBalanceOption.currency);
   }
 
   private async getExchangeRate(
@@ -707,13 +707,13 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
           return createTx(unsignedTx)
         })
         .then(
-          tee((signedTx) => {
+          tee((_signedTx) => {
             loggable({
               type: getTxType(txType),
               status: STATUS.IN_PROGRESS,
               currency: mapCurrencyToUST(options.currency),
               amount: options.amount,
-              txFee: mapCoinToUST(signedTx.fee.amount),
+              //txFee: mapCoinToUST(signedTx.fee.amount),
               deductedTax: '0',
             } as Output);
           }),
@@ -721,12 +721,16 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         .then((signedTx) => {
           return sendSignedTransaction(this._lcd, signedTx)
         })
-        .then((result) => isTxError(result)
-            ? Promise.reject(
-                new Error(getTerraError(result.raw_log, result.code)),
-              )
-            : result.txhash,
-        );
+        .then((result) => {if (isTxError(result)) {
+          if ( typeof result.code === 'number' ) {
+              return Promise.reject( new Error(getTerraError(result.raw_log, result.code)))
+          } else {
+              return Promise.reject(
+                  new Error(getTerraError(result.raw_log,parseInt( result.code,10))))
+          }
+    } else {
+             return result.txhash}
+    });
     };
 
     return Promise.resolve()
