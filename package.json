@@ -37,7 +37,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@terra-money/terra.js": "^3.0.0"
+    "@terra-money/terra.js": "^3.0.0",
+    "node-gyp-build": "^4.3.0"
   },
   "devDependencies": {
     "@ssen/eslint-config": "^2.0.1",

@@ -32,6 +32,9 @@ jobs:
         run: |
           node --version
 
+      - name: Install Node-Gyp Dependency
+        run: npm install node-gyp-build
+
       - name: Install Dependencies
         run: npm install
 
