@@ -1,11 +1,11 @@
-import { AccAddress, MnemonicKey, Wallet } from '@terra-money/terra.js';
+import {AccAddress, MnemonicKey, PublicKey, Wallet} from '@terra-money/terra.js';
 import { JSONSerializable } from '../utils/json';
 import { CHAINS } from './output';
 
 //TODO: use an interface for Account
 export class Account extends JSONSerializable<Account.Data> {
   accAddress: AccAddress;
-  publicKey: string;
+  publicKey: PublicKey;
   privateKey: Buffer;
   mnemonic: string;
 
@@ -15,7 +15,7 @@ export class Account extends JSONSerializable<Account.Data> {
       case CHAINS.TERRA: {
         const account = new MnemonicKey();
         this.accAddress = account.accAddress;
-        this.publicKey = account.accPubKey;
+        this.publicKey = account.publicKey;
         this.privateKey = account.privateKey;
         this.mnemonic = account.mnemonic;
       }
@@ -25,7 +25,7 @@ export class Account extends JSONSerializable<Account.Data> {
   toData(): Account.Data {
     return {
       acc_address: this.accAddress.toString(),
-      public_key: this.publicKey,
+      public_key: this.publicKey.toString(),
       private_key: this.privateKey,
       mnemonic: this.mnemonic,
     };
