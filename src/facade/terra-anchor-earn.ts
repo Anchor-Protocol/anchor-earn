@@ -245,10 +245,6 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
 
     assertInput<Msg[], Tx>(customSigner, customBroadcaster);
 
-    await this.assertAUSTBalance(
-      withdrawOption.amount,
-      address ? address : undefined,
-    );
 
     let requestedAmount = '0';
 
@@ -274,6 +270,11 @@ export class TerraAnchorEarn implements AnchorEarnOperations {
         );
       }
     }
+    
+    await this.assertAUSTBalance(
+      withdrawOption.amount,
+      address ? address : undefined,
+    );
 
     const operation = new OperationImpl(
       fabricateMarketRedeemStable,
